@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require_relative "resend/version"
+require "resend/client"
 
-module Resend
-  class Error < StandardError; end
-end
+require "./railsend" if defined?(Rails) && defined?(ActionMailer)
