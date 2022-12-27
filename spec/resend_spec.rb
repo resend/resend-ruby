@@ -29,4 +29,27 @@ RSpec.describe Resend do
     }
     expect { c.send_email subject_missing }.to raise_error(ArgumentError)
   end
+
+  it "raise when 'to' is neither string nor array" do
+    c = Resend::Client.new "re_123"
+
+    invalid = {
+      "to": 123,
+      "text": "t",
+      "subject": "t"
+    }
+    expect { c.send_email invalid }.to raise_error(ArgumentError)
+  end
+
+  it "raise when 'from' is not a string" do
+    c = Resend::Client.new "re_123"
+
+    invalid = {
+      "to": "123",
+      "from": 1,
+      "text": "t",
+      "subject": "t"
+    }
+    expect { c.send_email invalid }.to raise_error(ArgumentError)
+  end
 end

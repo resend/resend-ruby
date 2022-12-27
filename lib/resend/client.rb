@@ -1,7 +1,6 @@
 require_relative "./version"
+require_relative "./errors"
 require "httparty"
-
-class ResendError < StandardError;end
 
 module Resend
 
@@ -48,23 +47,24 @@ module Resend
     private
 
     def validate!(params)
+      raise ArgumentError.new("'to' should be an Array or String") unless params[:to].is_a?(String) or params[:to].is_a?(Array)
       raise ArgumentError.new("Argument 'to' is missing") if params[:to].nil?
       raise ArgumentError.new("'to' can not be empty") if params[:to].empty?
 
+      raise ArgumentError.new("'from' should be a String") unless params[:from].is_a?(String)
       raise ArgumentError.new("Argument 'from' is missing") if params[:from].nil?
       raise ArgumentError.new("'from' can not be empty") if params[:from].empty?
 
+      raise ArgumentError.new("'from' should be a String") unless params[:from].is_a?(String)
       raise ArgumentError.new("Argument 'subject' is missing") if params[:subject].nil?
       raise ArgumentError.new("'subject' can not be empty") if params[:subject].empty?
 
-      if params[:text].nil? and params[:html].nil?
-        raise ArgumentError.new("Argument 'text' and 'html' are missing")
-      end
+      raise ArgumentError.new("Argument 'text' and 'html' are missing") if params[:text].nil? and params[:html].nil?
     end
 
     def handle_error!(error)
       err = error.transform_keys(&:to_sym)
-      raise ResendError.new(err[:message])
+      raise Resend::ResendError.new(err[:message])
     end
   end
 end
