@@ -1,5 +1,7 @@
 # Resend Ruby and Rails SDK
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+![Build](https://github.com/drish/resend-ruby/actions/workflows/build.yaml/badge.svg)
 ---
 
 ## Installation
