@@ -6,8 +6,10 @@
 /pkg/
 /spec/reports/
 /tmp/
+/sig/
 
 # rspec failure tracking
 .rspec_status
 
 test.rb
+*.gem
