@@ -2,7 +2,6 @@ require "resend"
 
 module Resend
   class Mailer
-    IGNORED_HEADERS = %w[to from subject reply-to]
 
     attr_accessor :config, :settings
 
