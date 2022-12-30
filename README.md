@@ -50,7 +50,7 @@ This gem can be used as an ActionMailer delivery method, add this to your `confi
 
 ```ruby
 config.action_mailer.delivery_method = :resend
-config.action_mailer.mailgun_settings = {
+config.action_mailer.resend_settings = {
     api_key: 'resend_api_key',
 }
 ```
