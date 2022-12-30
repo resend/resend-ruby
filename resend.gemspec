@@ -14,4 +14,5 @@ Gem::Specification.new do |spec|
   spec.require_path  = "lib"
   spec.required_ruby_version = ">= 2.6"
   spec.add_dependency "httparty", "~> 0.20.0"
+  spec.add_development_dependency 'rails'
 end

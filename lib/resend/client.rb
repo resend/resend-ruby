@@ -36,14 +36,6 @@ module Resend
       resp
     end
 
-    # Rails #configure
-    def configure(options)
-      options.each do |key, value|
-        instance_variable_set("@#{key}", value)
-      end
-      yield(self) if block_given?
-    end
-
     private
 
     def validate!(params)
