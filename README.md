@@ -2,6 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 ![Build](https://github.com/drish/resend-ruby/actions/workflows/build.yml/badge.svg)
+[![Gem Version](https://badge.fury.io/rb/resend.svg)](https://badge.fury.io/rb/resend)
 ---
 
 ## Installation
