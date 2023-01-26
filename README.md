@@ -16,7 +16,7 @@ gem install resend
 
 Via Gemfile:
 ```
-gem 'resend', '~>0.1.0'
+gem 'resend', '~>0.2.0'
 ```
 
 ## Setup
