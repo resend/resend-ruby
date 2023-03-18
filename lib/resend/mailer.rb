@@ -21,7 +21,7 @@ module Resend
       params[:cc] = mail[:cc].to_s if mail[:cc].present?
       params[:bcc] = mail[:bcc].to_s if mail[:bcc].present?
       params[:reply_to] = mail[:reply_to].to_s if mail[:reply_to].present?
-      params[:html] = mail.body.decoded
+      params[:html] = mail.html_part.decode_body
 
       resp = @resend_client.send_email(params)
 
