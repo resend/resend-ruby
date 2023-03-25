@@ -1,7 +1,7 @@
 require_relative '../lib/resend'
 require "stringio"
 
-raise if ENV["RESEND_API_KEY"].empty?
+raise if ENV["RESEND_API_KEY"].nil?
 
 client = Resend::Client.new(ENV["RESEND_API_KEY"])
 
