@@ -25,7 +25,7 @@ RSpec.describe Resend do
     subject_missing = {
       "from": "test@test.com",
       "to": "test@test.com",
-      "text": "t",
+      "text": "t"
     }
     expect { c.send_email subject_missing }.to raise_error(ArgumentError)
   end
