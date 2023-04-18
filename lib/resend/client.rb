@@ -40,9 +40,9 @@ module Resend
     private
 
     def validate!(params)
-      validate_to_param!
-      validate_from_param!
-      validate_subject_param!
+      validate_to_param!(params)
+      validate_from_param!(params)
+      validate_subject_param!(params)
       raise ArgumentError, "Argument 'text' and 'html' are missing" if params[:text].nil? && params[:html].nil?
     end
 
