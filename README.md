@@ -45,6 +45,9 @@ r = client.send_email(params)
 puts r
 ```
 
+You can view all the examples in the (examples folder)[https://github.com/drish/resend-ruby/tree/main/examples]
+
+
 # Rails and ActiveMailer support
 
 This gem can be used as an ActionMailer delivery method, add this to your `config/environments/environment.rb` file and replace with your api key.

@@ -3,4 +3,7 @@
 module Resend
   class ResendError < StandardError
   end
+
+  class InvalidPermissionError < ResendError
+  end
 end
