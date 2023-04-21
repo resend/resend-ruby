@@ -28,10 +28,11 @@ module Resend
     end
 
     # permission can be nil
-    # permission can not be present and blank
-    # permission must be included in ALLOWED_PERMISSIONS
+    # permission can not be blank when it is present
+    # permission must be included in ALLOWED_PERMISSIONS when it is present
     def validate_api_key_permission!(params)
-      raise ArgumentError, "Argument 'permission' can not be blank" if params[:permission].to_s.empty?
+      return if params[:permission].nil?
+      raise ArgumentError, "Argument 'permission' can not be blank" if params[:permission].empty?
       unless ALLOWED_PERMISSIONS.include? params[:permission]
         raise ArgumentError, "#{params[:permission]} is invalid, must be 'full_access' or 'sending_access'"
       end
@@ -40,7 +41,8 @@ module Resend
     # domain can be nil
     # domain can not be blank when present
     def validate_api_key_domain!(params)
-      raise ArgumentError, "Argument 'domain_id' can not be blank" if params[:domain_id] && params[:domain_id].empty?
+      return if params[:domain_id].nil?
+      raise ArgumentError, "Argument 'domain_id' can not be blank" if params[:domain_id].empty?
     end
   end
 end

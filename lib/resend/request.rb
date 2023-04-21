@@ -32,16 +32,16 @@ module Resend
       options[:headers] = @headers
       resp = HTTParty.post("#{BASE_URL}#{@path}", options)
       resp.transform_keys!(&:to_sym)
-      handle_error!(resp[:error]) unless resp[:error].nil?
+      handle_error!(resp) if resp[:statusCode] && resp[:statusCode] != 200
       resp
     end
 
-    private
-
     # TODO: looks like the API changed how the errors are sent.
-    def handle_error!(error)
-      err = error.transform_keys(&:to_sym)
-      raise Resend::ResendError, err[:message]
+    def handle_error!(resp)
+      code = resp[:statusCode]
+      body = resp[:message]
+      error = Resend::Error::ERRORS[code]
+      raise(error.new(body, code)) if error
     end
   end
 end
