@@ -7,8 +7,8 @@ raise if ENV["RESEND_API_KEY"].nil?
 client = Resend::Client.new(ENV["RESEND_API_KEY"])
 
 params = {
-  "from": "team@recomendo.io",
-  "to": ["carlosderich@gmail.com"],
+  "from": "you@yourdomain.io",
+  "to": ["you@examepl.com"],
   "text": "test",
   "subject": "test"
 }

@@ -10,10 +10,10 @@ client = Resend::Client.new(ENV["RESEND_API_KEY"])
 file = IO.read(File.join(File.dirname(__FILE__), "../resources/invoice.pdf"))
 
 params = {
-  "from": "team@recomendo.io",
-  "to": ["carlosderich@gmail.com"],
-  "text": "test",
-  "subject": "test",
+  "from": "you@yourdomain.io",
+  "to": ["someone@example.com"],
+  "text": "heyo",
+  "subject": "Hello with attachment",
   "attachments": [
     "filename": "invoice.pdf",
     "content": file.bytes # make sure to use .bytes() here

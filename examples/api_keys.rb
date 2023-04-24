@@ -7,10 +7,9 @@ raise if ENV["RESEND_API_KEY"].nil?
 def create_api_key_with_defaults
   client = Resend::Client.new(ENV["RESEND_API_KEY"])
   params = {
-    # defaults to All Domains when no Domain is set
-    # defaults to sending_access when no Permission is set
-    "name": "test1",
-    "domain_id": "shz"
+    # defaults to All Domains when no domain_id is set
+    # defaults to `sending_access` when no `permission` is set
+    "name": "test1"
   }
   key = client.create_api_key(params)
   puts key
@@ -26,5 +25,5 @@ def create_api_key_with_permissions
   puts key
 end
 
-# create_api_key_with_permissions
+create_api_key_with_permissions
 create_api_key_with_defaults

@@ -5,7 +5,7 @@ require "resend/client"
 
 require "resend/railtie" if defined?(Rails) && defined?(ActionMailer)
 
-# Main Resent module
+# Main Resend module
 module Resend
   class << self
     attr_accessor :api_key
