@@ -45,7 +45,7 @@ r = client.send_email(params)
 puts r
 ```
 
-You can view all the examples in the (examples folder)[https://github.com/drish/resend-ruby/tree/main/examples]
+You can view all the examples in the [examples folder](https://github.com/drish/resend-ruby/tree/main/examples)
 
 
 # Rails and ActiveMailer support
