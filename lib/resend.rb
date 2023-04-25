@@ -3,15 +3,17 @@
 require "resend/version"
 require "resend/client"
 
-require 'resend/railtie' if defined?(Rails) && defined?(ActionMailer)
+require "resend/railtie" if defined?(Rails) && defined?(ActionMailer)
 
+# Main Resend module
 module Resend
   class << self
-    attr_accessor :api_key,
+    attr_accessor :api_key
+
     def configure
       yield self if block_given?
       true
     end
-    alias_method :config, :configure
+    alias config configure
   end
 end

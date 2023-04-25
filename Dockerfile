@@ -6,7 +6,7 @@ RUN mkdir -p /app
 WORKDIR /app
 
 ADD Gemfile /app/Gemfile
-# ADD Gemfile.lock /app/Gemfile.lock
+ADD Gemfile.lock /app/Gemfile.lock
 
-# RUN bundle install
+RUN bundle install
 ADD . /app
