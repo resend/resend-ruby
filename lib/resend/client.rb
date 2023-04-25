@@ -7,7 +7,7 @@ require "resend/emails"
 require "httparty"
 
 module Resend
-  # Main Resend client class, most methods should live here.
+  # Main Resend client class.
   class Client
     include Resend::ApiKeys
     include Resend::Emails
