@@ -6,7 +6,7 @@ Gem::Specification.new do |spec|
   spec.name          = "resend"
   spec.version       = Resend::VERSION
   spec.summary       = "The Ruby and Rails SDK for resend.com"
-  spec.homepage      = "https://github.com/drish/resend-ruby"
+  spec.homepage      = "https://github.com/resendlabs/resend-ruby"
   spec.license       = "MIT"
 
   spec.author        = "Derich Pacheco"
