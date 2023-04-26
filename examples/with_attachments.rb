@@ -15,8 +15,10 @@ params = {
   "text": "heyo",
   "subject": "Hello with attachment",
   "attachments": [
-    "filename": "invoice.pdf",
-    "content": file.bytes # make sure to use .bytes() here
+    {
+      "filename": "invoice.pdf",
+      "content": file.bytes # make sure to use .bytes() here
+    }
   ]
 }
 

@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "resend/version"
-require "resend/errors"
 require "resend/api_keys"
 require "resend/emails"
 require "httparty"
