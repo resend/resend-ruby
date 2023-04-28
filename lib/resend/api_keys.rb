@@ -6,8 +6,6 @@ require "resend/errors"
 module Resend
   # api keys api wrapper
   module ApiKeys
-    ALLOWED_PERMISSIONS = %w[sending_access full_access].freeze
-
     # https://resend.com/docs/api-reference/api-keys/create-api-key
     def create_api_key(params)
       path = "/api-keys"
