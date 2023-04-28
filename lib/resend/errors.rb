@@ -17,7 +17,11 @@ module Resend
     # code 422
     InvalidRequestError = Class.new(ServerError)
 
+    # code 404
+    NotFoundError = Class.new(ServerError)
+
     ERRORS = {
+      404 => Resend::Error::InvalidRequestError,
       422 => Resend::Error::InvalidRequestError,
       400 => Resend::Error::InvalidRequestError,
       500 => Resend::Error::InternalServerError

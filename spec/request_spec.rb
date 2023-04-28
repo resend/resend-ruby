@@ -27,7 +27,7 @@ RSpec.describe Resend::Request do
     expect { req.handle_error!(resp) }.to raise_error(Resend::Error::InvalidRequestError, /422/)
   end
 
-  it "Resend::Error::InternalServerError" do
+  it "Resend::Error::InternalServerErro 500" do
     req = described_class.new(@client)
     resp = {
       :statusCode => 500,

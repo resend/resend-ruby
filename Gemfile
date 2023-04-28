@@ -11,6 +11,6 @@ gem "rspec", "~> 3.0"
 
 gem "rubocop", "~> 1.21"
 
-gem "httparty", "~> 0.20.0"
+gem "httparty", "~> 0.19.1"
 
 gem "pry-byebug"
