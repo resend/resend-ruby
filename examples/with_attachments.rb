@@ -10,8 +10,8 @@ Resend.api_key = ENV["RESEND_API_KEY"]
 file = IO.read(File.join(File.dirname(__FILE__), "../resources/invoice.pdf"))
 
 params = {
-  "from": "derich@recomendo.io",
-  "to": ["carlosderich@gmail.com"],
+  "from": "from@email.io",
+  "to": ["to@hi.com"],
   "text": "heyo",
   "subject": "Hello with attachment",
   "attachments": [

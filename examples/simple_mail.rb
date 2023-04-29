@@ -9,8 +9,8 @@ Resend.configure do |config|
 end
 
 params = {
-  "from": "derich@recomendo.io",
-  "to": ["carlosderich@gmail.com"],
+  "from": "from@email.io",
+  "to": ["to@hi.com"],
   "text": "test",
   "subject": "test",
   "tags": {
