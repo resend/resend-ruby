@@ -3,8 +3,14 @@
 RSpec.describe "API Keys" do
 
   describe "create_api_key" do
+
+    before do
+      Resend.configure do |config|
+        config.api_key = "re_123"
+      end
+    end
+
     it "should create api key" do
-      c = Resend::Client.new "re_123"
       resp = {
         "id": "dacf4072-4119-4d88-932f-6202748ac7c8",
         "token": "re_c1tpEyD8_NKFusih9vKVQknRAQfmFcWCv"
@@ -13,11 +19,10 @@ RSpec.describe "API Keys" do
         "name": "production"
       }
       allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
-      expect(c.create_api_key(params)[:id]).to eql("dacf4072-4119-4d88-932f-6202748ac7c8")
+      expect(Resend::ApiKeys.create(params)[:id]).to eql("dacf4072-4119-4d88-932f-6202748ac7c8")
     end
 
     it "should raise when permission is invalid" do
-      c = Resend::Client.new "re_123"
       resp = {
         "statusCode" => 422,
         "name" => "invalid_permission",
@@ -29,13 +34,12 @@ RSpec.describe "API Keys" do
         "permission": "invalid"
       }
       allow(HTTParty).to receive(:send).and_return(resp)
-      expect { c.create_api_key params }.to raise_error(Resend::Error::InvalidRequestError, /Access must be 'full_access' | 'sending_access'/)
+      expect { Resend::ApiKeys.create params }.to raise_error(Resend::Error::InvalidRequestError, /Access must be 'full_access' | 'sending_access'/)
     end
   end
 
   describe "list_api_keys" do
     it "should list api keys" do
-      c = Resend::Client.new "re_123"
       resp = {
         "data": [
           {
@@ -46,15 +50,14 @@ RSpec.describe "API Keys" do
         ]
       }
       allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
-      expect(c.list_api_keys.length).to eql(1)
+      expect(Resend::ApiKeys.list.length).to eql(1)
     end
   end
 
   describe "delete_api_key" do
     it "should delete api key" do
-      c = Resend::Client.new "re_123"
       allow_any_instance_of(Resend::Request).to receive(:perform).and_return("")
-      expect { c.delete_api_key }.not_to raise_error
+      expect { Resend::ApiKeys.delete }.not_to raise_error
     end
   end
 end

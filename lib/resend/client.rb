@@ -5,18 +5,16 @@ require "resend/emails"
 require "httparty"
 
 module Resend
-  # Main Resend client class.
+  # Client class.
   class Client
-    include Resend::ApiKeys
     include Resend::Emails
 
-    attr_reader :api_key, :base_url, :timeout
+    attr_reader :api_key
 
     def initialize(api_key)
       raise ArgumentError, "API Key is not a string" unless api_key.is_a?(String)
 
       @api_key = api_key
-      @timeout = nil
     end
   end
 end

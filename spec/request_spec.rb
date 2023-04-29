@@ -6,11 +6,11 @@ require "resend/client"
 RSpec.describe Resend::Request do
 
   before do
-    @client = Resend::Client.new "re_123"
+    Resend.api_key = "re_123"
   end
 
   it "Resend::Error::InvalidRequestError 400" do
-    req = described_class.new(@client)
+    req = described_class.new
     resp = {
       :statusCode => 400,
       :message => "400"
@@ -19,7 +19,7 @@ RSpec.describe Resend::Request do
   end
 
   it "Resend::Error::InvalidRequestError 422" do
-    req = described_class.new(@client)
+    req = described_class.new
     resp = {
       :statusCode => 422,
       :message => "422"
@@ -28,7 +28,7 @@ RSpec.describe Resend::Request do
   end
 
   it "Resend::Error::InternalServerErro 500" do
-    req = described_class.new(@client)
+    req = described_class.new
     resp = {
       :statusCode => 500,
       :message => "500"

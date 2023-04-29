@@ -10,10 +10,11 @@ module Resend
   class Request
     BASE_URL = "https://api.resend.com/"
 
-    attr_accessor :client, :body, :verb
+    attr_accessor :body, :verb
 
-    def initialize(client, path = "", body = {}, verb = "POST")
-      @client = client
+    def initialize(path = "", body = {}, verb = "POST")
+      raise if Resend.api_key.nil?
+
       @path = path
       @body = body
       @verb = verb
@@ -21,7 +22,7 @@ module Resend
         "Content-Type" => "application/json",
         "Accept" => "application/json",
         "User-Agent" => "ruby:#{Resend::VERSION}",
-        "Authorization" => "Bearer #{@client.api_key}"
+        "Authorization" => "Bearer #{Resend.api_key}"
       }
     end
 

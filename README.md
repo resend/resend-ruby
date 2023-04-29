@@ -25,7 +25,16 @@ First, you need to get an API key, which is available in the [Resend Dashboard](
 
 ```ruby
 require "resend"
-client = Resend::Client.new "re_YOUR_API_KEY"
+Resend.api_key = ENV["RESEND_API_KEY"]
+```
+
+or
+
+```ruby
+require "resend"
+Resend.configure do |config|
+  config.api_key = ENV["RESEND_API_KEY"]
+end
 ```
 
 ## Example
@@ -33,7 +42,7 @@ client = Resend::Client.new "re_YOUR_API_KEY"
 ```rb
 require "resend"
 
-client = Resend::Client.new "re_YOUR_API_KEY"
+Resend.api_key = ENV["RESEND_API_KEY"]
 
 params = {
   "from": "from@email.io",
@@ -41,7 +50,7 @@ params = {
   "html": "<h1>Hello World</h1>",
   "subject": "Hey"
 }
-r = client.send_email(params)
+r = Resend::Emails.send(params)
 puts r
 ```
 

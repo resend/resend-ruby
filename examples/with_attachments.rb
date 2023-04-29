@@ -5,13 +5,13 @@ require "stringio"
 
 raise if ENV["RESEND_API_KEY"].nil?
 
-client = Resend::Client.new(ENV["RESEND_API_KEY"])
+Resend.api_key = ENV["RESEND_API_KEY"]
 
 file = IO.read(File.join(File.dirname(__FILE__), "../resources/invoice.pdf"))
 
 params = {
-  "from": "you@yourdomain.io",
-  "to": ["someone@example.com"],
+  "from": "derich@recomendo.io",
+  "to": ["carlosderich@gmail.com"],
   "text": "heyo",
   "subject": "Hello with attachment",
   "attachments": [
@@ -22,5 +22,5 @@ params = {
   ]
 }
 
-sent = client.send_email(params)
+sent = Resend::Emails.send(params)
 puts sent

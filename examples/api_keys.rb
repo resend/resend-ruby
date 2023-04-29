@@ -4,30 +4,28 @@ require_relative "../lib/resend"
 
 raise if ENV["RESEND_API_KEY"].nil?
 
-def create_api_key
-  client = Resend::Client.new(ENV["RESEND_API_KEY"])
+Resend.api_key = ENV["RESEND_API_KEY"]
+
+def create
   params = {
     name: "name"
   }
-  key = client.create_api_key(params)
+  key = Resend::ApiKeys.create(params)
   puts key
 end
 
-def list_api_keys
-  client = Resend::Client.new(ENV["RESEND_API_KEY"])
-  keys = client.list_api_keys
+def list
+  keys = Resend::ApiKeys.list
   puts keys
 end
 
-def delete_api_key
-  client = Resend::Client.new(ENV["RESEND_API_KEY"])
-  key = client.create_api_key({name: "t"})
+def delete
+  key = Resend::ApiKeys.create({name: "t"})
   puts "created api key id: #{key[:id]}"
-  client.delete_api_key key[:id]
-  client.delete_api_key
+  Resend::ApiKeys.delete key[:id]
   puts "deleted #{key[:id]}"
 end
 
-create_api_key
-list_api_keys
-delete_api_key
+create
+list
+delete
