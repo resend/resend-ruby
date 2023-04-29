@@ -9,8 +9,13 @@ module Resend
       # send email functionality
       # https://resend.com/docs/api-reference/send-email
       def send(params)
-        path = "/email"
+        path = "emails"
         Resend::Request.new(path, params, "post").perform
+      end
+
+      def get(email_id = "")
+        path = "emails/#{email_id}"
+        Resend::Request.new(path, {}, "get").perform
       end
     end
 

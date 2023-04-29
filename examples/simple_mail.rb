@@ -10,7 +10,7 @@ end
 
 params = {
   "from": "from@email.io",
-  "to": ["to@hi.com"],
+  "to": ["to@gmail.com"],
   "text": "test",
   "subject": "test",
   "tags": {
@@ -18,7 +18,8 @@ params = {
   }
 }
 
-puts(Resend::Emails.send(params))
+email_id = Resend::Emails.send(params)[:id]
+puts(email_id)
 
-# client = Resend::Client.new Resend.api_key
-# client.send_email(params)
+email = Resend::Emails.get email_id
+puts email[:id]
