@@ -36,8 +36,8 @@ require "resend"
 client = Resend::Client.new "re_YOUR_API_KEY"
 
 params = {
-  "from": "team@recomendo.io",
-  "to": "carlosderich@gmail.com",
+  "from": "from@email.io",
+  "to": ["to@email.com", "to1@gmail.com"],
   "html": "<h1>Hello World</h1>",
   "subject": "Hey"
 }

@@ -27,16 +27,17 @@ module Resend
 
     # Performs the HTTP call
     def perform
-      options = {}
-      options[:body] = @body.to_json
-      options[:headers] = @headers
-      resp = HTTParty.post("#{BASE_URL}#{@path}", options)
-      resp.transform_keys!(&:to_sym)
+      options = {
+        headers: @headers
+      }
+      options[:body] = @body.to_json unless @body.empty?
+
+      resp = HTTParty.send(@verb, "#{BASE_URL}#{@path}", options)
+      resp.transform_keys!(&:to_sym) unless resp.body.empty?
       handle_error!(resp) if resp[:statusCode] && resp[:statusCode] != 200
       resp
     end
 
-    # TODO: looks like the API changed how the errors are sent.
     def handle_error!(resp)
       code = resp[:statusCode]
       body = resp[:message]
