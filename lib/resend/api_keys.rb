@@ -20,7 +20,7 @@ module Resend
       end
 
       # https://resend.com/docs/api-reference/api-keys/delete-api-key
-      def delete(api_key_id = "")
+      def remove(api_key_id = "")
         path = "/api-keys/#{api_key_id}"
         Resend::Request.new(path, {}, "delete").perform
       end

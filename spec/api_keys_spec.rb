@@ -2,7 +2,7 @@
 
 RSpec.describe "API Keys" do
 
-  describe "create_api_key" do
+  describe "create" do
 
     before do
       Resend.configure do |config|
@@ -38,7 +38,7 @@ RSpec.describe "API Keys" do
     end
   end
 
-  describe "list_api_keys" do
+  describe "list" do
     it "should list api keys" do
       resp = {
         "data": [
@@ -54,10 +54,10 @@ RSpec.describe "API Keys" do
     end
   end
 
-  describe "delete_api_key" do
-    it "should delete api key" do
+  describe "remove" do
+    it "should remove api key" do
       allow_any_instance_of(Resend::Request).to receive(:perform).and_return("")
-      expect { Resend::ApiKeys.delete }.not_to raise_error
+      expect { Resend::ApiKeys.remove }.not_to raise_error
     end
   end
 end
