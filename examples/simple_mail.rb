@@ -18,8 +18,8 @@ params = {
   }
 }
 
-email_id = Resend::Emails.send(params)[:id]
-puts(email_id)
+email = Resend::Emails.send(params)
+puts(email)
 
-email = Resend::Emails.get email_id
+email = Resend::Emails.get email[:id]
 puts email[:id]
