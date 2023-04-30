@@ -19,13 +19,13 @@ def list
   puts keys
 end
 
-def delete
+def remove
   key = Resend::ApiKeys.create({name: "t"})
   puts "created api key id: #{key[:id]}"
-  Resend::ApiKeys.delete key[:id]
-  puts "deleted #{key[:id]}"
+  Resend::ApiKeys.remove key[:id]
+  puts "removed #{key[:id]}"
 end
 
 create
 list
-delete
+remove

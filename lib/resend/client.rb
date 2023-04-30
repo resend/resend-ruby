@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "resend/api_keys"
+require "resend/domains"
 require "resend/emails"
 require "httparty"
 
