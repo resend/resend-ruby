@@ -10,10 +10,11 @@ module Resend
   class Request
     BASE_URL = "https://api.resend.com/"
 
-    attr_accessor :client, :body, :verb
+    attr_accessor :body, :verb
 
-    def initialize(client, path = "", body = {}, verb = "POST")
-      @client = client
+    def initialize(path = "", body = {}, verb = "POST")
+      raise if Resend.api_key.nil?
+
       @path = path
       @body = body
       @verb = verb
@@ -21,7 +22,7 @@ module Resend
         "Content-Type" => "application/json",
         "Accept" => "application/json",
         "User-Agent" => "ruby:#{Resend::VERSION}",
-        "Authorization" => "Bearer #{@client.api_key}"
+        "Authorization" => "Bearer #{Resend.api_key}"
       }
     end
 
@@ -31,8 +32,7 @@ module Resend
         headers: @headers
       }
       options[:body] = @body.to_json unless @body.empty?
-
-      resp = HTTParty.send(@verb, "#{BASE_URL}#{@path}", options)
+      resp = HTTParty.send(@verb.to_sym, "#{BASE_URL}#{@path}", options)
       resp.transform_keys!(&:to_sym) unless resp.body.empty?
       handle_error!(resp) if resp[:statusCode] && resp[:statusCode] != 200
       resp

@@ -4,7 +4,9 @@ require_relative "../lib/resend"
 
 raise if ENV["RESEND_API_KEY"].nil?
 
-client = Resend::Client.new(ENV["RESEND_API_KEY"])
+Resend.configure do |config|
+  config.api_key = ENV["RESEND_API_KEY"]
+end
 
 params = {
   "from": "from@email.io",
@@ -16,5 +18,8 @@ params = {
   }
 }
 
-sent = client.send_email(params)
-puts sent
+email_id = Resend::Emails.send(params)[:id]
+puts(email_id)
+
+email = Resend::Emails.get email_id
+puts email[:id]
