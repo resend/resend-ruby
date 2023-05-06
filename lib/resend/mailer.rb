@@ -21,36 +21,44 @@ module Resend
       resp
     end
 
-    # rubocop:disable Metrics/AbcSize
     def build_resend_params(mail)
       params = {
         from: get_from(mail.from),
         to: mail.to,
         subject: mail.subject
       }
+      params.merge!(get_addons(mail))
+      params[:attachments] = get_attachments(mail) if mail.attachments.present?
+      params.merge!(get_contents(mail))
+      params
+    end
+
+    def get_addons(mail)
+      params = {}
       params[:cc] = mail.cc if mail.cc.present?
       params[:bcc] = mail.bcc if mail.bcc.present?
       params[:reply_to] = mail.reply_to if mail.reply_to.present?
-      params[:attachments] = get_attachments(mail) if mail.attachments.present?
-      params[:html] = get_contents(mail)
       params
     end
-    # rubocop:enable Metrics/AbcSize
+
+    def get_contents(mail)
+      params = {}
+      case mail.mime_type
+      when "text/plain"
+        params[:text] = mail.body.decoded
+      when "text/html"
+        params[:html] = mail.body.decoded
+      when "multipart/alternative", "multipart/mixed", "multipart/related"
+        params[:text] = mail.text_part.decoded if mail.text_part
+        params[:html] = mail.html_part.decoded if mail.html_part
+      end
+      params
+    end
 
     def get_from(input)
       return input.first if input.is_a? Array
 
       input
-    end
-
-    def get_contents(mail)
-      case mail.mime_type
-      when "text/plain", "text/html"
-        mail.body.decoded
-      when "multipart/alternative", "multipart/mixed", "multipart/related"
-        return mail.text_part.decoded if mail.text_part
-        return mail.html_part.decoded if mail.html_part
-      end
     end
 
     def get_attachments(mail)
