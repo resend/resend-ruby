@@ -2,7 +2,7 @@ AllCops:
   TargetRubyVersion: 2.6
   SuggestExtensions: false
   Exclude:
-    - './spec/**'
+    - './spec/**/**'
 
 Style/GuardClause:
   Enabled: false
