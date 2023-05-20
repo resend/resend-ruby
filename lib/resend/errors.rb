@@ -21,6 +21,7 @@ module Resend
     NotFoundError = Class.new(ServerError)
 
     ERRORS = {
+      401 => Resend::Error::InvalidRequestError,
       404 => Resend::Error::InvalidRequestError,
       422 => Resend::Error::InvalidRequestError,
       400 => Resend::Error::InvalidRequestError,

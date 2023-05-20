@@ -12,31 +12,65 @@ module Resend
       raise Resend::ResendError.new("Config requires api_key", @config) unless @config.key?(:api_key)
 
       @settings = { return_response: true } # avoids NilError exception
-      @resend_client = Resend::Client.new config[:api_key]
     end
 
     def deliver!(mail)
       params = build_resend_params(mail)
-      resp = @resend_client.send_email(params)
+      resp = Resend::Emails.send(params)
       mail.message_id = resp[:id] if resp[:error].nil?
       resp
     end
 
-    # rubocop:disable Metrics/AbcSize
     def build_resend_params(mail)
       params = {
-        from: mail[:from].to_s,
+        from: get_from(mail.from),
         to: mail.to,
         subject: mail.subject
       }
-      params[:cc] = mail[:cc].to_s if mail[:cc].present?
-      params[:bcc] = mail[:bcc].to_s if mail[:bcc].present?
-      params[:reply_to] = mail[:reply_to].to_s if mail[:reply_to].present?
-      params[:html] = mail.body.decoded
+      params.merge!(get_addons(mail))
+      params[:attachments] = get_attachments(mail) if mail.attachments.present?
+      params.merge!(get_contents(mail))
       params
     end
-    # rubocop:enable Metrics/AbcSize
 
-    attr_reader :resend_client
+    def get_addons(mail)
+      params = {}
+      params[:cc] = mail.cc if mail.cc.present?
+      params[:bcc] = mail.bcc if mail.bcc.present?
+      params[:reply_to] = mail.reply_to if mail.reply_to.present?
+      params
+    end
+
+    def get_contents(mail)
+      params = {}
+      case mail.mime_type
+      when "text/plain"
+        params[:text] = mail.body.decoded
+      when "text/html"
+        params[:html] = mail.body.decoded
+      when "multipart/alternative", "multipart/mixed", "multipart/related"
+        params[:text] = mail.text_part.decoded if mail.text_part
+        params[:html] = mail.html_part.decoded if mail.html_part
+      end
+      params
+    end
+
+    def get_from(input)
+      return input.first if input.is_a? Array
+
+      input
+    end
+
+    def get_attachments(mail)
+      attachments = []
+      mail.attachments.each do |part|
+        attachment = {
+          filename: part.filename,
+          content: part.body.decoded.bytes
+        }
+        attachments.append(attachment)
+      end
+      attachments
+    end
   end
 end
