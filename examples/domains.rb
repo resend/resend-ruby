@@ -13,6 +13,21 @@ def create
   }
   domain = Resend::Domains.create(params)
   puts domain
+
+  Resend::Domains.remove domain[:id]
+  puts "deleted #{domain[:id]}"
+end
+
+def get
+  domain = Resend::Domains.create({name: "test"})
+  puts "created domain id: #{domain[:id]}"
+
+  retrieved = Resend::Domains.get domain[:id]
+  puts "retrieved domain: #{retrieved[:id]}"
+  puts retrieved
+
+  Resend::Domains.remove retrieved[:id]
+  puts "deleted #{retrieved[:id]}"
 end
 
 def list
@@ -21,20 +36,25 @@ def list
 end
 
 def remove
-  key = Resend::Domains.create({name: "test"})
-  puts "created domain id: #{key[:id]}"
-  Resend::Domains.remove key[:id]
-  puts "deleted #{key[:id]}"
+  domain = Resend::Domains.create({name: "test"})
+  puts "created domain id: #{domain[:id]}"
+  Resend::Domains.remove domain[:id]
+  puts "deleted #{domain[:id]}"
 end
 
 def verify
-  key = Resend::Domains.create({name: "test2"})
-  puts "created domain id: #{key[:id]}"
-  Resend::Domains.verify key[:id]
-  puts "verified #{key[:id]}"
+  domain = Resend::Domains.create({name: "test2"})
+  puts "created domain id: #{domain[:id]}"
+
+  Resend::Domains.verify domain[:id]
+  puts "verified #{domain[:id]}"
+
+  Resend::Domains.remove domain[:id]
+  puts "deleted #{domain[:id]}"
 end
 
 create
+get
 list
 remove
 verify
