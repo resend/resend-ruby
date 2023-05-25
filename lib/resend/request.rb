@@ -31,10 +31,11 @@ module Resend
       options = {
         headers: @headers
       }
+
       options[:body] = @body.to_json unless @body.empty?
       resp = HTTParty.send(@verb.to_sym, "#{BASE_URL}#{@path}", options)
       resp.transform_keys!(&:to_sym) unless resp.body.empty?
-      handle_error!(resp) if resp[:statusCode] && resp[:statusCode] != 200
+      handle_error!(resp) if resp[:statusCode] && (resp[:statusCode] != 200 || resp[:statusCode] != 201)
       resp
     end
 

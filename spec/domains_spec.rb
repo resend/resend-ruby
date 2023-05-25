@@ -84,6 +84,30 @@ RSpec.describe "Domains" do
     end
   end
 
+  describe "get domain" do
+    it "should retrieve domain" do
+      resp = {
+        "object": "domain",
+        "id": "d91cd9bd-1176-453e-8fc1-35364d380206",
+        "name": "example.com",
+        "status": "not_started",
+        "created_at": "2023-04-26T20:21:26.347412+00:00",
+        "region": "us-east-1"
+      }
+      allow(resp).to receive(:body).and_return(resp)
+      allow(HTTParty).to receive(:send).and_return(resp)
+
+      email = Resend::Domains.get(resp[:id])
+
+      expect(email[:object]).to eql "domain"
+      expect(email[:id]).to eql "d91cd9bd-1176-453e-8fc1-35364d380206"
+      expect(email[:name]).to eql "example.com"
+      expect(email[:status]).to eql "not_started"
+      expect(email[:created_at]).to eql "2023-04-26T20:21:26.347412+00:00"
+      expect(email[:region]).to eql "us-east-1"
+    end
+  end
+
   describe "list domains" do
     it "should list domains" do
       resp = {
