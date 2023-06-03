@@ -65,7 +65,7 @@ This gem can be used as an ActionMailer delivery method, add this to your `confi
 config.action_mailer.delivery_method = :resend
 ```
 
-Create or update your mailer initializer file with your Resend API Key.
+Create or update your mailer initializer file and replace the placeholder with your Resend API Key.
 
 ```rb
 # /app/initializers/mailer.rb
