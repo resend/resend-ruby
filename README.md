@@ -59,13 +59,17 @@ You can view all the examples in the [examples folder](https://github.com/drish/
 
 # Rails and ActiveMailer support
 
-This gem can be used as an ActionMailer delivery method, add this to your `config/environments/environment.rb` file and replace with your api key.
+This gem can be used as an ActionMailer delivery method, add this to your `config/environments/environment.rb` file.
 
 ```ruby
 config.action_mailer.delivery_method = :resend
-config.action_mailer.resend_settings = {
-    api_key: 'resend_api_key',
-}
+```
+
+Create or update your mailer initializer file with your Resend API Key.
+
+```rb
+# /app/initializers/mailer.rb
+Resend.api_key = "re_123456"
 ```
 
 After that you can deliver_now!, example below:
@@ -86,13 +90,4 @@ u = User.new name: "derich"
 mailer = UserMailer.with(user: u).welcome_email
 mailer.deliver_now!
 # => {:id=>"b8f94710-0d84-429c-925a-22d3d8f86916", from: 'you@yourdomain.io', to: ["example2@mail.com", "example1@mail.com"]}
-```
-
-This gem can also be initialized with a Rails initializer file, example below:
-
-```ruby
-# /app/initializers/mailer.rb
-Resend.configure do |config|
-  config.api_key = 'resend_api_key'
-end
 ```
