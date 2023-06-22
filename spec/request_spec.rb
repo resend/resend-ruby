@@ -27,7 +27,16 @@ RSpec.describe Resend::Request do
     expect { req.handle_error!(resp) }.to raise_error(Resend::Error::InvalidRequestError, /422/)
   end
 
-  it "Resend::Error::InternalServerErro 500" do
+  it "Resend::Error::RateLimitExceededError 429" do
+    req = described_class.new
+    resp = {
+      :statusCode => 429,
+      :message => "429"
+    }
+    expect { req.handle_error!(resp) }.to raise_error(Resend::Error::RateLimitExceededError, /429/)
+  end
+
+  it "Resend::Error::InternalServerError 500" do
     req = described_class.new
     resp = {
       :statusCode => 500,
