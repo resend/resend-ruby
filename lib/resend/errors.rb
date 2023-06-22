@@ -4,7 +4,6 @@ module Resend
   # Errors wrapper class
   # For more info: https://resend.com/docs/api-reference/error-codes
   class Error < StandardError
-
     # 4xx HTTP status code
     ClientError = Class.new(self)
 
@@ -17,6 +16,9 @@ module Resend
     # code 422
     InvalidRequestError = Class.new(ServerError)
 
+    # code 429
+    RateLimitExceededError = Class.new(ServerError)
+
     # code 404
     NotFoundError = Class.new(ServerError)
 
@@ -24,6 +26,7 @@ module Resend
       401 => Resend::Error::InvalidRequestError,
       404 => Resend::Error::InvalidRequestError,
       422 => Resend::Error::InvalidRequestError,
+      429 => Resend::Error::RateLimitExceededError,
       400 => Resend::Error::InvalidRequestError,
       500 => Resend::Error::InternalServerError
     }.freeze
