@@ -9,7 +9,7 @@ module Resend
 
     def initialize(config)
       @config = config
-      raise Resend::ResendError.new("Config requires api_key", @config) unless @config.key?(:api_key)
+      raise Resend::Error.new("Config requires api_key", @config) unless Resend.api_key
 
       @settings = { return_response: true } # avoids NilError exception
     end
