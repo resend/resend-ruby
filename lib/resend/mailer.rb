@@ -5,11 +5,14 @@ require "resend"
 module Resend
   # Mailer class used by railtie
   class Mailer
-    attr_accessor :config
+    attr_accessor :config, :settings
 
     def initialize(config)
       @config = config
       raise Resend::Error.new("Make sure your API Key is set", @config) unless Resend.api_key
+
+      # avoids NilError exception
+      @settings = { return_response: true }
     end
 
     def deliver!(mail)
