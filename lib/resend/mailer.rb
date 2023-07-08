@@ -9,7 +9,7 @@ module Resend
 
     def initialize(config)
       @config = config
-      raise Resend::Error.new("Make sure your api is set", @config) unless Resend.api_key
+      raise Resend::Error.new("Make sure your API Key is set", @config) unless Resend.api_key
     end
 
     def deliver!(mail)
@@ -19,6 +19,7 @@ module Resend
       resp
     end
 
+    # Builds the payload for sending
     def build_resend_params(mail)
       params = {
         from: get_from(mail.from),
@@ -26,11 +27,20 @@ module Resend
         subject: mail.subject
       }
       params.merge!(get_addons(mail))
+      params.merge!(get_headers(mail))
       params[:attachments] = get_attachments(mail) if mail.attachments.present?
       params.merge!(get_contents(mail))
       params
     end
 
+    # Add custom headers fields
+    def get_headers(mail)
+      params = {}
+      params[:headers] = mail[:headers].unparsed_value if mail[:headers].present?
+      params
+    end
+
+    # Add cc, bcc, reply_to fields
     def get_addons(mail)
       params = {}
       params[:cc] = mail.cc if mail.cc.present?
@@ -39,6 +49,7 @@ module Resend
       params
     end
 
+    # Gets the body of the email
     def get_contents(mail)
       params = {}
       case mail.mime_type
@@ -53,12 +64,14 @@ module Resend
       params
     end
 
+    # Gets the `from` field
     def get_from(input)
       return input.first if input.is_a? Array
 
       input
     end
 
+    # Handle attachments when present
     def get_attachments(mail)
       attachments = []
       mail.attachments.each do |part|
