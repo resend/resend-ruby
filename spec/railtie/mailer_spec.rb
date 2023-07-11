@@ -15,7 +15,10 @@ class TestMailer < ActionMailer::Base
   default from: "test@example.com"
 
   def html_text_msg(to, subject)
-    mail(to: to, subject: subject) do |format|
+    headers = {
+      "X-Entity-Ref-ID": "123",
+    }
+    mail(to: to, subject: subject, headers: headers) do |format|
       format.html { render html: "<p>HTML!</p>".html_safe }
       format.text { render plain: "text" }
     end
@@ -56,6 +59,7 @@ class TestMailer < ActionMailer::Base
       expect(body[:to]).to eql(["test@example.org"])
       expect(body[:html]).to eql("<p>HTML!</p>")
       expect(body[:text]).to eql("text")
+      expect(body[:headers][:"X-Entity-Ref-ID"]).to eql("123")
     end
 
     it "properly creates a html only msg" do
