@@ -21,7 +21,7 @@ module Resend
       @headers = {
         "Content-Type" => "application/json",
         "Accept" => "application/json",
-        "User-Agent" => "ruby:#{Resend::VERSION}",
+        "User-Agent" => "resend-ruby:#{Resend::VERSION}",
         "Authorization" => "Bearer #{Resend.api_key}"
       }
     end
