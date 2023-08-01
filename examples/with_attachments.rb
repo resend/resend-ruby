@@ -16,8 +16,12 @@ params = {
   "subject": "Hello with attachment",
   "attachments": [
     {
-      "filename": "invoice.pdf",
+      "filename": "invoice.pdf", # local file
       "content": file.bytes # make sure to use .bytes() here
+    },
+    {
+      "path": "https://github.com/resendlabs/resend-go/raw/main/resources/invoice.pdf",
+      "filename": "from_external_path.pdf"
     }
   ]
 }
