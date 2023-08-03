@@ -46,50 +46,65 @@ class TestMailer < ActionMailer::Base
       format.html { render html: "<p>html</p>".html_safe }
     end
   end
+end
 
-  RSpec.describe "Resend::Mailer" do
-    before do
-      @mailer = Resend::Mailer.new({ api_key: "123" })
-    end
+class TestMailerWithDisplayName < TestMailer
+  default from: "Test <test@example.com>"
+end
 
-    it "properly creates a message body" do
-      message = TestMailer.html_text_msg("test@example.org", "Test!")
-      body = @mailer.build_resend_params(message)
-      expect(body[:from]).to eql("test@example.com")
-      expect(body[:to]).to eql(["test@example.org"])
-      expect(body[:html]).to eql("<p>HTML!</p>")
-      expect(body[:text]).to eql("text")
-      expect(body[:headers][:"X-Entity-Ref-ID"]).to eql("123")
-    end
+RSpec.describe "Resend::Mailer" do
+  before do
+    @mailer = Resend::Mailer.new({ api_key: "123" })
+  end
 
-    it "properly creates a html only msg" do
-      message = TestMailer.html_only("test@example.org", "Test!")
-      body = @mailer.build_resend_params(message)
-      expect(body[:from]).to eql("test@example.com")
-      expect(body[:to]).to eql(["test@example.org"])
-      expect(body[:html]).to eql("<p>HTML!</p>")
-      expect(body[:text]).to be nil
-    end
+  it "properly creates a message body" do
+    message = TestMailer.html_text_msg("test@example.org", "Test!")
+    body = @mailer.build_resend_params(message)
+    expect(body[:from]).to eql("test@example.com")
+    expect(body[:to]).to eql(["test@example.org"])
+    expect(body[:html]).to eql("<p>HTML!</p>")
+    expect(body[:text]).to eql("text")
+    expect(body[:headers][:"X-Entity-Ref-ID"]).to eql("123")
+  end
 
-    it "properly creates a text only msg" do
-      message = TestMailer.text_only("test@example.org", "Test!")
-      body = @mailer.build_resend_params(message)
-      expect(body[:from]).to eql("test@example.com")
-      expect(body[:to]).to eql(["test@example.org"])
-      expect(body[:html]).to be nil
-      expect(body[:text]).to eql("text")
-    end
+  it "properly creates a html only msg" do
+    message = TestMailer.html_only("test@example.org", "Test!")
+    body = @mailer.build_resend_params(message)
+    expect(body[:from]).to eql("test@example.com")
+    expect(body[:to]).to eql(["test@example.org"])
+    expect(body[:html]).to eql("<p>HTML!</p>")
+    expect(body[:text]).to be nil
+  end
 
-    it "properly creates a html text with attachments msg" do
-      message = TestMailer.with_attachment("test@example.org", "Test!")
-      body = @mailer.build_resend_params(message)
-      expect(body[:from]).to eql("test@example.com")
-      expect(body[:to]).to eql(["test@example.org"])
-      expect(body[:html]).to eql("<p>html</p>")
-      expect(body[:text]).to eql("txt")
-      expect(body[:attachments].length).to eql(1)
-      expect(body[:attachments].first[:filename]).to eql("invoice.pdf")
-      expect(body[:attachments].first[:content].length > 0).to be true
-    end
+  it "properly creates a text only msg" do
+    message = TestMailer.text_only("test@example.org", "Test!")
+    body = @mailer.build_resend_params(message)
+    expect(body[:from]).to eql("test@example.com")
+    expect(body[:to]).to eql(["test@example.org"])
+    expect(body[:html]).to be nil
+    expect(body[:text]).to eql("text")
+  end
+
+  it "properly creates a html text with attachments msg" do
+    message = TestMailer.with_attachment("test@example.org", "Test!")
+    body = @mailer.build_resend_params(message)
+    expect(body[:from]).to eql("test@example.com")
+    expect(body[:to]).to eql(["test@example.org"])
+    expect(body[:html]).to eql("<p>html</p>")
+    expect(body[:text]).to eql("txt")
+    expect(body[:attachments].length).to eql(1)
+    expect(body[:attachments].first[:filename]).to eql("invoice.pdf")
+    expect(body[:attachments].first[:content].length > 0).to be true
+  end
+
+  it "properly handles from display name" do
+    message = TestMailerWithDisplayName
+      .text_only("test@example.org", "Test!")
+
+    body = @mailer.build_resend_params(message)
+    expect(body[:from]).to eql("Test <test@example.com>")
+    expect(body[:to]).to eql(["test@example.org"])
+    expect(body[:html]).to be nil
+    expect(body[:text]).to eql("text")
   end
 end

@@ -9,13 +9,12 @@ Resend.configure do |config|
 end
 
 params = {
-  "from": "from@email.io",
-  "to": ["to@gmail.com"],
+  "from": "r@recomendo.io",
+  "to": ["emillybalcantara@gmail.com"],
   "text": "test",
   "subject": "test",
-  "tags": {
-    "country": "br"
-  }
+  "cc": ["carlosderich1@gmail.com"],
+  "bcc": ["carlosderich@gmail.com"],
 }
 
 email = Resend::Emails.send(params)
