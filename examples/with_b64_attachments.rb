@@ -3,15 +3,12 @@
 require_relative "../lib/resend"
 require "stringio"
 require "base64"
-require "pry-byebug"
 
 raise if ENV["RESEND_API_KEY"].nil?
 
 Resend.api_key = ENV["RESEND_API_KEY"]
 
 file = IO.read(File.join(File.dirname(__FILE__), "../resources/invoice.pdf"))
-
-binding.pry
 
 params = {
   "from": "onboarding@resend.dev",
