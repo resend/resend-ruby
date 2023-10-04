@@ -8,14 +8,14 @@ Resend.api_key = ENV["RESEND_API_KEY"]
 
 params = [
   {
-    "from": "r@recomendo.io",
-    "to": ["carlosderich@gmail.com"],
+    "from": "onboarding@resend.dev",
+    "to": ["delivered@resend.dev"],
     "subject": "hey",
     "html": "<strong>hello, world!</strong>",
   },
   {
-    "from": "r@recomendo.io",
-    "to": ["carlosderich@gmail.com"],
+    "from": "onboarding@resend.dev",
+    "to": ["delivered@resend.dev"],
     "subject": "hello",
     "html": "<strong>hello, world!</strong>",
   },
