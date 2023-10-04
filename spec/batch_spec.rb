@@ -7,7 +7,7 @@ RSpec.describe "Batch" do
       Resend.api_key = "re_123"
     end
 
-    it "should send email" do
+    it "should send batch email" do
       resp = {
         "data": [
           {
