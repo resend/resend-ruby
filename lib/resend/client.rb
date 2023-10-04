@@ -3,6 +3,7 @@
 require "resend/api_keys"
 require "resend/domains"
 require "resend/emails"
+require "resend/batch"
 require "httparty"
 
 module Resend
