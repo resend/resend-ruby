@@ -4,9 +4,7 @@ require_relative "../lib/resend"
 
 raise if ENV["RESEND_API_KEY"].nil?
 
-Resend.configure do |config|
-  config.api_key = ENV["RESEND_API_KEY"]
-end
+Resend.api_key = ENV["RESEND_API_KEY"]
 
 params = {
   "from": "from@email.io",
