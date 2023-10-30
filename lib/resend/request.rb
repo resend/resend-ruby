@@ -34,7 +34,7 @@ module Resend
 
       options[:body] = @body.to_json unless @body.empty?
       resp = HTTParty.send(@verb.to_sym, "#{BASE_URL}#{@path}", options)
-      resp.transform_keys!(&:to_sym) unless resp.body.empty?
+      resp.transform_keys!(&:to_sym) if !resp.body.empty? && resp.respond_to?(:transform_keys!)
       handle_error!(resp) if resp[:statusCode] && (resp[:statusCode] != 200 || resp[:statusCode] != 201)
       resp
     end
@@ -42,6 +42,8 @@ module Resend
     def handle_error!(resp)
       code = resp[:statusCode]
       body = resp[:message]
+      # 如果报这个错，其实邮件是发出去了
+      return if body == "Something went wrong while creating log"
       error = Resend::Error::ERRORS[code]
       raise(error.new(body, code)) if error
     end
