@@ -68,7 +68,7 @@ config.action_mailer.delivery_method = :resend
 Create or update your mailer initializer file and replace the placeholder with your Resend API Key.
 
 ```rb
-# /app/initializers/mailer.rb
+# /config/initializers/resend.rb
 Resend.api_key = "re_123456"
 ```
 
