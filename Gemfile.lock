@@ -1,8 +1,8 @@
 PATH
   remote: .
   specs:
-    resend (0.8.0)
-      httparty (~> 0.19.1)
+    resend (0.8.1)
+      httparty (>= 0.19.1)
 
 GEM
   remote: https://rubygems.org/
@@ -119,6 +119,8 @@ GEM
     nio4r (2.5.8)
     nokogiri (1.13.10)
       mini_portile2 (~> 2.8.0)
+      racc (~> 1.4)
+    nokogiri (1.13.10-arm64-darwin)
       racc (~> 1.4)
     parallel (1.23.0)
     parser (3.2.2.4)
