@@ -30,6 +30,12 @@ module Resend
         path = "audiences/#{audience_id}/contacts/#{contact_id}"
         Resend::Request.new(path, {}, "delete").perform
       end
+
+      # https://resend.com/docs/api-reference/contacts/update-contact
+      def update(params)
+        path = "audiences/#{params[:audience_id]}/contacts/#{params[:id]}"
+        Resend::Request.new(path, params, "patch").perform
+      end
     end
   end
 end

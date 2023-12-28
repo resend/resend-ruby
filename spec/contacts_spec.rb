@@ -110,4 +110,31 @@ RSpec.describe "Contacts" do
       expect(deleted[:deleted]).to be true
     end
   end
+
+  describe "update contact" do
+
+    before do
+      Resend.configure do |config|
+        config.api_key = "re_123"
+      end
+    end
+
+    it "should update a contact record" do
+      resp = {
+        "object": "contact",
+        "id": "479e3145-dd38-476b-932c-529ceb705947"
+      }
+
+      update_params = {
+        audience_id: audience_id,
+        id: "479e3145-dd38-476b-932c-529ceb705947",
+        unsubscribed: false,
+      }
+
+      allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
+      contact = Resend::Contacts.update(update_params)
+      expect(contact[:id]).to eql("479e3145-dd38-476b-932c-529ceb705947")
+      expect(contact[:object]).to eql("contact")
+    end
+  end
 end

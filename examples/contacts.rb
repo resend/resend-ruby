@@ -8,11 +8,11 @@ Resend.api_key = ENV["RESEND_API_KEY"]
 
 def example
 
-  audience_id = "48c269ed-9873-4d60-bdd9-cd7e6fc0b9b8"
+  audience_id = "78b8d3bc-a55a-45a3-aee6-6ec0a5e13d7e"
 
   params = {
     audience_id: audience_id,
-    email: "steve@woz.com",
+    email: "steve@example.com",
     first_name: "Steve",
     last_name: "Woz",
     unsubscribed: false,
@@ -21,8 +21,17 @@ def example
   contact = Resend::Contacts.create(params)
   puts "Contact created: #{contact}"
 
-  Resend::Contacts.get(audience_id, contact[:id])
-  puts "Retrieved contact: #{contact}"
+  update_params = {
+    audience_id: audience_id,
+    id: contact[:id],
+    unsubscribed: true,
+  }
+
+  retrieved = Resend::Contacts.get(audience_id, contact[:id])
+  puts retrieved
+
+  updated = Resend::Contacts.update(update_params)
+  puts "Updated contact: #{updated}"
 
   contacts = Resend::Contacts.list(audience_id)
   puts contacts
