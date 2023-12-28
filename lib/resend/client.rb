@@ -5,6 +5,7 @@ require "resend/domains"
 require "resend/emails"
 require "resend/batch"
 require "resend/audiences"
+require "resend/contacts"
 require "httparty"
 
 module Resend
