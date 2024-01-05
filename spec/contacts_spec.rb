@@ -48,6 +48,8 @@ RSpec.describe "Contacts" do
       }
 
       allow(resp).to receive(:body).and_return(resp)
+      allow(resp).to receive(:code).and_return(200)
+
       allow(HTTParty).to receive(:send).and_return(resp)
 
       contact = Resend::Contacts.get(audience_id, resp[:id])
@@ -102,6 +104,7 @@ RSpec.describe "Contacts" do
       }
 
       allow(resp).to receive(:body).and_return(resp)
+      allow(resp).to receive(:code).and_return(200)
       allow(HTTParty).to receive(:send).and_return(resp)
 
       deleted = Resend::Contacts.remove(audience_id, resp[:id])
@@ -131,6 +134,7 @@ RSpec.describe "Contacts" do
         unsubscribed: false,
       }
 
+      allow(resp).to receive(:code).and_return(200)
       allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
       contact = Resend::Contacts.update(update_params)
       expect(contact[:id]).to eql("479e3145-dd38-476b-932c-529ceb705947")

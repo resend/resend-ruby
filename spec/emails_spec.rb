@@ -39,6 +39,7 @@ RSpec.describe "Emails" do
         "last_event": "delivered"
       }
       allow(resp).to receive(:body).and_return(resp)
+      allow(resp).to receive(:code).and_return(200)
       allow(HTTParty).to receive(:send).and_return(resp)
       email = Resend::Emails.get(resp[:id])
       expect(email[:subject]).to eql "Hello World"
@@ -52,6 +53,7 @@ RSpec.describe "Emails" do
         "message"=>"Missing `to` field"
       }
       allow(resp).to receive(:body).and_return(resp)
+
       params = {
         "from": "from@e.io",
         "text": "test",
@@ -61,6 +63,9 @@ RSpec.describe "Emails" do
         }
       }
       allow(HTTParty).to receive(:send).and_return(resp)
+      allow(resp).to receive(:code).and_return(422)
+      allow(resp).to receive(:parsed_response).and_return(resp)
+
       expect { Resend::Emails.send params }.to raise_error(Resend::Error::InvalidRequestError, /Missing `to` field/)
     end
 
@@ -71,6 +76,9 @@ RSpec.describe "Emails" do
         "message"=>"Missing `from` field"
       }
       allow(resp).to receive(:body).and_return(resp)
+      allow(resp).to receive(:code).and_return(422)
+      allow(resp).to receive(:parsed_response).and_return(resp)
+
       params = {
         "to": ["from@e.io"],
         "text": "test",

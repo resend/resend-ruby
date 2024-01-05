@@ -36,6 +36,8 @@ RSpec.describe "Audiences" do
         "created_at": "2023-10-06T22:59:55.977Z"
       }
       allow(resp).to receive(:body).and_return(resp)
+      allow(resp).to receive(:code).and_return(200)
+
       allow(HTTParty).to receive(:send).and_return(resp)
 
       audience = Resend::Audiences.get(resp[:id])
@@ -79,6 +81,8 @@ RSpec.describe "Audiences" do
       }
 
       allow(resp).to receive(:body).and_return(resp)
+      allow(resp).to receive(:code).and_return(200)
+
       allow(HTTParty).to receive(:send).and_return(resp)
 
       deleted = Resend::Audiences.remove("78261eea-8f8b-4381-83c6-79fa7120f1cf")

@@ -76,6 +76,9 @@ RSpec.describe "Domains" do
         "statusCode"=>400
       }
       allow(resp).to receive(:body).and_return(resp)
+      allow(resp).to receive(:code).and_return(422)
+      allow(resp).to receive(:parsed_response).and_return(resp)
+
       params = {
         "name": "example.com",
       }
@@ -95,6 +98,8 @@ RSpec.describe "Domains" do
         "region": "us-east-1"
       }
       allow(resp).to receive(:body).and_return(resp)
+      allow(resp).to receive(:code).and_return(200)
+
       allow(HTTParty).to receive(:send).and_return(resp)
 
       email = Resend::Domains.get(resp[:id])

@@ -22,8 +22,12 @@ module Resend
     # code 404
     NotFoundError = Class.new(ServerError)
 
+    # code 403
+    ValidationError = Class.new(ServerError)
+
     ERRORS = {
       401 => Resend::Error::InvalidRequestError,
+      403 => Resend::Error::ValidationError,
       404 => Resend::Error::InvalidRequestError,
       422 => Resend::Error::InvalidRequestError,
       429 => Resend::Error::RateLimitExceededError,

@@ -29,6 +29,8 @@ RSpec.describe "API Keys" do
         "message" => "Access must be 'full_access' | 'sending_access'"
       }
       allow(resp).to receive(:body).and_return(resp)
+      allow(resp).to receive(:code).and_return(422)
+      allow(resp).to receive(:parsed_response).and_return(resp)
       params = {
         "name": "production",
         "permission": "invalid"

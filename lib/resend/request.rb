@@ -28,22 +28,40 @@ module Resend
 
     # Performs the HTTP call
     def perform
-      options = {
-        headers: @headers
-      }
-
+      options = { headers: @headers }
       options[:body] = @body.to_json unless @body.empty?
+
       resp = HTTParty.send(@verb.to_sym, "#{BASE_URL}#{@path}", options)
-      resp.transform_keys!(&:to_sym) unless resp.body.empty?
-      handle_error!(resp) if resp[:statusCode] && (resp[:statusCode] != 200 || resp[:statusCode] != 201)
+
+      unless resend_call_sucess?(resp)
+        handle_resend_error!(resp)
+
+        # default to general resend error
+        raise Resend::Error.new(nil, resp.code)
+      end
+
+      resp.transform_keys!(&:to_sym) if resp.respond_to?(:transform_keys) && !resp.body.empty?
       resp
     end
 
-    def handle_error!(resp)
-      code = resp[:statusCode]
-      body = resp[:message]
+    private
+
+    # Handles a Resend type of error.
+    def handle_resend_error!(resp)
+      code = resp.code
+      body = nil
+      body = resp.parsed_response["message"] if resp.respond_to?(:parsed_response)
       error = Resend::Error::ERRORS[code]
       raise(error.new(body, code)) if error
+    end
+
+    # Checks if the resend API response was successful.
+    # Resend API returns 200 or 201 for successful calls.
+    #
+    # @param resp [HTTParty::Response]
+    # @return [Boolean]
+    def resend_call_sucess?(resp)
+      resp.code == 200 || resp.code == 201
     end
   end
 end
