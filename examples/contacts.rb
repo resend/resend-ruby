@@ -36,7 +36,12 @@ def example
   contacts = Resend::Contacts.list(audience_id)
   puts contacts
 
+  # delete by id
   del = Resend::Contacts.remove(audience_id, contact[:id])
+
+  # delete by email
+  # del = Resend::Contacts.remove(audience_id, "steve@example.com")
+
   puts "Deleted #{del}"
 end
 
