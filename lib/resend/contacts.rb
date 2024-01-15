@@ -25,7 +25,13 @@ module Resend
         Resend::Request.new(path, {}, "get").perform
       end
 
-      # https://resend.com/docs/api-reference/contacts/delete-contact
+      #
+      # Remove a contact from an audience
+      #
+      # @param audience_id [String] the audience id
+      # @param contact_id [String] either the contact id or contact email
+      #
+      # see also: https://resend.com/docs/api-reference/contacts/delete-contact
       def remove(audience_id, contact_id)
         path = "audiences/#{audience_id}/contacts/#{contact_id}"
         Resend::Request.new(path, {}, "delete").perform
