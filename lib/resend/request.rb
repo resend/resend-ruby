@@ -8,7 +8,7 @@ module Resend
   # This class is responsible for making the appropriate HTTP calls
   # and raising the specific errors based on the response.
   class Request
-    BASE_URL = "https://api.resend.com/"
+    BASE_URL = ENV["RESEND_BASE_URL"] || "https://api.resend.com/"
 
     attr_accessor :body, :verb
 
