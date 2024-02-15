@@ -108,9 +108,9 @@ RSpec.describe "Domains" do
       }
 
       allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
-      contact = Resend::Domains.update(update_params)
-      expect(contact[:data][:id]).to eql("479e3145-dd38-476b-932c-529ceb705947")
-      expect(contact[:data][:object]).to eql("domain")
+      domain = Resend::Domains.update(update_params)
+      expect(domain[:data][:id]).to eql("479e3145-dd38-476b-932c-529ceb705947")
+      expect(domain[:data][:object]).to eql("domain")
     end
   end
 
