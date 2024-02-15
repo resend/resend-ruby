@@ -30,6 +30,20 @@ def get
   puts "deleted #{retrieved[:id]}"
 end
 
+def update
+  domain = Resend::Domains.create({name: "test"})
+  puts "created domain id: #{domain[:id]}"
+
+  params = {
+    id: domain[:id],
+    open_tracking: false,
+    click_tracking: false,
+  }
+  updated = Resend::Domains.update(params)
+  puts "updated domain: #{updated[:id]}"
+  puts updated
+end
+
 def list
   domains = Resend::Domains.list
   puts domains
@@ -55,6 +69,7 @@ end
 
 create
 get
+update
 list
 remove
 verify
