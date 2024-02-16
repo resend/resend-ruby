@@ -84,6 +84,36 @@ RSpec.describe "Domains" do
     end
   end
 
+  describe "update domain" do
+
+    before do
+      Resend.configure do |config|
+        config.api_key = "re_123"
+      end
+    end
+
+    it "should update a domain record" do
+      resp = {
+        "data": {
+          "object": "domain",
+          "id": "479e3145-dd38-476b-932c-529ceb705947"
+        },
+        "error": nil
+      }
+
+      update_params = {
+        id: '479e3145-dd38-476b-932c-529ceb705947',
+        open_tracking: true,
+        click_tracking: true,
+      }
+
+      allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
+      domain = Resend::Domains.update(update_params)
+      expect(domain[:data][:id]).to eql("479e3145-dd38-476b-932c-529ceb705947")
+      expect(domain[:data][:object]).to eql("domain")
+    end
+  end
+
   describe "get domain" do
     it "should retrieve domain" do
       resp = {

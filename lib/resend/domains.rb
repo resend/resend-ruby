@@ -13,6 +13,12 @@ module Resend
         Resend::Request.new(path, params, "post").perform
       end
 
+      # https://resend.com/docs/api-reference/domains/update-domain
+      def update(params)
+        path = "domains/#{params[:id]}"
+        Resend::Request.new(path, params, "patch").perform
+      end
+
       # https://resend.com/docs/api-reference/domains/get-domain
       def get(domain_id = "")
         path = "domains/#{domain_id}"
