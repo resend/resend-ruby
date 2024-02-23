@@ -94,11 +94,8 @@ RSpec.describe "Domains" do
 
     it "should update a domain record" do
       resp = {
-        "data": {
-          "object": "domain",
-          "id": "479e3145-dd38-476b-932c-529ceb705947"
-        },
-        "error": nil
+        "object": "domain",
+        "id": "479e3145-dd38-476b-932c-529ceb705947"
       }
 
       update_params = {
@@ -109,8 +106,8 @@ RSpec.describe "Domains" do
 
       allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
       domain = Resend::Domains.update(update_params)
-      expect(domain[:data][:id]).to eql("479e3145-dd38-476b-932c-529ceb705947")
-      expect(domain[:data][:object]).to eql("domain")
+      expect(domain[:id]).to eql("479e3145-dd38-476b-932c-529ceb705947")
+      expect(domain[:object]).to eql("domain")
     end
   end
 
