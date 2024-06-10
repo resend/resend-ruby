@@ -38,6 +38,7 @@ def update
     id: domain[:id],
     open_tracking: false,
     click_tracking: false,
+    tls: "enforced"
   }
   updated = Resend::Domains.update(params)
   puts "updated domain: #{updated[:id]}"
