@@ -102,6 +102,7 @@ RSpec.describe "Domains" do
         id: '479e3145-dd38-476b-932c-529ceb705947',
         open_tracking: true,
         click_tracking: true,
+        tls: "enforced"
       }
 
       allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
