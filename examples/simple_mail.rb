@@ -7,10 +7,10 @@ raise if ENV["RESEND_API_KEY"].nil?
 Resend.api_key = ENV["RESEND_API_KEY"]
 
 params = {
-  "from": "from@email.io",
-  "to": ["to@gmail.com"],
+  "from": "onboarding@resend.dev",
+  "to": ["delivered@resend.dev"],
+  "subject": "Hello from Resend Ruby SDK",
   "text": "test",
-  "subject": "test",
   "tags": {
     "country": "br"
   }

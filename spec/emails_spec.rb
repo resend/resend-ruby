@@ -23,6 +23,16 @@ RSpec.describe "Emails" do
       expect(Resend::Emails.send(params)[:id]).to eql(resp[:id])
     end
 
+    it "should update email" do
+      resp = {"id"=>"872d1f17-0f08-424c-a18c-d425324acab6", "object": "email"}
+      params = {
+        "id": "872d1f17-0f08-424c-a18c-d425324acab6",
+        "scheduled_at": "2024-11-05T11:52:01.858Z"
+      }
+      allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
+      expect(Resend::Emails.update(params)[:id]).to eql(resp[:id])
+    end
+
     it "should retrieve email" do
       resp = {
         "object": "email",
@@ -43,6 +53,18 @@ RSpec.describe "Emails" do
       email = Resend::Emails.get(resp[:id])
       expect(email[:subject]).to eql "Hello World"
       expect(email[:id]).to eql "4ef9a417-02e9-4d39-ad75-9611e0fcc33c"
+    end
+
+    it "should cancel email" do
+      resp = {
+        "object": "email",
+        "id": "49a3999c-0ce1-4ea6-ab68-afcd6dc2e794"
+      }
+      allow(resp).to receive(:body).and_return(resp)
+      allow(HTTParty).to receive(:send).and_return(resp)
+
+      email = Resend::Emails.cancel(resp[:id])
+      expect(email[:id]).to eql "49a3999c-0ce1-4ea6-ab68-afcd6dc2e794"
     end
 
     it "should raise when to is missing" do
