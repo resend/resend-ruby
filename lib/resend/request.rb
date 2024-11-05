@@ -34,6 +34,9 @@ module Resend
 
       options[:body] = @body.to_json unless @body.empty?
       resp = HTTParty.send(@verb.to_sym, "#{BASE_URL}#{@path}", options)
+
+      check_json!(resp)
+
       resp.transform_keys!(&:to_sym) unless resp.body.empty?
       handle_error!(resp) if resp[:statusCode] && (resp[:statusCode] != 200 || resp[:statusCode] != 201)
       resp
@@ -44,6 +47,18 @@ module Resend
       body = resp[:message]
       error = Resend::Error::ERRORS[code]
       raise(error.new(body, code)) if error
+    end
+
+    private
+
+    def check_json!(resp)
+      if resp.body.is_a?(Hash)
+        JSON.parse(resp.body.to_json)
+      else
+        JSON.parse(resp.body)
+      end
+    rescue JSON::ParserError, TypeError
+      raise Resend::Error::InternalServerError.new("Resend API returned an unexpected response", nil)
     end
   end
 end
