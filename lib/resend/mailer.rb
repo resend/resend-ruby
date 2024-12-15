@@ -44,6 +44,7 @@ module Resend
       }
       params.merge!(get_addons(mail))
       params.merge!(get_headers(mail))
+      params.merge!(get_tags(mail))
       params[:attachments] = get_attachments(mail) if mail.attachments.present?
       params.merge!(get_contents(mail))
       params
@@ -59,6 +60,19 @@ module Resend
     def get_headers(mail)
       params = {}
       params[:headers] = mail[:headers].unparsed_value if mail[:headers].present?
+      params
+    end
+
+    #
+    # Add tags fields
+    #
+    # @param Mail mail Rails Mail object
+    #
+    # @return Hash hash with tags param
+    #
+    def get_tags(mail)
+      params = {}
+      params[:tags] = mail[:tags].unparsed_value if mail[:tags].present?
       params
     end
 
