@@ -27,5 +27,5 @@ def remove
 end
 
 create
-list
-remove
+# list
+# remove

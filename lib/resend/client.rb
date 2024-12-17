@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 
+require "resend/audiences"
 require "resend/api_keys"
+require "resend/broadcasts"
+require "resend/batch"
+require "resend/contacts"
 require "resend/domains"
 require "resend/emails"
-require "resend/batch"
-require "resend/audiences"
-require "resend/contacts"
 require "httparty"
 
 module Resend
