@@ -9,7 +9,7 @@ Resend.api_key = ENV["RESEND_API_KEY"]
 params = {
   from: "onboarding@resend.dev",
   subject: "Hello",
-  audience_id: "78b8d3bc-a55a-45a3-aee6-6ec0a5e13d7e",
+  audience_id: "78b8d3bc-a55a-45a3-aee6-6ec0a5e13d7e", # replace with an existing audience id
   text: "Hello, how are you?",
 }
 
