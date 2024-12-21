@@ -13,7 +13,9 @@ module Resend
     attr_accessor :body, :verb
 
     def initialize(path = "", body = {}, verb = "POST")
-      raise if Resend.api_key.nil?
+      raise if (api_key = Resend.api_key).nil?
+
+      api_key = api_key.call if api_key.is_a?(Proc)
 
       @path = path
       @body = body
@@ -22,7 +24,7 @@ module Resend
         "Content-Type" => "application/json",
         "Accept" => "application/json",
         "User-Agent" => "resend-ruby:#{Resend::VERSION}",
-        "Authorization" => "Bearer #{Resend.api_key}"
+        "Authorization" => "Bearer #{api_key}"
       }
     end
 
