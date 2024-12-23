@@ -3,6 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 ![Build](https://github.com/drish/resend-ruby/actions/workflows/build.yml/badge.svg)
 [![Gem Version](https://badge.fury.io/rb/resend.svg)](https://badge.fury.io/rb/resend)
+
 ---
 
 ## Installation
@@ -10,11 +11,13 @@
 To install Resend Ruby and Rails SDK, simply execute the following command in a terminal:
 
 Via RubyGems:
+
 ```
 gem install resend
 ```
 
 Via Gemfile:
+
 ```
 gem 'resend'
 ```
@@ -37,6 +40,19 @@ Resend.configure do |config|
 end
 ```
 
+The `#api_key` method also accepts a block without arguments, which can be useful for lazy or dynamic loading of API keys.
+
+```ruby
+require "resend"
+Resend.api_key = -> { ENV["RESEND_API_KEY"] }
+```
+
+```ruby
+Resend.configure do |config|
+  config.api_key = -> { Current.user.resend_api_key } # Assumes the user has a `resend_api_key` attribute.
+end
+```
+
 ## Example
 
 ```rb
@@ -55,7 +71,6 @@ puts r
 ```
 
 You can view all the examples in the [examples folder](https://github.com/drish/resend-ruby/tree/main/examples)
-
 
 # Rails and ActiveMailer support
 
