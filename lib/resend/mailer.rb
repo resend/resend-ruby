@@ -7,6 +7,17 @@ module Resend
   class Mailer
     attr_accessor :config, :settings
 
+    # These are set as `headers` by the Rails API, but these will be filtered out
+    # when constructing the Resend API payload, since they're are sent as post params.
+    # https://resend.com/docs/api-reference/emails/send-email
+    IGNORED_HEADERS = %w[
+      cc bcc
+      from reply-to to subject mime-version
+      html text
+      content-type tags scheduled_at
+      headers
+    ].freeze
+
     def initialize(config)
       @config = config
       raise Resend::Error.new("Make sure your API Key is set", @config) unless Resend.api_key
@@ -51,7 +62,19 @@ module Resend
     end
 
     #
-    # Add custom headers fields
+    # Add custom headers fields.
+    #
+    # Both ways are supported:
+    #
+    #   1. Through the `#mail()` method ie:
+    #     mail(headers: { "X-Custom-Header" => "value" })
+    #
+    #   2. Through the Rails `#headers` method ie:
+    #     headers["X-Custom-Header"] = "value"
+    #
+    #
+    # setting the header values through the `#mail` method will overwrite values set
+    # through the `#headers` method using the same key.
     #
     # @param Mail mail Rails Mail object
     #
@@ -59,7 +82,37 @@ module Resend
     #
     def get_headers(mail)
       params = {}
-      params[:headers] = mail[:headers].unparsed_value if mail[:headers].present?
+
+      if mail[:headers].present? || unignored_headers(mail).present?
+        params[:headers] = {}
+        params[:headers].merge!(headers_values(mail)) if unignored_headers(mail).present?
+        params[:headers].merge!(mail_headers_values(mail)) if mail[:headers].present?
+      end
+
+      params
+    end
+
+    # Gets the values of the headers that are set through the `#mail` method
+    #
+    # @param Mail mail Rails Mail object
+    # @return Hash hash with mail headers values
+    def mail_headers_values(mail)
+      params = {}
+      mail[:headers].unparsed_value.each do |k, v|
+        params[k.to_s] = v
+      end
+      params
+    end
+
+    # Gets the values of the headers that are set through the `#headers` method
+    #
+    # @param Mail mail Rails Mail object
+    # @return Hash hash with headers values
+    def headers_values(mail)
+      params = {}
+      unignored_headers(mail).each do |h|
+        params[h.name.to_s] = h.unparsed_value
+      end
       params
     end
 
@@ -143,6 +196,17 @@ module Resend
         attachments.append(attachment)
       end
       attachments
+    end
+
+    #
+    # Get all headers that are not ignored
+    #
+    # @param Mail mail
+    #
+    # @return Array headers
+    #
+    def unignored_headers(mail)
+      @unignored_headers ||= mail.header_fields.reject { |h| IGNORED_HEADERS.include?(h.name.downcase) }
     end
   end
 end
