@@ -113,6 +113,8 @@ module Resend
       unignored_headers(mail).each do |h|
         params[h.name.to_s] = h.unparsed_value
       end
+      # remove nil header values
+      params.delete_if { |_k, v| v.nil? }
       params
     end
 
