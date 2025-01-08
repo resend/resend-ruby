@@ -52,6 +52,14 @@ class TestMailer < ActionMailer::Base
     end
   end
 
+  def with_nil_header_values(to, subject)
+    headers["X-Entity-Ref-ID"] = nil
+    mail(to: to, subject: subject) do |format|
+      format.text { render plain: "txt" }
+      format.html { render html: "<p>html</p>".html_safe }
+    end
+  end
+
   def with_attachment(to, subject)
     attachments['invoice.pdf'] = {
       :content => File.read('resources/invoice.pdf'),
@@ -135,7 +143,7 @@ RSpec.describe "Resend::Mailer" do
     expect(body[:headers]["X-Entity-Ref-ID"]).to eql("123")
   end
 
-  it "#mail properly overwrites #headers" do
+  it "#build_resend_params properly overwrites #headers" do
     message = TestMailer.with_overwritten_headers("test@example.org", "Test!")
     body = @mailer.build_resend_params(message)
     expect(body[:from]).to eql("test@example.com")
@@ -144,5 +152,11 @@ RSpec.describe "Resend::Mailer" do
     expect(body[:html]).to eql("<p>html</p>")
     expect(body[:text]).to eql("txt")
     expect(body[:headers]["X-Entity-Ref-ID"]).to eql("overwritten")
+  end
+
+  it "#build_resend_params handles nil values" do
+    message = TestMailer.with_nil_header_values("test@example.org", "Test!")
+    body = @mailer.build_resend_params(message)
+    expect(body[:headers]).to be nil
   end
 end
