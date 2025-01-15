@@ -92,6 +92,11 @@ module Resend
       params
     end
 
+    # Remove nils from header values
+    def cleanup_headers(headers)
+      headers.delete_if { |_k, v| v.nil? }
+    end
+
     # Gets the values of the headers that are set through the `#mail` method
     #
     # @param Mail mail Rails Mail object
@@ -101,6 +106,7 @@ module Resend
       mail[:headers].unparsed_value.each do |k, v|
         params[k.to_s] = v
       end
+      cleanup_headers(params)
       params
     end
 
@@ -113,8 +119,7 @@ module Resend
       unignored_headers(mail).each do |h|
         params[h.name.to_s] = h.unparsed_value
       end
-      # remove nil header values
-      params.delete_if { |_k, v| v.nil? }
+      cleanup_headers(params)
       params
     end
 
