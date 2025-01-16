@@ -35,6 +35,7 @@ module Resend
       }
 
       options[:body] = @body.to_json unless @body.empty?
+
       resp = HTTParty.send(@verb.to_sym, "#{BASE_URL}#{@path}", options)
 
       check_json!(resp)

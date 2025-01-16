@@ -54,7 +54,10 @@ class TestMailer < ActionMailer::Base
 
   def with_nil_header_values(to, subject)
     headers["X-Entity-Ref-ID"] = nil
-    mail(to: to, subject: subject) do |format|
+    mail(to: to, subject: subject, headers: {
+      "custom-header1": nil,
+      "custom-header2": "v2"
+    }) do |format|
       format.text { render plain: "txt" }
       format.html { render html: "<p>html</p>".html_safe }
     end
@@ -157,6 +160,6 @@ RSpec.describe "Resend::Mailer" do
   it "#build_resend_params handles nil values" do
     message = TestMailer.with_nil_header_values("test@example.org", "Test!")
     body = @mailer.build_resend_params(message)
-    expect(body[:headers]).to be nil
+    expect(body[:headers].keys).to eq(["custom-header2"])
   end
 end
