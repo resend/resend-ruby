@@ -136,5 +136,13 @@ RSpec.describe "Contacts" do
       expect(contact[:id]).to eql("479e3145-dd38-476b-932c-529ceb705947")
       expect(contact[:object]).to eql("contact")
     end
+
+    it "raise when required fields are not provided" do
+      begin
+        Resend::Contacts.update({ audience_id: "123" })
+      rescue ArgumentError => e
+        expect(e.message).to eql("id or email is required")
+      end
+    end
   end
 end
