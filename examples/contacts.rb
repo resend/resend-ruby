@@ -23,8 +23,10 @@ def example
 
   update_params = {
     audience_id: audience_id,
-    id: contact[:id],
-    unsubscribed: true,
+    email: params[:email],
+    # id: contact[:id],
+    unsubscribed: false,
+    first_name: "Updated",
   }
 
   retrieved = Resend::Contacts.get(audience_id, contact[:id])

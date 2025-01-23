@@ -19,6 +19,10 @@ module Resend
         Resend::Request.new(path, {}, "get").perform
       end
 
+      #
+      # List contacts in an audience
+      #
+      # @param audience_id [String] the audience id
       # https://resend.com/docs/api-reference/contacts/list-contacts
       def list(audience_id)
         path = "audiences/#{audience_id}/contacts"
@@ -37,9 +41,15 @@ module Resend
         Resend::Request.new(path, {}, "delete").perform
       end
 
+      #
+      # Update a contact
+      #
+      # @param params [Hash] the contact params
       # https://resend.com/docs/api-reference/contacts/update-contact
       def update(params)
-        path = "audiences/#{params[:audience_id]}/contacts/#{params[:id]}"
+        raise ArgumentError, "id or email is required" if params[:id].nil? && params[:email].nil?
+
+        path = "audiences/#{params[:audience_id]}/contacts/#{params[:id] || params[:email]}"
         Resend::Request.new(path, params, "patch").perform
       end
     end
