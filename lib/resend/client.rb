@@ -1,13 +1,7 @@
 # frozen_string_literal: true
 
-require "resend/audiences"
-require "resend/api_keys"
-require "resend/broadcasts"
-require "resend/batch"
-require "resend/contacts"
-require "resend/domains"
+# backwards compatibility
 require "resend/emails"
-require "httparty"
 
 module Resend
   # Client class.

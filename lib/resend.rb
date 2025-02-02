@@ -1,8 +1,25 @@
 # frozen_string_literal: true
 
+# Version
 require "resend/version"
-require "resend/client"
 
+# Utils
+require "httparty"
+require "json"
+require "resend/errors"
+require "resend/client"
+require "resend/request"
+
+# API Operations
+require "resend/audiences"
+require "resend/api_keys"
+require "resend/broadcasts"
+require "resend/batch"
+require "resend/contacts"
+require "resend/domains"
+require "resend/emails"
+
+# Rails
 require "resend/railtie" if defined?(Rails) && defined?(ActionMailer)
 
 # Main Resend module

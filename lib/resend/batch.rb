@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "resend/request"
-
 module Resend
   # Module responsible for wrapping Batch email sending API
   module Batch

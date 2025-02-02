@@ -1,9 +1,5 @@
 # frozen_string_literal: true
 
-require "resend/version"
-require "resend/errors"
-require "httparty"
-
 module Resend
   # This class is responsible for making the appropriate HTTP calls
   # and raising the specific errors based on the response.
