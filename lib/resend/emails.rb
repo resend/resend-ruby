@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "resend/request"
-
 module Resend
   # Module responsible for wrapping email sending API
   module Emails

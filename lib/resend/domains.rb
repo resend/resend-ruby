@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require "resend/request"
-require "resend/errors"
-
 module Resend
   # domains api wrapper
   module Domains
