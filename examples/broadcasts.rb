@@ -6,15 +6,27 @@ raise if ENV["RESEND_API_KEY"].nil?
 
 Resend.api_key = ENV["RESEND_API_KEY"]
 
-params = {
+# replace with an existing audience id
+audience_id = "78b8d3bc-a55a-45a3-aee6-6ec0a5e13d7e"
+
+create_params = {
   from: "onboarding@resend.dev",
-  subject: "Hello",
-  audience_id: "78b8d3bc-a55a-45a3-aee6-6ec0a5e13d7e", # replace with an existing audience id
+  subject: "Hello from Ruby SDK",
+  audience_id: audience_id,
   text: "Hello, how are you?",
+  name: "Hello from Ruby SDK",
 }
 
-broadcast = Resend::Broadcasts.create(params)
+broadcast = Resend::Broadcasts.create(create_params)
 puts "created broadcast: #{broadcast[:id]}"
+
+update_params = {
+  broadcast_id: broadcast[:id],
+  name: "Hello from Ruby SDK - updated",
+}
+
+updated_broadcast = Resend::Broadcasts.update(update_params)
+puts "updated broadcast: #{updated_broadcast[:id]}"
 
 send_params = {
   broadcast_id: broadcast[:id],
@@ -30,5 +42,9 @@ puts broadcasts
 retrieved = Resend::Broadcasts.get(broadcast[:id])
 puts "retrieved #{retrieved[:id]}"
 
-Resend::Broadcasts.remove(broadcast[:id])
-puts "removed #{broadcast[:id]}"
+if retrieved[:status] == 'draft'
+  Resend::Broadcasts.remove(broadcast[:id])
+  puts "removed #{broadcast[:id]}"
+else
+  puts 'Cannot remove a broadcast that is not in draft status'
+end

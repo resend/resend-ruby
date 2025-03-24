@@ -21,6 +21,19 @@ RSpec.describe "Broadcasts" do
     end
   end
 
+  describe "update" do
+    it "should update broadcast" do
+      resp = {
+        "id": "49a3999c-0ce1-4ea6-ab68-afcd6dc2e794"
+      }
+      params = {
+        "broadcast_id": "49a3999c-0ce1-4ea6-ab68-afcd6dc2e794"
+      }
+      allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
+      expect(Resend::Broadcasts.update(params)[:id]).to eql("49a3999c-0ce1-4ea6-ab68-afcd6dc2e794")
+    end
+  end
+
   describe "send" do
     it "should send broadcast" do
       resp = {

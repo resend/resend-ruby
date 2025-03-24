@@ -10,6 +10,12 @@ module Resend
         Resend::Request.new(path, params, "post").perform
       end
 
+      # https://resend.com/docs/api-reference/broadcasts/update-broadcast
+      def update(params = {})
+        path = "broadcasts/#{params[:broadcast_id]}"
+        Resend::Request.new(path, params, "patch").perform
+      end
+
       # https://resend.com/docs/api-reference/broadcasts/send-broadcast
       def send(params = {})
         path = "broadcasts/#{params[:broadcast_id]}/send"

@@ -44,8 +44,13 @@ module Resend
     def handle_error!(resp)
       code = resp[:statusCode]
       body = resp[:message]
+
+      # get error from the known list of errors
       error = Resend::Error::ERRORS[code]
       raise(error.new(body, code)) if error
+
+      # Raise generic Resend error when the error code is not part of the known errors
+      raise Resend::Error.new(body, code)
     end
 
     private
