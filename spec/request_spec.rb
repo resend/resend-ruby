@@ -69,7 +69,7 @@ RSpec.describe Resend::Request do
         :statusCode => 999,
         :message => "999"
       }
-      expect { req.handle_error!(resp) }.to raise_error(Resend::Error, /Resend API returned an unexpected response/)
+      expect { req.handle_error!(resp) }.to raise_error(Resend::Error, "999")
     end
   end
 end
