@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "rails"
-require "json"
 require "resend"
 require "resend/railtie"
 require "spec_helper"

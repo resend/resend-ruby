@@ -62,5 +62,14 @@ RSpec.describe Resend::Request do
       }
       expect { req.handle_error!(resp) }.to raise_error(Resend::Error::InternalServerError, /500/)
     end
+
+    it 'unkown error should return Resend::Error' do
+      req = described_class.new
+      resp = {
+        :statusCode => 999,
+        :message => "999"
+      }
+      expect { req.handle_error!(resp) }.to raise_error(Resend::Error, "999")
+    end
   end
 end
