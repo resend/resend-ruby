@@ -25,6 +25,29 @@ RSpec.describe Resend::Request do
     end
   end
 
+  context 'initialize' do
+    it 'sets default headers' do
+      req = described_class.new
+      expect(req.instance_variable_get(:@headers)).to include(
+        "Content-Type" => "application/json",
+        "Accept" => "application/json",
+        "User-Agent" => "resend-ruby:#{Resend::VERSION}",
+        "Authorization" => "Bearer re_123"
+      )
+      expect(req.instance_variable_get(:@headers)).not_to include("Idempotency-Key")
+    end
+
+    it 'should set idempotency key' do
+      req = described_class.new("path", {}, "POST", options: { idempotency_key: "123" })
+      expect(req.instance_variable_get(:@headers)["Idempotency-Key"]).to eq("123")
+    end
+
+    it 'sets verb' do
+      req = described_class.new("path", {}, "POST")
+      expect(req.instance_variable_get(:@verb)).to eq("POST")
+    end
+  end
+
   context 'handle_error!' do
 
     it "Resend::Error::InvalidRequestError 400" do

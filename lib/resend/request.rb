@@ -6,9 +6,9 @@ module Resend
   class Request
     BASE_URL = ENV["RESEND_BASE_URL"] || "https://api.resend.com/"
 
-    attr_accessor :body, :verb
+    attr_accessor :body, :verb, :options
 
-    def initialize(path = "", body = {}, verb = "POST")
+    def initialize(path = "", body = {}, verb = "POST", options: {})
       raise if (api_key = Resend.api_key).nil?
 
       api_key = api_key.call if api_key.is_a?(Proc)
@@ -16,12 +16,15 @@ module Resend
       @path = path
       @body = body
       @verb = verb
+      @options = options
       @headers = {
         "Content-Type" => "application/json",
         "Accept" => "application/json",
         "User-Agent" => "resend-ruby:#{Resend::VERSION}",
         "Authorization" => "Bearer #{api_key}"
       }
+
+      set_idempotency_key
     end
 
     # Performs the HTTP call
@@ -54,6 +57,15 @@ module Resend
     end
 
     private
+
+    def set_idempotency_key
+      # Only set idempotency key if the verb is POST for now.
+      #
+      # Does not set it if the idempotency_key is nil or empty
+      if @verb.downcase == "post" && (!@options[:idempotency_key].nil? && !@options[:idempotency_key].empty?)
+        @headers["Idempotency-Key"] = @options[:idempotency_key]
+      end
+    end
 
     def check_json!(resp)
       if resp.body.is_a?(Hash)

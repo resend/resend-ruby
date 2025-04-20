@@ -104,5 +104,106 @@ RSpec.describe "Emails" do
       allow(HTTParty).to receive(:send).and_return(resp)
       expect { Resend::Emails.send params }.to raise_error(Resend::Error::InvalidRequestError, /Missing `from` field/)
     end
+
+    it "does not send the Idempotency-Key header when :idempotency_key is not provided" do
+      resp = {
+        "id"=>"872d1f17-0f08-424c-a18c-d425324acab6", "object": "email"
+      }
+
+      allow(resp).to receive(:body).and_return(resp)
+      allow(HTTParty).to receive(:send).and_return(resp)
+
+      Resend::Emails.send({ from: "me" })
+
+      expect(HTTParty).to have_received(:send).with(
+        :post,
+        "#{Resend::Request::BASE_URL}emails",
+        {
+          headers: {
+            "Content-Type" => "application/json",
+            "Accept" => "application/json",
+            "Authorization" => "Bearer re_123",
+            "User-Agent" => "resend-ruby:#{Resend::VERSION}",
+          },
+          body: { from: "me" }.to_json
+        }
+      )
+    end
+
+    it "does not send the Idempotency-Key header when :idempotency_key is nil" do
+      resp = {
+        "id"=>"872d1f17-0f08-424c-a18c-d425324acab6", "object": "email"
+      }
+
+      allow(resp).to receive(:body).and_return(resp)
+      allow(HTTParty).to receive(:send).and_return(resp)
+
+      Resend::Emails.send({ from: "me" }, options: { idempotency_key: nil })
+
+      expect(HTTParty).to have_received(:send).with(
+        :post,
+        "#{Resend::Request::BASE_URL}emails",
+        {
+          headers: {
+            "Content-Type" => "application/json",
+            "Accept" => "application/json",
+            "Authorization" => "Bearer re_123",
+            "User-Agent" => "resend-ruby:#{Resend::VERSION}",
+          },
+          body: { from: "me" }.to_json
+        }
+      )
+    end
+
+    it "does not send the Idempotency-Key header when :idempotency_key is an empty string" do
+      resp = {
+        "id"=>"872d1f17-0f08-424c-a18c-d425324acab6", "object": "email"
+      }
+
+      allow(resp).to receive(:body).and_return(resp)
+      allow(HTTParty).to receive(:send).and_return(resp)
+
+      Resend::Emails.send({ from: "me" }, options: { idempotency_key: "" })
+
+      expect(HTTParty).to have_received(:send).with(
+        :post,
+        "#{Resend::Request::BASE_URL}emails",
+        {
+          headers: {
+            "Content-Type" => "application/json",
+            "Accept" => "application/json",
+            "Authorization" => "Bearer re_123",
+            "User-Agent" => "resend-ruby:#{Resend::VERSION}",
+          },
+          body: { from: "me" }.to_json
+        }
+      )
+    end
+
+    it "does send the Idempotency-Key header when :idempotency_key is provided" do
+      resp = {
+        "id"=>"872d1f17-0f08-424c-a18c-d425324acab6", "object": "email"
+      }
+
+      allow(resp).to receive(:body).and_return(resp)
+      allow(HTTParty).to receive(:send).and_return(resp)
+
+      Resend::Emails.send({ from: "me" }, options: { idempotency_key: "123" })
+
+      expect(HTTParty).to have_received(:send).with(
+        :post,
+        "#{Resend::Request::BASE_URL}emails",
+        {
+          headers: {
+            "Content-Type" => "application/json",
+            "Accept" => "application/json",
+            "Authorization" => "Bearer re_123",
+            "User-Agent" => "resend-ruby:#{Resend::VERSION}",
+            "Idempotency-Key" => "123"
+          },
+          body: { from: "me" }.to_json
+        }
+      )
+    end
   end
 end
