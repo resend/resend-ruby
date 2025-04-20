@@ -3,8 +3,8 @@ AllCops:
   SuggestExtensions: false
   NewCops: disable
   Exclude:
-    - './spec/**/**'
-    - './examples/**'
+    - "./spec/**/**"
+    - "./examples/**"
 
 Style/GuardClause:
   Enabled: false
@@ -25,3 +25,6 @@ Metrics/ClassLength:
 
 Metrics/MethodLength:
   Max: 14
+
+Metrics/ParameterLists:
+  MaxOptionalParameters: 4
