@@ -5,7 +5,7 @@ module Resend
   module Emails
     class << self
       # Sends or schedules an email.
-      # see more: https://resend.com/docs/api-reference/send-email
+      # see more: https://resend.com/docs/api-reference/emails/send-email
       def send(params)
         path = "emails"
         Resend::Request.new(path, params, "post").perform
