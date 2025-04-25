@@ -16,8 +16,13 @@ params = {
   }
 }
 
+# With Idempotency
+email = Resend::Emails.send(params, options: { idempotency_key: "123" })
+puts(email)
+
+# Without Idempotency
 email = Resend::Emails.send(params)
 puts(email)
 
-email = Resend::Emails.get email[:id]
-puts email[:id]
+email = Resend::Emails.get(email[:id])
+puts(email[:id])

@@ -21,5 +21,7 @@ jobs:
           ruby-version: ${{ matrix.ruby }}
       - name: Install dependencies
         run: bundle install
+      - name: Rubocop
+        run: bundle exec rubocop
       - name: Run tests
         run: bundle exec rake spec
