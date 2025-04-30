@@ -10,6 +10,12 @@ module Resend
         Resend::Request.new(path, params, "post").perform
       end
 
+      #
+      # Retrieves a contact from an audience
+      #
+      # @param audience_id [String] the audience id
+      # @param id [String] either the contact id or contact's email
+      #
       # https://resend.com/docs/api-reference/contacts/get-contact
       def get(audience_id, id)
         path = "audiences/#{audience_id}/contacts/#{id}"

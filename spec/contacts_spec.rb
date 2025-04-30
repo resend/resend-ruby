@@ -35,7 +35,7 @@ RSpec.describe "Contacts" do
 
   describe "get contact" do
 
-    it "should retrieve a contact" do
+    it "should retrieve a contact by id" do
 
       resp = {
         "object": "contact",
@@ -51,6 +51,31 @@ RSpec.describe "Contacts" do
       allow(HTTParty).to receive(:send).and_return(resp)
 
       contact = Resend::Contacts.get(audience_id, resp[:id])
+
+      expect(contact[:object]).to eql "contact"
+      expect(contact[:id]).to eql "e169aa45-1ecf-4183-9955-b1499d5701d3"
+      expect(contact[:first_name]).to eql "Steve"
+      expect(contact[:last_name]).to eql "Wozniak"
+      expect(contact[:email]).to eql "steve.wozniak@gmail.com"
+      expect(contact[:unsubscribed]).to be false
+      expect(contact[:created_at]).to eql "2023-10-06T23:47:56.678Z"
+    end
+
+    it "should retrieve a contact by email" do
+      resp = {
+        "object": "contact",
+        "id": "e169aa45-1ecf-4183-9955-b1499d5701d3",
+        "email": "steve.wozniak@gmail.com",
+        "first_name": "Steve",
+        "last_name": "Wozniak",
+        "created_at": "2023-10-06T23:47:56.678Z",
+        "unsubscribed": false
+      }
+
+      allow(resp).to receive(:body).and_return(resp)
+      allow(HTTParty).to receive(:send).and_return(resp)
+
+      contact = Resend::Contacts.get(audience_id, resp[:email])
 
       expect(contact[:object]).to eql "contact"
       expect(contact[:id]).to eql "e169aa45-1ecf-4183-9955-b1499d5701d3"
