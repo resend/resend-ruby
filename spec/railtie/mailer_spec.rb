@@ -72,6 +72,19 @@ class TestMailer < ActionMailer::Base
       format.html { render html: "<p>html</p>".html_safe }
     end
   end
+
+  def with_options_hash
+    headers = {
+      "X-Entity-Ref-ID": "123",
+    }
+    options = {
+      idempotency_key: "123",
+      ignored_key: "ignored",
+    }
+    mail(to: "to", subject: "subj", headers: headers, options: options) do |format|
+      format.text { render plain: "text" }
+    end
+  end
 end
 
 class TestMailerWithDisplayName < TestMailer
@@ -100,6 +113,14 @@ RSpec.describe "Resend::Mailer" do
     expect(body[:to]).to eql(["test@example.org"])
     expect(body[:html]).to eql("<p>HTML!</p>")
     expect(body[:text]).to be nil
+  end
+
+  it "properly creates options hash" do
+    message = TestMailer.with_options_hash
+    options = @mailer.get_options(message)
+    expect(options[:idempotency_key]).to eql("123")
+    expect(options[:ignored_key]).to be nil
+    expect(options.keys).to match_array([:idempotency_key])
   end
 
   it "properly creates a text only msg" do

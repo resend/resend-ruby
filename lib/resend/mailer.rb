@@ -15,8 +15,10 @@ module Resend
       from reply-to to subject mime-version
       html text
       content-type tags scheduled_at
-      headers
+      headers options
     ].freeze
+
+    SUPPORTED_OPTIONS = %w[idempotency_key].freeze
 
     def initialize(config)
       @config = config
@@ -35,7 +37,8 @@ module Resend
     #
     def deliver!(mail)
       params = build_resend_params(mail)
-      resp = Resend::Emails.send(params)
+      options = get_options(mail) if mail[:options].present?
+      resp = Resend::Emails.send(params, options: options || {})
       mail.message_id = resp[:id] if resp[:error].nil?
       resp
     end
@@ -90,6 +93,22 @@ module Resend
       end
 
       params
+    end
+
+    #
+    # Adds additional options fields.
+    # Currently supports only :idempotency_key
+    #
+    # @param Mail mail Rails Mail object
+    # @return Hash hash with headers param
+    #
+    def get_options(mail)
+      opts = {}
+      if mail[:options].present?
+        opts.merge!(mail[:options].unparsed_value)
+        opts.delete_if { |k, _v| !SUPPORTED_OPTIONS.include?(k.to_s) }
+      end
+      opts
     end
 
     # Remove nils from header values

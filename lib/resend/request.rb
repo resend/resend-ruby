@@ -32,7 +32,6 @@ module Resend
       options = {
         headers: @headers
       }
-
       options[:body] = @body.to_json unless @body.empty?
 
       resp = HTTParty.send(@verb.to_sym, "#{BASE_URL}#{@path}", options)
