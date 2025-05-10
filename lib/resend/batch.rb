@@ -5,9 +5,10 @@ module Resend
   module Batch
     class << self
       # https://resend.com/docs/api-reference/emails/send-batch-emails
-      def send(params = [])
+      def send(params = [], options: {})
         path = "emails/batch"
-        Resend::Request.new(path, params, "post").perform
+
+        Resend::Request.new(path, params, "post", options: options).perform
       end
     end
   end
