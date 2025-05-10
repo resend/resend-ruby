@@ -21,5 +21,12 @@ params = [
   },
 ]
 
+# Send a batch of emails without Idempotency key
 emails = Resend::Batch.send(params)
+puts "Emails sent without Idempotency key:"
+puts(emails)
+
+# Send a batch of emails with Idempotency key
+emails = Resend::Batch.send(params, options: { idempotency_key: "af67ff1cdf3cdf1" })
+puts "Emails sent with Idempotency key:"
 puts(emails)
