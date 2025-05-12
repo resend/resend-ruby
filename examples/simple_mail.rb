@@ -17,10 +17,12 @@ params = {
 }
 
 # With Idempotency
+puts "Sending email with Idempotency key:"
 email = Resend::Emails.send(params, options: { idempotency_key: "123" })
 puts(email)
 
 # Without Idempotency
+puts "Sending email without Idempotency key:"
 email = Resend::Emails.send(params)
 puts(email)
 
