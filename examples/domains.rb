@@ -8,7 +8,7 @@ Resend.api_key = ENV["RESEND_API_KEY"]
 
 def create
   params = {
-    name: "drish.dev",
+    name: "example@example.com",
     region: "us-east-1",
     custom_return_path: "outbound",
   }
