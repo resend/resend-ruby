@@ -64,6 +64,8 @@ RSpec.describe "Domains" do
       }
       params = {
         "name": "example.com",
+        "region": "us-east-1",
+        "custom_return_path": "outbound",
       }
       allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
       expect(Resend::Domains.create(params)[:id]).to eql("4dd369bc-aa82-4ff3-97de-514ae3000ee0")

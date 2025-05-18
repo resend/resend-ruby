@@ -8,8 +8,9 @@ Resend.api_key = ENV["RESEND_API_KEY"]
 
 def create
   params = {
-    name: "name",
-    region: ""
+    name: "example@example.com",
+    region: "us-east-1",
+    custom_return_path: "outbound",
   }
   domain = Resend::Domains.create(params)
   puts domain
