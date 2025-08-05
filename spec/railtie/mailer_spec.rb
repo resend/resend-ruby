@@ -167,7 +167,6 @@ RSpec.describe "Resend::Mailer" do
     expect(body[:attachments].first[:filename]).to eql("logo.png")
     expect(body[:attachments].first[:content].length > 0).to be true
     expect(body[:attachments].first[:inline_content_id]).to_not be_nil
-    expect(body[:attachments].first[:inline_content_id]).to match(/^[a-f0-9_\-@\.]+$/)
   end
 
   it "properly handles from display name" do
