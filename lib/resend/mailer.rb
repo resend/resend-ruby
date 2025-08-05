@@ -219,6 +219,9 @@ module Resend
           filename: part.filename,
           content: part.body.decoded.bytes
         }
+
+        # Rails uses the auto generated cid for inline attachments
+        attachment[:inline_content_id] = part.cid if part.inline?
         attachments.append(attachment)
       end
       attachments

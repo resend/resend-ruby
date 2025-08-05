@@ -73,6 +73,17 @@ class TestMailer < ActionMailer::Base
     end
   end
 
+  def with_inline_attachment(to, subject)
+    attachments.inline['logo.png'] = {
+      :content => File.read('resources/logo.png'),
+      :mime_type => 'image/png',
+    }
+    mail(to: to, subject: subject) do |format|
+      format.text { render plain: "txt" }
+      format.html { render html: '<p>html with inline image: <img src="cid:logo.png"></p>'.html_safe }
+    end
+  end
+
   def with_options_hash
     headers = {
       "X-Entity-Ref-ID": "123",
@@ -142,6 +153,21 @@ RSpec.describe "Resend::Mailer" do
     expect(body[:attachments].length).to eql(1)
     expect(body[:attachments].first[:filename]).to eql("invoice.pdf")
     expect(body[:attachments].first[:content].length > 0).to be true
+    expect(body[:attachments].first[:inline_content_id]).to be_nil
+  end
+
+  it "properly creates a html text with inline attachments msg" do
+    message = TestMailer.with_inline_attachment("test@example.org", "Test!")
+    body = @mailer.build_resend_params(message)
+    expect(body[:from]).to eql("test@example.com")
+    expect(body[:to]).to eql(["test@example.org"])
+    expect(body[:html]).to eql('<p>html with inline image: <img src="cid:logo.png"></p>')
+    expect(body[:text]).to eql("txt")
+    expect(body[:attachments].length).to eql(1)
+    expect(body[:attachments].first[:filename]).to eql("logo.png")
+    expect(body[:attachments].first[:content].length > 0).to be true
+    expect(body[:attachments].first[:inline_content_id]).to_not be_nil
+    expect(body[:attachments].first[:inline_content_id]).to match(/^[a-f0-9\-@]+$/)
   end
 
   it "properly handles from display name" do
