@@ -61,8 +61,8 @@ require "resend"
 Resend.api_key = ENV["RESEND_API_KEY"]
 
 params = {
-  "from": "from@email.io",
-  "to": ["to@email.com", "to1@gmail.com"],
+  "from": "onboarding@resend.dev",
+  "to": ["delivered@resend.dev", "your@email.com"],
   "html": "<h1>Hello World</h1>",
   "subject": "Hey"
 }
