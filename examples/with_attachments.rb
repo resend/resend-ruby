@@ -38,7 +38,7 @@ inline_attachment_params = {
     {
       "path": "https://resend.com/static/brand/resend-wordmark-black.png",
       "filename": "resend-wordmark-black.png",
-      "inline_content_id": "image"
+      "content_id": "image"
     }
   ]
 }

@@ -221,7 +221,7 @@ module Resend
         }
 
         # Rails uses the auto generated cid for inline attachments
-        attachment[:inline_content_id] = part.cid if part.inline?
+        attachment[:content_id] = part.cid if part.inline?
         attachments.append(attachment)
       end
       attachments
