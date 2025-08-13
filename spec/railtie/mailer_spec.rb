@@ -153,7 +153,7 @@ RSpec.describe "Resend::Mailer" do
     expect(body[:attachments].length).to eql(1)
     expect(body[:attachments].first[:filename]).to eql("invoice.pdf")
     expect(body[:attachments].first[:content].length > 0).to be true
-    expect(body[:attachments].first[:inline_content_id]).to be_nil
+    expect(body[:attachments].first[:content_id]).to be_nil
   end
 
   it "properly creates a html text with inline attachments msg" do
@@ -166,7 +166,7 @@ RSpec.describe "Resend::Mailer" do
     expect(body[:attachments].length).to eql(1)
     expect(body[:attachments].first[:filename]).to eql("logo.png")
     expect(body[:attachments].first[:content].length > 0).to be true
-    expect(body[:attachments].first[:inline_content_id]).to_not be_nil
+    expect(body[:attachments].first[:content_id]).to_not be_nil
   end
 
   it "properly handles from display name" do
