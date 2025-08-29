@@ -72,7 +72,7 @@ puts r
 
 You can view all the examples in the [examples folder](https://github.com/drish/resend-ruby/tree/main/examples)
 
-# Rails and ActiveMailer support
+# Rails and ActionMailer support
 
 This gem can be used as an ActionMailer delivery method, add this to your `config/environments/environment.rb` file.
 
