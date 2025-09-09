@@ -32,7 +32,13 @@ module Resend
       options = {
         headers: @headers
       }
-      options[:body] = @body.to_json unless @body.empty?
+      
+      # For GET requests with query parameters, use them as query string
+      if @verb.downcase == "get" && !@body.empty?
+        options[:query] = @body
+      else
+        options[:body] = @body.to_json unless @body.empty?
+      end
 
       resp = HTTParty.send(@verb.to_sym, "#{BASE_URL}#{@path}", options)
 

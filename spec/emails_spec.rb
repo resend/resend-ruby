@@ -205,5 +205,73 @@ RSpec.describe "Emails" do
         }
       )
     end
+
+    it "should list emails without parameters" do
+      resp = {
+        "object" => "list",
+        "has_more" => false,
+        "data" => [
+          {
+            "id" => "4ef9a417-02e9-4d39-ad75-9611e0fcc33c",
+            "to" => ["james@bond.com"],
+            "from" => "onboarding@resend.dev",
+            "created_at" => "2023-04-03T22:13:42.674981+00:00",
+            "subject" => "Hello World",
+            "last_event" => "delivered"
+          }
+        ]
+      }
+      allow(resp).to receive(:body).and_return(resp)
+      allow(HTTParty).to receive(:send).and_return(resp)
+
+      result = Resend::Emails.list
+      expect(result[:object]).to eql("list")
+      expect(result[:has_more]).to eql(false)
+      expect(result[:data].length).to eql(1)
+    end
+
+    it "should list emails with limit parameter" do
+      resp = {
+        "object" => "list",
+        "has_more" => true,
+        "data" => []
+      }
+      allow(resp).to receive(:body).and_return(resp)
+      allow(HTTParty).to receive(:send).and_return(resp)
+
+      result = Resend::Emails.list(limit: 50)
+
+      expect(HTTParty).to have_received(:send).with(
+        :get,
+        "#{Resend::Request::BASE_URL}emails",
+        hash_including(
+          query: { limit: 50 }
+        )
+      )
+      expect(result[:object]).to eql("list")
+      expect(result[:has_more]).to eql(true)
+    end
+
+    it "should list emails with pagination parameters" do
+      resp = {
+        "object" => "list",
+        "has_more" => false,
+        "data" => []
+      }
+      allow(resp).to receive(:body).and_return(resp)
+      allow(HTTParty).to receive(:send).and_return(resp)
+
+      result = Resend::Emails.list(limit: 20, after: "cursor_123", before: "cursor_456")
+
+      expect(HTTParty).to have_received(:send).with(
+        :get,
+        "#{Resend::Request::BASE_URL}emails",
+        hash_including(
+          query: { limit: 20, after: "cursor_123", before: "cursor_456" }
+        )
+      )
+      expect(result[:object]).to eql("list")
+      expect(result[:has_more]).to eql(false)
+    end
   end
 end
