@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    resend (0.23.0)
+    resend (0.24.0)
       httparty (>= 0.21.0)
 
 GEM
