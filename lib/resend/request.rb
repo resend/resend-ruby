@@ -29,24 +29,11 @@ module Resend
 
     # Performs the HTTP call
     def perform
-      options = {
-        headers: @headers
-      }
-      
-      # For GET requests with query parameters, use them as query string
-      if @verb.downcase == "get" && !@body.empty?
-        options[:query] = @body
-      else
-        options[:body] = @body.to_json unless @body.empty?
-      end
-
+      options = build_request_options
       resp = HTTParty.send(@verb.to_sym, "#{BASE_URL}#{@path}", options)
 
       check_json!(resp)
-
-      resp.transform_keys!(&:to_sym) unless resp.body.empty?
-      handle_error!(resp) if resp[:statusCode] && (resp[:statusCode] != 200 || resp[:statusCode] != 201)
-      resp
+      process_response(resp)
     end
 
     def handle_error!(resp)
@@ -62,6 +49,32 @@ module Resend
     end
 
     private
+
+    def build_request_options
+      options = { headers: @headers }
+
+      if get_request_with_query?
+        options[:query] = @body
+      elsif !@body.empty?
+        options[:body] = @body.to_json
+      end
+
+      options
+    end
+
+    def get_request_with_query?
+      @verb.downcase == "get" && !@body.empty?
+    end
+
+    def process_response(resp)
+      resp.transform_keys!(&:to_sym) unless resp.body.empty?
+      handle_error!(resp) if error_response?(resp)
+      resp
+    end
+
+    def error_response?(resp)
+      resp[:statusCode] && (resp[:statusCode] != 200 && resp[:statusCode] != 201)
+    end
 
     def set_idempotency_key
       # Only set idempotency key if the verb is POST for now.
