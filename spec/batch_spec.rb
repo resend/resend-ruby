@@ -138,5 +138,132 @@ RSpec.describe "Batch" do
         }
       )
     end
+
+    it "does not send the x-batch-validation header when :batch_validation is not provided" do
+      resp = {
+        "data": [
+          { "id": "ae2014de-c168-4c61-8267-70d2662a1ce1" },
+          { "id": "faccb7a5-8a28-4e9a-ac64-8da1cc3bc1cb" }
+        ]
+      }
+
+      allow(resp).to receive(:body).and_return(resp)
+      allow(HTTParty).to receive(:send).and_return(resp)
+
+      Resend::Batch.send([{ from: "me" }])
+
+      expect(HTTParty).to have_received(:send).with(
+        :post,
+        "#{Resend::Request::BASE_URL}emails/batch",
+        {
+          headers: {
+            "Content-Type" => "application/json",
+            "Accept" => "application/json",
+            "Authorization" => "Bearer re_123",
+            "User-Agent" => "resend-ruby:#{Resend::VERSION}",
+          },
+          body: [{ from: "me" }].to_json
+        }
+      )
+    end
+
+    it "sends the x-batch-validation header when :batch_validation is set to permissive" do
+      resp = {
+        "data": [
+          { "id": "ae2014de-c168-4c61-8267-70d2662a1ce1" }
+        ],
+        "errors": [
+          { "index": 1, "message": "Invalid email address" }
+        ]
+      }
+
+      allow(resp).to receive(:body).and_return(resp)
+      allow(HTTParty).to receive(:send).and_return(resp)
+
+      Resend::Batch.send([{ from: "me" }], options: { batch_validation: "permissive" })
+
+      expect(HTTParty).to have_received(:send).with(
+        :post,
+        "#{Resend::Request::BASE_URL}emails/batch",
+        {
+          headers: {
+            "Content-Type" => "application/json",
+            "Accept" => "application/json",
+            "Authorization" => "Bearer re_123",
+            "User-Agent" => "resend-ruby:#{Resend::VERSION}",
+            "x-batch-validation" => "permissive"
+          },
+          body: [{ from: "me" }].to_json
+        }
+      )
+    end
+
+    it "sends the x-batch-validation header when :batch_validation is set to strict" do
+      resp = {
+        "data": [
+          { "id": "ae2014de-c168-4c61-8267-70d2662a1ce1" },
+          { "id": "faccb7a5-8a28-4e9a-ac64-8da1cc3bc1cb" }
+        ]
+      }
+
+      allow(resp).to receive(:body).and_return(resp)
+      allow(HTTParty).to receive(:send).and_return(resp)
+
+      Resend::Batch.send([{ from: "me" }], options: { batch_validation: "strict" })
+
+      expect(HTTParty).to have_received(:send).with(
+        :post,
+        "#{Resend::Request::BASE_URL}emails/batch",
+        {
+          headers: {
+            "Content-Type" => "application/json",
+            "Accept" => "application/json",
+            "Authorization" => "Bearer re_123",
+            "User-Agent" => "resend-ruby:#{Resend::VERSION}",
+            "x-batch-validation" => "strict"
+          },
+          body: [{ from: "me" }].to_json
+        }
+      )
+    end
+
+    it "handles response with errors array in permissive mode" do
+      resp = {
+        "data": [
+          { "id": "ae2014de-c168-4c61-8267-70d2662a1ce1" }
+        ],
+        "errors": [
+          {
+            "index": 1,
+            "message": "The 'to' field must be a valid email address"
+          }
+        ]
+      }
+
+      params = [
+        {
+          "from": "from@e.io",
+          "to": ["valid@email.com"],
+          "text": "testing",
+          "subject": "Hey",
+        },
+        {
+          "from": "from@e.io",
+          "to": ["invalid-email"],
+          "text": "testing",
+          "subject": "Hello",
+        },
+      ]
+
+      allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
+
+      result = Resend::Batch.send(params, options: { batch_validation: "permissive" })
+
+      expect(result[:data].length).to eq 1
+      expect(result[:errors]).not_to be_nil
+      expect(result[:errors].length).to eq 1
+      expect(result[:errors][0][:index]).to eq 1
+      expect(result[:errors][0][:message]).to include("valid email address")
+    end
   end
 end

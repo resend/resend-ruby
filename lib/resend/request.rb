@@ -25,6 +25,7 @@ module Resend
       }
 
       set_idempotency_key
+      set_batch_validation
     end
 
     # Performs the HTTP call
@@ -63,6 +64,14 @@ module Resend
       # Does not set it if the idempotency_key is nil or empty
       if @verb.downcase == "post" && (!@options[:idempotency_key].nil? && !@options[:idempotency_key].empty?)
         @headers["Idempotency-Key"] = @options[:idempotency_key]
+      end
+    end
+
+    def set_batch_validation
+      # Set x-batch-validation header for batch emails
+      # Supported values: 'strict' (default) or 'permissive'
+      if @path == "emails/batch" && @options[:batch_validation]
+        @headers["x-batch-validation"] = @options[:batch_validation]
       end
     end
 
