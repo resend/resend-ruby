@@ -17,8 +17,8 @@ module Resend
       end
 
       # https://resend.com/docs/api-reference/audiences/list-audiences
-      def list
-        path = "audiences"
+      def list(params = {})
+        path = Resend::PaginationHelper.build_paginated_path("audiences", params)
         Resend::Request.new(path, {}, "get").perform
       end
 

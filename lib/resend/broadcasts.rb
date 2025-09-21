@@ -23,8 +23,8 @@ module Resend
       end
 
       # https://resend.com/docs/api-reference/broadcasts/list-broadcasts
-      def list
-        path = "broadcasts"
+      def list(params = {})
+        path = Resend::PaginationHelper.build_paginated_path("broadcasts", params)
         Resend::Request.new(path, {}, "get").perform
       end
 
