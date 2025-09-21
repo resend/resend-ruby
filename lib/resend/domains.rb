@@ -22,9 +22,9 @@ module Resend
         Resend::Request.new(path, {}, "get").perform
       end
 
-      # https://resend.com/docs/api-reference/api-keys/list-api-keys
-      def list
-        path = "domains"
+      # https://resend.com/docs/api-reference/domains/list-domains
+      def list(params = {})
+        path = Resend::PaginationHelper.build_paginated_path("domains", params)
         Resend::Request.new(path, {}, "get").perform
       end
 
