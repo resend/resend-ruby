@@ -21,7 +21,7 @@ module Resend
       attr_reader :rate_limit_limit, :rate_limit_remaining, :rate_limit_reset, :retry_after
 
       def initialize(msg, code = nil, headers = {})
-        super(msg, code)
+        super(msg, code, headers)
         @rate_limit_limit = headers["ratelimit-limit"]&.to_i
         @rate_limit_remaining = headers["ratelimit-remaining"]&.to_i
         @rate_limit_reset = headers["ratelimit-reset"]&.to_i
