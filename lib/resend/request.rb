@@ -47,13 +47,11 @@ module Resend
     def handle_error!(resp)
       code = resp[:statusCode]
       body = resp[:message]
+      headers = resp.respond_to?(:headers) ? resp.headers : (resp[:headers] || {})
 
       # get error from the known list of errors
-      error = Resend::Error::ERRORS[code]
-      raise(error.new(body, code)) if error
-
-      # Raise generic Resend error when the error code is not part of the known errors
-      raise Resend::Error.new(body, code)
+      error_class = Resend::Error::ERRORS[code] || Resend::Error
+      raise error_class.new(body, code, headers)
     end
 
     private
