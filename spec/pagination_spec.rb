@@ -54,14 +54,12 @@ RSpec.describe "Pagination" do
         expect(path).not_to include("after")
       end
 
-      it "raises error for invalid limit" do
-        expect {
-          Resend::PaginationHelper.build_paginated_path("api-keys", { limit: 0 })
-        }.to raise_error(ArgumentError, "limit must be between 1 and 100")
+      it "builds path with any limit value (validation deferred to API)" do
+        path = Resend::PaginationHelper.build_paginated_path("api-keys", { limit: 0 })
+        expect(path).to eq("api-keys?limit=0")
 
-        expect {
-          Resend::PaginationHelper.build_paginated_path("api-keys", { limit: 101 })
-        }.to raise_error(ArgumentError, "limit must be between 1 and 100")
+        path = Resend::PaginationHelper.build_paginated_path("api-keys", { limit: 101 })
+        expect(path).to eq("api-keys?limit=101")
       end
     end
   end
