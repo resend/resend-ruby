@@ -17,7 +17,17 @@ module Resend
     InvalidRequestError = Class.new(ServerError)
 
     # code 429
-    RateLimitExceededError = Class.new(ServerError)
+    class RateLimitExceededError < ServerError
+      attr_reader :rate_limit_limit, :rate_limit_remaining, :rate_limit_reset, :retry_after
+
+      def initialize(msg, code = nil, headers = {})
+        super(msg, code, headers)
+        @rate_limit_limit = headers["ratelimit-limit"]&.to_i
+        @rate_limit_remaining = headers["ratelimit-remaining"]&.to_i
+        @rate_limit_reset = headers["ratelimit-reset"]&.to_i
+        @retry_after = headers["retry-after"]&.to_i
+      end
+    end
 
     # code 404
     NotFoundError = Class.new(ServerError)
@@ -31,9 +41,12 @@ module Resend
       500 => Resend::Error::InternalServerError
     }.freeze
 
-    def initialize(msg, code = nil)
+    attr_reader :headers
+
+    def initialize(msg, code = nil, headers = {})
       super(msg)
       @code = code
+      @headers = headers
     end
   end
 end

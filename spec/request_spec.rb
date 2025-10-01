@@ -68,13 +68,27 @@ RSpec.describe Resend::Request do
       expect { req.handle_error!(resp) }.to raise_error(Resend::Error::InvalidRequestError, /422/)
     end
 
-    it "Resend::Error::RateLimitExceededError 429" do
+    it "Resend::Error::RateLimitExceededError 429 with headers" do
       req = described_class.new
       resp = {
         :statusCode => 429,
-        :message => "429"
+        :message => "429",
+        :headers => {
+          'ratelimit-limit' => '2',
+          'ratelimit-remaining' => '0',
+          'ratelimit-reset' => '60',
+          'retry-after' => '60'
+        }
       }
-      expect { req.handle_error!(resp) }.to raise_error(Resend::Error::RateLimitExceededError, /429/)
+
+      expect { req.handle_error!(resp) }.to raise_error do |error|
+        expect(error).to be_a(Resend::Error::RateLimitExceededError)
+        expect(error.message).to include("429")
+        expect(error.rate_limit_limit).to eq(2)
+        expect(error.rate_limit_remaining).to eq(0)
+        expect(error.rate_limit_reset).to eq(60)
+        expect(error.retry_after).to eq(60)
+      end
     end
 
     it "Resend::Error::InternalServerError 500" do
