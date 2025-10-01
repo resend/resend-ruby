@@ -18,14 +18,6 @@ module Resend
         # Filter out nil values and convert to string keys
         filtered_params = query_params.compact.transform_keys(&:to_s)
 
-        # Validate limit parameter
-        if filtered_params["limit"]
-          limit = filtered_params["limit"].to_i
-          if limit <= 0 || limit > 100
-            raise ArgumentError, "limit must be between 1 and 100"
-          end
-        end
-
         # Build query string
         query_string = filtered_params.map { |k, v| "#{k}=#{CGI.escape(v.to_s)}" }.join("&")
 
