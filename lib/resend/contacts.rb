@@ -26,9 +26,10 @@ module Resend
       # List contacts in an audience
       #
       # @param audience_id [String] the audience id
+      # @param params [Hash] optional pagination parameters
       # https://resend.com/docs/api-reference/contacts/list-contacts
-      def list(audience_id)
-        path = "audiences/#{audience_id}/contacts"
+      def list(audience_id, params = {})
+        path = Resend::PaginationHelper.build_paginated_path("audiences/#{audience_id}/contacts", params)
         Resend::Request.new(path, {}, "get").perform
       end
 

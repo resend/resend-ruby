@@ -43,6 +43,11 @@ def example
   contacts = Resend::Contacts.list(audience_id)
   puts contacts
 
+  # Example with pagination
+  paginated_contacts = Resend::Contacts.list(audience_id, { limit: 10 })
+  puts "Paginated contacts (limit 10):"
+  puts paginated_contacts
+
   # delete by id
   del = Resend::Contacts.remove(audience_id, contact[:id])
 
