@@ -6,9 +6,11 @@ require "resend/version"
 # Utils
 require "httparty"
 require "json"
+require "cgi"
 require "resend/errors"
 require "resend/client"
 require "resend/request"
+require "resend/pagination_helper"
 
 # API Operations
 require "resend/audiences"
