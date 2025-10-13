@@ -49,6 +49,11 @@ end
 def list
   domains = Resend::Domains.list
   puts domains
+
+  # Example with pagination
+  paginated_domains = Resend::Domains.list({ limit: 20, before: "domain_id_here" })
+  puts "Paginated domains (limit 20, before domain_id_here):"
+  puts paginated_domains
 end
 
 def remove

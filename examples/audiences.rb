@@ -19,6 +19,11 @@ def example
   audiences = Resend::Audiences.list
   puts audiences
 
+  # Example with pagination
+  paginated_audiences = Resend::Audiences.list({ limit: 5 })
+  puts "Paginated audiences (limit 5):"
+  puts paginated_audiences
+
   Resend::Audiences.remove audience[:id]
   puts "deleted #{audience[:id]}"
 end

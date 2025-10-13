@@ -39,6 +39,11 @@ puts "sent broadcast: #{sent_broadcast[:id]}"
 broadcasts = Resend::Broadcasts.list
 puts broadcasts
 
+# Example with pagination
+paginated_broadcasts = Resend::Broadcasts.list({ limit: 15, after: "broadcast_id_here" })
+puts "Paginated broadcasts (limit 15, after broadcast_id_here):"
+puts paginated_broadcasts
+
 retrieved = Resend::Broadcasts.get(broadcast[:id])
 puts "retrieved #{retrieved[:id]}"
 
