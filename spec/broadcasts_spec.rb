@@ -116,7 +116,9 @@ RSpec.describe "Broadcasts" do
         "status": "draft",
         "created_at": "2024-12-01T19:32:22.980Z",
         "scheduled_at": nil,
-        "sent_at": nil
+        "sent_at": nil,
+        "html": "<p>hello world</p>",
+        "text": "hello world"
       }
 
       allow(resp).to receive(:body).and_return(resp)
@@ -136,6 +138,8 @@ RSpec.describe "Broadcasts" do
       expect(broadcast[:created_at]).to eql "2024-12-01T19:32:22.980Z"
       expect(broadcast[:scheduled_at]).to eql nil
       expect(broadcast[:sent_at]).to eql nil
+      expect(broadcast[:html]).to eql "<p>hello world</p>"
+      expect(broadcast[:text]).to eql "hello world"
     end
   end
 
