@@ -46,6 +46,8 @@ puts paginated_broadcasts
 
 retrieved = Resend::Broadcasts.get(broadcast[:id])
 puts "retrieved #{retrieved[:id]}"
+puts "html: #{retrieved[:html]}"
+puts "text: #{retrieved[:text]}"
 
 if retrieved[:status] == 'draft'
   Resend::Broadcasts.remove(broadcast[:id])
