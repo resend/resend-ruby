@@ -2,6 +2,7 @@
 
 module Resend
   module Emails
+    # Module for receiving emails API operations
     module Receiving
       class << self
         # Retrieve a single received email

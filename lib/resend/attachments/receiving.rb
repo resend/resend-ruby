@@ -2,6 +2,7 @@
 
 module Resend
   module Attachments
+    # Module for receiving email attachments API operations
     module Receiving
       class << self
         # Retrieve a single attachment from a received email
