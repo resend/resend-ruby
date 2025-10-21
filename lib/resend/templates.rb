@@ -27,6 +27,12 @@ module Resend
         path = "templates/#{template_id}/publish"
         Resend::Request.new(path, {}, "post").perform
       end
+
+      # https://resend.com/docs/api-reference/templates/duplicate-template
+      def duplicate(template_id = "")
+        path = "templates/#{template_id}/duplicate"
+        Resend::Request.new(path, {}, "post").perform
+      end
     end
   end
 end

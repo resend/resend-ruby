@@ -228,4 +228,28 @@ RSpec.describe "Templates" do
       expect(result[:object]).to eql("template")
     end
   end
+
+  describe "duplicate" do
+    it "should duplicate a template by ID" do
+      resp = {
+        "id": "e169aa45-1ecf-4183-9955-b1499d5701d3",
+        "object": "template"
+      }
+      allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
+      result = Resend::Templates.duplicate("34a080c9-b17d-4187-ad80-5af20266e535")
+      expect(result[:id]).to eql("e169aa45-1ecf-4183-9955-b1499d5701d3")
+      expect(result[:object]).to eql("template")
+    end
+
+    it "should duplicate a template by alias" do
+      resp = {
+        "id": "e169aa45-1ecf-4183-9955-b1499d5701d3",
+        "object": "template"
+      }
+      allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
+      result = Resend::Templates.duplicate("welcome")
+      expect(result[:id]).to eql("e169aa45-1ecf-4183-9955-b1499d5701d3")
+      expect(result[:object]).to eql("template")
+    end
+  end
 end

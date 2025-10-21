@@ -131,3 +131,22 @@ puts "\nPublished template by alias: #{published_by_alias[:id]}"
 final_check = Resend::Templates.get("complete")
 puts "Final template status: #{final_check[:status]}"
 puts "Published at: #{final_check[:published_at]}"
+
+# Duplicate a template by ID
+duplicated_template = Resend::Templates.duplicate(template[:id])
+puts "\nDuplicated template - New ID: #{duplicated_template[:id]}"
+
+# Get the duplicated template to see its details
+duplicated_details = Resend::Templates.get(duplicated_template[:id])
+puts "Duplicated template name: #{duplicated_details[:name]}"
+puts "Duplicated template status: #{duplicated_details[:status]}"
+
+# Duplicate a template by alias
+duplicated_by_alias = Resend::Templates.duplicate("complete")
+puts "\nDuplicated template by alias - New ID: #{duplicated_by_alias[:id]}"
+
+# Get details of the template duplicated from alias
+alias_duplicate_details = Resend::Templates.get(duplicated_by_alias[:id])
+puts "Alias duplicate name: #{alias_duplicate_details[:name]}"
+puts "Alias duplicate from: #{alias_duplicate_details[:from]}"
+puts "Alias duplicate subject: #{alias_duplicate_details[:subject]}"
