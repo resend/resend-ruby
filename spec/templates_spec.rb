@@ -150,4 +150,58 @@ RSpec.describe "Templates" do
       expect(template[:alias]).to eql("reset-password")
     end
   end
+
+  describe "update" do
+    it "should update a template" do
+      resp = {
+        "id": "34a080c9-b17d-4187-ad80-5af20266e535",
+        "object": "template"
+      }
+      params = {
+        "name": "updated-welcome-email",
+        "html": "<strong>Updated content</strong>"
+      }
+      allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
+      result = Resend::Templates.update("34a080c9-b17d-4187-ad80-5af20266e535", params)
+      expect(result[:id]).to eql("34a080c9-b17d-4187-ad80-5af20266e535")
+      expect(result[:object]).to eql("template")
+    end
+
+    it "should update a template with variables" do
+      resp = {
+        "id": "34a080c9-b17d-4187-ad80-5af20266e535",
+        "object": "template"
+      }
+      params = {
+        "name": "updated-welcome-email",
+        "html": "<strong>Hello {{{NAME}}}</strong>",
+        "variables": [
+          {
+            "key": "NAME",
+            "type": "string",
+            "fallback_value": "Guest"
+          }
+        ]
+      }
+      allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
+      result = Resend::Templates.update("34a080c9-b17d-4187-ad80-5af20266e535", params)
+      expect(result[:id]).to eql("34a080c9-b17d-4187-ad80-5af20266e535")
+      expect(result[:object]).to eql("template")
+    end
+
+    it "should update a template by alias" do
+      resp = {
+        "id": "34a080c9-b17d-4187-ad80-5af20266e535",
+        "object": "template"
+      }
+      params = {
+        "name": "updated-reset-password",
+        "subject": "Reset Your Password Now"
+      }
+      allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
+      result = Resend::Templates.update("reset-password", params)
+      expect(result[:id]).to eql("34a080c9-b17d-4187-ad80-5af20266e535")
+      expect(result[:object]).to eql("template")
+    end
+  end
 end

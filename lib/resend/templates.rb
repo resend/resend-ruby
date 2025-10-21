@@ -15,6 +15,12 @@ module Resend
         path = "templates/#{template_id}"
         Resend::Request.new(path, {}, "get").perform
       end
+
+      # https://resend.com/docs/api-reference/templates/update-template
+      def update(template_id, params = {})
+        path = "templates/#{template_id}"
+        Resend::Request.new(path, params, "patch").perform
+      end
     end
   end
 end

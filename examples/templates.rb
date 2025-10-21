@@ -84,3 +84,33 @@ if retrieved_by_alias[:variables] && !retrieved_by_alias[:variables].empty?
     puts "  - #{var['key']} (#{var['type']}): #{var['fallback_value']}"
   end
 end
+
+# Update a template by ID
+update_params = {
+  name: "updated-welcome-email",
+  html: "<h1>Welcome!</h1><p>We're glad you're here, {{{NAME}}}!</p>",
+  variables: [
+    {
+      key: "NAME",
+      type: "string",
+      fallback_value: "friend"
+    }
+  ]
+}
+
+updated_template = Resend::Templates.update(template[:id], update_params)
+puts "\nUpdated template: #{updated_template[:id]}"
+
+# Verify the update by retrieving it again
+verified = Resend::Templates.get(template[:id])
+puts "Updated template name: #{verified[:name]}"
+puts "Updated template HTML: #{verified[:html]}"
+
+# Update a template by alias
+alias_update_params = {
+  subject: "Welcome to Acme - Updated",
+  from: "Acme Team <team@resend.dev>"
+}
+
+updated_by_alias = Resend::Templates.update("complete", alias_update_params)
+puts "\nUpdated template by alias: #{updated_by_alias[:id]}"
