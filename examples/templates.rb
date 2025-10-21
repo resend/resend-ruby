@@ -29,10 +29,6 @@ template_with_vars = {
       key: "AGE",
       type: "number",
       fallback_value: 25
-    },
-    {
-      key: "OPTIONAL_VARIABLE",
-      type: "string"
     }
   ]
 }
@@ -66,3 +62,25 @@ complete_params = {
 complete_template = Resend::Templates.create(complete_params)
 puts "Created complete template: #{complete_template[:id]}"
 puts "Template object type: #{complete_template[:object]}"
+
+# Get a template by ID
+retrieved_template = Resend::Templates.get(template[:id])
+puts "\nRetrieved template by ID: #{retrieved_template[:id]}"
+puts "Template name: #{retrieved_template[:name]}"
+puts "Template status: #{retrieved_template[:status]}"
+puts "Template HTML: #{retrieved_template[:html]}"
+
+# Get a template by alias
+retrieved_by_alias = Resend::Templates.get("complete")
+puts "\nRetrieved template by alias: #{retrieved_by_alias[:alias]}"
+puts "Template ID: #{retrieved_by_alias[:id]}"
+puts "Template from: #{retrieved_by_alias[:from]}"
+puts "Template subject: #{retrieved_by_alias[:subject]}"
+
+if retrieved_by_alias[:variables] && !retrieved_by_alias[:variables].empty?
+  puts "Template variables:"
+  retrieved_by_alias[:variables].each do |var|
+    # Use string keys for nested objects
+    puts "  - #{var['key']} (#{var['type']}): #{var['fallback_value']}"
+  end
+end
