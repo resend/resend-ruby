@@ -114,3 +114,20 @@ alias_update_params = {
 
 updated_by_alias = Resend::Templates.update("complete", alias_update_params)
 puts "\nUpdated template by alias: #{updated_by_alias[:id]}"
+
+# Publish a template by ID
+published_template = Resend::Templates.publish(template[:id])
+puts "\nPublished template: #{published_template[:id]}"
+
+# Verify the template is published
+published_status = Resend::Templates.get(template[:id])
+puts "Template status after publish: #{published_status[:status]}"
+
+# Publish a template by alias
+published_by_alias = Resend::Templates.publish("complete")
+puts "\nPublished template by alias: #{published_by_alias[:id]}"
+
+# Check the published template
+final_check = Resend::Templates.get("complete")
+puts "Final template status: #{final_check[:status]}"
+puts "Published at: #{final_check[:published_at]}"

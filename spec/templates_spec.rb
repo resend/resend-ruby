@@ -204,4 +204,28 @@ RSpec.describe "Templates" do
       expect(result[:object]).to eql("template")
     end
   end
+
+  describe "publish" do
+    it "should publish a template by ID" do
+      resp = {
+        "id": "34a080c9-b17d-4187-ad80-5af20266e535",
+        "object": "template"
+      }
+      allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
+      result = Resend::Templates.publish("34a080c9-b17d-4187-ad80-5af20266e535")
+      expect(result[:id]).to eql("34a080c9-b17d-4187-ad80-5af20266e535")
+      expect(result[:object]).to eql("template")
+    end
+
+    it "should publish a template by alias" do
+      resp = {
+        "id": "34a080c9-b17d-4187-ad80-5af20266e535",
+        "object": "template"
+      }
+      allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
+      result = Resend::Templates.publish("welcome")
+      expect(result[:id]).to eql("34a080c9-b17d-4187-ad80-5af20266e535")
+      expect(result[:object]).to eql("template")
+    end
+  end
 end
