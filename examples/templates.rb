@@ -150,3 +150,41 @@ alias_duplicate_details = Resend::Templates.get(duplicated_by_alias[:id])
 puts "Alias duplicate name: #{alias_duplicate_details[:name]}"
 puts "Alias duplicate from: #{alias_duplicate_details[:from]}"
 puts "Alias duplicate subject: #{alias_duplicate_details[:subject]}"
+
+# List all templates
+all_templates = Resend::Templates.list
+puts "\nListing all templates:"
+puts "Total templates: #{all_templates[:data].length}"
+puts "Has more: #{all_templates[:has_more]}"
+
+all_templates[:data].each do |t|
+  puts "  - #{t['name']} (#{t['id']}) - Status: #{t['status']}"
+end
+
+# List templates with pagination
+paginated_templates = Resend::Templates.list({ limit: 2 })
+puts "\nListing templates with limit of 2:"
+puts "Returned: #{paginated_templates[:data].length} templates"
+puts "Has more: #{paginated_templates[:has_more]}"
+
+# List templates after a specific ID
+if paginated_templates[:data].length > 0
+  first_id = paginated_templates[:data][0]['id']
+  after_templates = Resend::Templates.list({ limit: 2, after: first_id })
+  puts "\nListing templates after ID #{first_id}:"
+  puts "Returned: #{after_templates[:data].length} templates"
+end
+
+# Remove the duplicated template by ID
+removed_template = Resend::Templates.remove(duplicated_template[:id])
+puts "\nRemoved template: #{removed_template[:id]}"
+puts "Deleted: #{removed_template[:deleted]}"
+
+# Remove the second duplicated template by its ID
+removed_by_alias_dup = Resend::Templates.remove(duplicated_by_alias[:id])
+puts "\nRemoved duplicated template: #{removed_by_alias_dup[:id]}"
+puts "Deleted: #{removed_by_alias_dup[:deleted]}"
+
+# Verify templates were removed by listing again
+final_list = Resend::Templates.list
+puts "\nFinal template count: #{final_list[:data].length}"

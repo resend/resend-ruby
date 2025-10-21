@@ -252,4 +252,86 @@ RSpec.describe "Templates" do
       expect(result[:object]).to eql("template")
     end
   end
+
+  describe "list" do
+    it "should list templates" do
+      resp = {
+        "object": "list",
+        "data": [
+          {
+            "id": "e169aa45-1ecf-4183-9955-b1499d5701d3",
+            "name": "reset-password",
+            "status": "draft",
+            "published_at": nil,
+            "created_at": "2023-10-06T23:47:56.678Z",
+            "updated_at": "2023-10-06T23:47:56.678Z",
+            "alias": "reset-password"
+          },
+          {
+            "id": "b7f9c2e1-1234-4abc-9def-567890abcdef",
+            "name": "welcome-message",
+            "status": "published",
+            "published_at": "2023-10-06T23:47:56.678Z",
+            "created_at": "2023-10-06T23:47:56.678Z",
+            "updated_at": "2023-10-06T23:47:56.678Z",
+            "alias": "welcome-message"
+          }
+        ],
+        "has_more": false
+      }
+      allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
+
+      templates = Resend::Templates.list[:data]
+
+      expect(templates.length).to eql(2)
+      expect(templates[0][:id]).to eql("e169aa45-1ecf-4183-9955-b1499d5701d3")
+      expect(templates[0][:name]).to eql("reset-password")
+      expect(templates[0][:status]).to eql("draft")
+      expect(templates[0][:alias]).to eql("reset-password")
+
+      expect(templates[1][:id]).to eql("b7f9c2e1-1234-4abc-9def-567890abcdef")
+      expect(templates[1][:name]).to eql("welcome-message")
+      expect(templates[1][:status]).to eql("published")
+      expect(templates[1][:alias]).to eql("welcome-message")
+    end
+
+    it "should list templates with pagination" do
+      resp = {
+        "object": "list",
+        "data": [],
+        "has_more": false
+      }
+      allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
+
+      result = Resend::Templates.list({ limit: 2, after: "34a080c9-b17d-4187-ad80-5af20266e535" })
+      expect(result[:object]).to eql("list")
+      expect(result[:has_more]).to eql(false)
+    end
+  end
+
+  describe "remove" do
+    it "should remove template by ID" do
+      resp = {
+        "object": "template",
+        "id": "34a080c9-b17d-4187-ad80-5af20266e535",
+        "deleted": true
+      }
+      allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
+      result = Resend::Templates.remove("34a080c9-b17d-4187-ad80-5af20266e535")
+      expect(result[:id]).to eql("34a080c9-b17d-4187-ad80-5af20266e535")
+      expect(result[:deleted]).to eql(true)
+    end
+
+    it "should remove template by alias" do
+      resp = {
+        "object": "template",
+        "id": "34a080c9-b17d-4187-ad80-5af20266e535",
+        "deleted": true
+      }
+      allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
+      result = Resend::Templates.remove("welcome")
+      expect(result[:id]).to eql("34a080c9-b17d-4187-ad80-5af20266e535")
+      expect(result[:deleted]).to eql(true)
+    end
+  end
 end
