@@ -20,6 +20,7 @@ require "resend/batch"
 require "resend/contacts"
 require "resend/domains"
 require "resend/emails"
+require "resend/templates"
 
 # Rails
 require "resend/railtie" if defined?(Rails) && defined?(ActionMailer)
