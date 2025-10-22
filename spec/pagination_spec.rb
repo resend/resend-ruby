@@ -205,7 +205,7 @@ RSpec.describe "Pagination" do
   end
 
   describe "Topics.list with pagination" do
-    it "should accept pagination parameters" do
+    it "accepts pagination parameters" do
       resp = {
         "object": "list",
         "data": [
