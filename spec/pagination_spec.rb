@@ -203,4 +203,32 @@ RSpec.describe "Pagination" do
       expect(result[:has_more]).to be true
     end
   end
+
+  describe "Topics.list with pagination" do
+    it "accepts pagination parameters" do
+      resp = {
+        "object": "list",
+        "data": [
+          {
+            "id": "b6d24b8e-af0b-4c3c-be0c-359bbd97381e",
+            "name": "Weekly Newsletter"
+          }
+        ],
+        "has_more": false
+      }
+
+      request_instance = instance_double(Resend::Request)
+      allow(request_instance).to receive(:perform).and_return(resp)
+      allow(Resend::Request).to receive(:new) do |path, body, verb|
+        expect(path).to include("limit=15")
+        expect(path).to include("before=topic_456")
+        request_instance
+      end
+
+      params = { limit: 15, before: "topic_456" }
+      result = Resend::Topics.list(params)
+      expect(result[:object]).to eql("list")
+      expect(result[:has_more]).to be false
+    end
+  end
 end
