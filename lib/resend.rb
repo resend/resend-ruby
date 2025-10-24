@@ -21,6 +21,7 @@ require "resend/contacts"
 require "resend/domains"
 require "resend/emails"
 require "resend/topics"
+require "resend/webhooks"
 
 # Rails
 require "resend/railtie" if defined?(Rails) && defined?(ActionMailer)
