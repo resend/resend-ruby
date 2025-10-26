@@ -8,7 +8,6 @@ Resend.api_key = ENV["RESEND_API_KEY"]
 
 puts "=== Listing Received Emails ==="
 
-# List all received emails with default settings
 puts "\nListing all received emails:"
 emails = Resend::Emails::Receiving.list
 
