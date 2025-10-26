@@ -73,7 +73,6 @@ if email[:attachments] && !email[:attachments].empty?
     puts "      Content ID: #{attachment["content_id"]}" if attachment["content_id"]
   end
 
-  # List all attachments for this email
   puts "\n  Listing all attachments for email: #{email[:id]}"
   attachments_list = Resend::Attachments::Receiving.list(
     email_id: email[:id]
