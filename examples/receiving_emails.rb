@@ -22,7 +22,6 @@ emails[:data].each do |e|
   end
 end
 
-# List with custom limit
 puts "\n\nListing with limit of 5:"
 limited_emails = Resend::Emails::Receiving.list(limit: 5)
 
