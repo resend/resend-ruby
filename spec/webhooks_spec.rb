@@ -227,4 +227,245 @@ RSpec.describe "Webhooks" do
     end
   end
 
+  describe "verify" do
+    let(:webhook_secret) { "whsec_MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw" }
+    let(:payload) { '{"type":"email.sent","created_at":"2024-01-01T00:00:00.000Z"}' }
+    let(:msg_id) { "msg_2Lh9KX9FZ5Z5Z5Z5Z5Z5Z5Z5Z" }
+    let(:timestamp) { Time.now.to_i.to_s }
+
+    # Helper to generate valid signature
+    def generate_test_signature(secret, msg_id, timestamp, payload)
+      require "openssl"
+      require "base64"
+
+      # Strip whsec_ prefix and decode
+      secret_bytes = Base64.strict_decode64(secret.sub(/^whsec_/, ""))
+
+      # Create signed content
+      signed_content = "#{msg_id}.#{timestamp}.#{payload}"
+
+      # Generate HMAC-SHA256 signature
+      hmac = OpenSSL::HMAC.digest(OpenSSL::Digest.new("sha256"), secret_bytes, signed_content)
+      signature = Base64.strict_encode64(hmac)
+
+      "v1,#{signature}"
+    end
+
+    it "should verify valid webhook signature" do
+      signature = generate_test_signature(webhook_secret, msg_id, timestamp, payload)
+
+      result = Resend::Webhooks.verify(
+        payload: payload,
+        headers: {
+          svix_id: msg_id,
+          svix_timestamp: timestamp,
+          svix_signature: signature
+        },
+        webhook_secret: webhook_secret
+      )
+
+      expect(result).to be true
+    end
+
+    it "should verify with multiple signatures" do
+      signature1 = generate_test_signature(webhook_secret, msg_id, timestamp, payload)
+      signature2 = "v1,invalid_signature_here"
+
+      result = Resend::Webhooks.verify(
+        payload: payload,
+        headers: {
+          svix_id: msg_id,
+          svix_timestamp: timestamp,
+          svix_signature: "#{signature2} #{signature1}"
+        },
+        webhook_secret: webhook_secret
+      )
+
+      expect(result).to be true
+    end
+
+    it "should reject invalid signature" do
+      expect {
+        Resend::Webhooks.verify(
+          payload: payload,
+          headers: {
+            svix_id: msg_id,
+            svix_timestamp: timestamp,
+            svix_signature: "v1,invalid_signature"
+          },
+          webhook_secret: webhook_secret
+        )
+      }.to raise_error("No matching signature found")
+    end
+
+    it "should reject tampered payload" do
+      signature = generate_test_signature(webhook_secret, msg_id, timestamp, payload)
+      tampered_payload = '{"type":"email.delivered","created_at":"2024-01-01T00:00:00.000Z"}'
+
+      expect {
+        Resend::Webhooks.verify(
+          payload: tampered_payload,
+          headers: {
+            svix_id: msg_id,
+            svix_timestamp: timestamp,
+            svix_signature: signature
+          },
+          webhook_secret: webhook_secret
+        )
+      }.to raise_error("No matching signature found")
+    end
+
+    it "should reject expired timestamp" do
+      old_timestamp = (Time.now.to_i - 400).to_s  # 400 seconds ago (beyond 5 min tolerance)
+      signature = generate_test_signature(webhook_secret, msg_id, old_timestamp, payload)
+
+      expect {
+        Resend::Webhooks.verify(
+          payload: payload,
+          headers: {
+            svix_id: msg_id,
+            svix_timestamp: old_timestamp,
+            svix_signature: signature
+          },
+          webhook_secret: webhook_secret
+        )
+      }.to raise_error(/Timestamp outside tolerance window/)
+    end
+
+    it "should reject future timestamp beyond tolerance" do
+      future_timestamp = (Time.now.to_i + 400).to_s  # 400 seconds in the future
+      signature = generate_test_signature(webhook_secret, msg_id, future_timestamp, payload)
+
+      expect {
+        Resend::Webhooks.verify(
+          payload: payload,
+          headers: {
+            svix_id: msg_id,
+            svix_timestamp: future_timestamp,
+            svix_signature: signature
+          },
+          webhook_secret: webhook_secret
+        )
+      }.to raise_error(/Timestamp outside tolerance window/)
+    end
+
+    it "should accept timestamp within tolerance" do
+      old_timestamp = (Time.now.to_i - 100).to_s  # 100 seconds ago (within 5 min tolerance)
+      signature = generate_test_signature(webhook_secret, msg_id, old_timestamp, payload)
+
+      result = Resend::Webhooks.verify(
+        payload: payload,
+        headers: {
+          svix_id: msg_id,
+          svix_timestamp: old_timestamp,
+          svix_signature: signature
+        },
+        webhook_secret: webhook_secret
+      )
+
+      expect(result).to be true
+    end
+
+    it "should raise error when payload is missing" do
+      expect {
+        Resend::Webhooks.verify(
+          payload: nil,
+          headers: {
+            svix_id: msg_id,
+            svix_timestamp: timestamp,
+            svix_signature: "v1,sig"
+          },
+          webhook_secret: webhook_secret
+        )
+      }.to raise_error("payload cannot be empty")
+    end
+
+    it "should raise error when webhook_secret is missing" do
+      expect {
+        Resend::Webhooks.verify(
+          payload: payload,
+          headers: {
+            svix_id: msg_id,
+            svix_timestamp: timestamp,
+            svix_signature: "v1,sig"
+          },
+          webhook_secret: nil
+        )
+      }.to raise_error("webhook_secret cannot be empty")
+    end
+
+    it "should raise error when svix-id header is missing" do
+      expect {
+        Resend::Webhooks.verify(
+          payload: payload,
+          headers: {
+            svix_id: nil,
+            svix_timestamp: timestamp,
+            svix_signature: "v1,sig"
+          },
+          webhook_secret: webhook_secret
+        )
+      }.to raise_error("svix-id header is required")
+    end
+
+    it "should raise error when svix-timestamp header is missing" do
+      expect {
+        Resend::Webhooks.verify(
+          payload: payload,
+          headers: {
+            svix_id: msg_id,
+            svix_timestamp: nil,
+            svix_signature: "v1,sig"
+          },
+          webhook_secret: webhook_secret
+        )
+      }.to raise_error("svix-timestamp header is required")
+    end
+
+    it "should raise error when svix-signature header is missing" do
+      expect {
+        Resend::Webhooks.verify(
+          payload: payload,
+          headers: {
+            svix_id: msg_id,
+            svix_timestamp: timestamp,
+            svix_signature: nil
+          },
+          webhook_secret: webhook_secret
+        )
+      }.to raise_error("svix-signature header is required")
+    end
+
+    it "should handle webhook secret without whsec_ prefix" do
+      secret_without_prefix = webhook_secret.sub(/^whsec_/, "")
+      signature = generate_test_signature(webhook_secret, msg_id, timestamp, payload)
+
+      result = Resend::Webhooks.verify(
+        payload: payload,
+        headers: {
+          svix_id: msg_id,
+          svix_timestamp: timestamp,
+          svix_signature: signature
+        },
+        webhook_secret: secret_without_prefix
+      )
+
+      expect(result).to be true
+    end
+
+    it "should raise error for invalid base64 secret" do
+      expect {
+        Resend::Webhooks.verify(
+          payload: payload,
+          headers: {
+            svix_id: msg_id,
+            svix_timestamp: timestamp,
+            svix_signature: "v1,sig"
+          },
+          webhook_secret: "whsec_not_valid_base64!!!"
+        )
+      }.to raise_error(/Failed to decode webhook secret/)
+    end
+  end
+
 end

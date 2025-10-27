@@ -1,8 +1,14 @@
 # frozen_string_literal: true
 
+require "openssl"
+require "base64"
+
 module Resend
   # The Webhooks module provides methods for managing webhooks via the Resend API.
   # Webhooks allow you to receive real-time notifications about email events.
+  #
+  # Default tolerance for timestamp validation (5 minutes)
+  WEBHOOK_TOLERANCE_SECONDS = 300
   #
   # @example Create a webhook
   #   Resend::Webhooks.create(
@@ -112,6 +118,94 @@ module Resend
       def remove(webhook_id = "")
         path = "webhooks/#{webhook_id}"
         Resend::Request.new(path, {}, "delete").perform
+      end
+
+      # Verify a webhook payload using HMAC-SHA256 signature validation
+      # This validates that the webhook request came from Resend and hasn't been tampered with
+      #
+      # @param params [Hash] The webhook verification parameters
+      # @option params [String] :payload The raw webhook payload body (required)
+      # @option params [Hash] :headers The webhook headers containing svix-id, svix-timestamp, and svix-signature (required)
+      # @option params [String] :webhook_secret The signing secret from webhook creation (required)
+      #
+      # @return [Boolean] true if verification succeeds
+      # @raise [StandardError] If verification fails or required parameters are missing
+      #
+      # @example
+      #   Resend::Webhooks.verify(
+      #     payload: request.body.read,
+      #     headers: {
+      #       svix_id: "id_1234567890abcdefghijklmnopqrstuvwxyz",
+      #       svix_timestamp: "1616161616",
+      #       svix_signature: "v1,signature_here"
+      #     },
+      #     webhook_secret: "whsec_1234567890abcdez"
+      #   )
+      def verify(params = {})
+        payload = params[:payload]
+        headers = params[:headers] || {}
+        webhook_secret = params[:webhook_secret]
+
+        # Validate required parameters
+        raise "payload cannot be empty" if payload.nil? || payload.empty?
+        raise "webhook_secret cannot be empty" if webhook_secret.nil? || webhook_secret.empty?
+        raise "svix-id header is required" if headers[:svix_id].nil? || headers[:svix_id].empty?
+        raise "svix-timestamp header is required" if headers[:svix_timestamp].nil? || headers[:svix_timestamp].empty?
+        raise "svix-signature header is required" if headers[:svix_signature].nil? || headers[:svix_signature].empty?
+
+        # Step 1: Validate timestamp to prevent replay attacks
+        timestamp = headers[:svix_timestamp].to_i
+        now = Time.now.to_i
+        diff = now - timestamp
+
+        if diff > WEBHOOK_TOLERANCE_SECONDS || diff < -WEBHOOK_TOLERANCE_SECONDS
+          raise "Timestamp outside tolerance window: difference of #{diff} seconds"
+        end
+
+        # Step 2: Construct signed content: {id}.{timestamp}.{payload}
+        signed_content = "#{headers[:svix_id]}.#{headers[:svix_timestamp]}.#{payload}"
+
+        # Step 3: Decode the signing secret (strip whsec_ prefix and base64 decode)
+        secret = webhook_secret.sub(/^whsec_/, "")
+        begin
+          decoded_secret = Base64.strict_decode64(secret)
+        rescue ArgumentError => e
+          raise "Failed to decode webhook secret: #{e.message}"
+        end
+
+        # Step 4: Calculate expected signature using HMAC-SHA256
+        expected_signature = generate_signature(decoded_secret, signed_content)
+
+        # Step 5: Compare signatures using constant-time comparison
+        # The signature header contains space-separated signatures with version prefixes (e.g., "v1,sig1 v1,sig2")
+        signatures = headers[:svix_signature].split(" ")
+        signatures.each do |sig|
+          # Strip version prefix (e.g., "v1,")
+          parts = sig.split(",", 2)
+          next if parts.length != 2
+
+          received_signature = parts[1]
+          if secure_compare(expected_signature, received_signature)
+            return true
+          end
+        end
+
+        raise "No matching signature found"
+      end
+
+      private
+
+      # Generate HMAC-SHA256 signature and return it as base64
+      def generate_signature(secret, content)
+        digest = OpenSSL::HMAC.digest("sha256", secret, content)
+        Base64.strict_encode64(digest)
+      end
+
+      # Constant-time string comparison to prevent timing attacks
+      # Uses Ruby's built-in secure comparison (similar to Python's hmac.compare_digest)
+      def secure_compare(a, b)
+        return false if a.nil? || b.nil? || a.bytesize != b.bytesize
+        OpenSSL.fixed_length_secure_compare(a, b)
       end
     end
   end
