@@ -8,7 +8,6 @@ Resend.api_key = ENV["RESEND_API_KEY"]
 
 puts "=== Listing Received Emails ==="
 
-# List all received emails with default settings
 puts "\nListing all received emails:"
 emails = Resend::Emails::Receiving.list
 
@@ -23,7 +22,6 @@ emails[:data].each do |e|
   end
 end
 
-# List with custom limit
 puts "\n\nListing with limit of 5:"
 limited_emails = Resend::Emails::Receiving.list(limit: 5)
 
@@ -75,7 +73,6 @@ if email[:attachments] && !email[:attachments].empty?
     puts "      Content ID: #{attachment["content_id"]}" if attachment["content_id"]
   end
 
-  # List all attachments for this email
   puts "\n  Listing all attachments for email: #{email[:id]}"
   attachments_list = Resend::Attachments::Receiving.list(
     email_id: email[:id]
