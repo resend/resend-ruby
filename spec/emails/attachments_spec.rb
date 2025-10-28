@@ -6,7 +6,7 @@ RSpec.describe "Emails::Attachments" do
   end
 
   describe "get" do
-    it "should retrieve an attachment from a sent email" do
+    it "retrieves an attachment from a sent email" do
       resp = {
         "object" => "attachment",
         "id" => "2a0c9ce0-3112-4728-976e-47ddcd16a318",
@@ -31,7 +31,7 @@ RSpec.describe "Emails::Attachments" do
       expect(attachment[:download_url]).to include("cdn.resend.com")
     end
 
-    it "should call the correct API endpoint" do
+    it "calls the correct API endpoint" do
       resp = {
         "object" => "attachment",
         "id" => "2a0c9ce0-3112-4728-976e-47ddcd16a318"
@@ -58,7 +58,7 @@ RSpec.describe "Emails::Attachments" do
       )
     end
 
-    it "should raise an error when attachment is not found" do
+    it "raises an error when attachment is not found" do
       resp = {
         "statusCode" => 404,
         "name" => "not_found",
@@ -80,7 +80,7 @@ RSpec.describe "Emails::Attachments" do
   end
 
   describe "list" do
-    it "should list attachments from a sent email without parameters" do
+    it "lists attachments from a sent email without parameters" do
       resp = {
         "object" => "list",
         "has_more" => false,
@@ -108,7 +108,7 @@ RSpec.describe "Emails::Attachments" do
       expect(result[:data].first["filename"]).to eql("invoice.pdf")
     end
 
-    it "should list attachments with limit parameter" do
+    it "lists attachments with limit parameter" do
       resp = {
         "object" => "list",
         "has_more" => false,
@@ -133,7 +133,7 @@ RSpec.describe "Emails::Attachments" do
       expect(result[:has_more]).to eql(false)
     end
 
-    it "should list attachments with pagination parameters" do
+    it "lists attachments with pagination parameters" do
       resp = {
         "object" => "list",
         "has_more" => true,
@@ -160,7 +160,7 @@ RSpec.describe "Emails::Attachments" do
       expect(result[:has_more]).to eql(true)
     end
 
-    it "should call the correct API endpoint for list" do
+    it "calls the correct API endpoint for list" do
       resp = {
         "object" => "list",
         "has_more" => false,
