@@ -273,5 +273,35 @@ RSpec.describe "Emails" do
       expect(result[:object]).to eql("list")
       expect(result[:has_more]).to eql(false)
     end
+
+    it "should send email with template without variables" do
+      resp = {"id"=>"49a3999c-0ce1-4ea6-ab68-afcd6dc2e794"}
+      params = {
+        from: "onboarding@resend.dev",
+        to: ["delivered@resend.dev"],
+        template: {
+          id: "d91cd9bd-f5ab-4bbe-89c8-c890a4caced4"
+        }
+      }
+      allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
+      expect(Resend::Emails.send(params)[:id]).to eql(resp[:id])
+    end
+
+    it "should send email with template with variables" do
+      resp = {"id"=>"49a3999c-0ce1-4ea6-ab68-afcd6dc2e794"}
+      params = {
+        from: "onboarding@resend.dev",
+        to: ["delivered@resend.dev"],
+        template: {
+          id: "d91cd9bd-f5ab-4bbe-89c8-c890a4caced4",
+          variables: {
+            name: "Alice",
+            age: 30
+          }
+        }
+      }
+      allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
+      expect(Resend::Emails.send(params)[:id]).to eql(resp[:id])
+    end
   end
 end
