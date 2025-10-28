@@ -124,13 +124,11 @@ RSpec.describe "Emails::Receiving::Attachments" do
         limit: 50
       )
 
-      expect(HTTParty).to have_received(:send).with(
-        :get,
-        "#{Resend::Request::BASE_URL}emails/receiving/4ef9a417-02e9-4d39-ad75-9611e0fcc33c/attachments",
-        hash_including(
-          query: { limit: 50 }
-        )
-      )
+      expect(HTTParty).to have_received(:send) do |method, url, options|
+        expect(method).to eq(:get)
+        expect(url).to include("emails/receiving/4ef9a417-02e9-4d39-ad75-9611e0fcc33c/attachments")
+        expect(url).to include("limit=50")
+      end
       expect(result[:object]).to eql("list")
       expect(result[:has_more]).to eql(false)
     end
@@ -151,13 +149,13 @@ RSpec.describe "Emails::Receiving::Attachments" do
         before: "cursor_456"
       )
 
-      expect(HTTParty).to have_received(:send).with(
-        :get,
-        "#{Resend::Request::BASE_URL}emails/receiving/4ef9a417-02e9-4d39-ad75-9611e0fcc33c/attachments",
-        hash_including(
-          query: { limit: 20, after: "cursor_123", before: "cursor_456" }
-        )
-      )
+      expect(HTTParty).to have_received(:send) do |method, url, options|
+        expect(method).to eq(:get)
+        expect(url).to include("emails/receiving/4ef9a417-02e9-4d39-ad75-9611e0fcc33c/attachments")
+        expect(url).to include("limit=20")
+        expect(url).to include("after=cursor_123")
+        expect(url).to include("before=cursor_456")
+      end
       expect(result[:object]).to eql("list")
       expect(result[:has_more]).to eql(true)
     end
