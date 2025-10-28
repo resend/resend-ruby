@@ -54,15 +54,13 @@ module Resend
           #   )
           def list(params = {})
             email_id = params[:email_id]
-            path = "emails/receiving/#{email_id}/attachments"
+            base_path = "emails/receiving/#{email_id}/attachments"
 
-            # Build query parameters, filtering out nil values
-            query_params = {}
-            query_params[:limit] = params[:limit] if params[:limit]
-            query_params[:after] = params[:after] if params[:after]
-            query_params[:before] = params[:before] if params[:before]
+            # Extract pagination parameters
+            pagination_params = params.slice(:limit, :after, :before)
 
-            Resend::Request.new(path, query_params, "get").perform
+            path = Resend::PaginationHelper.build_paginated_path(base_path, pagination_params)
+            Resend::Request.new(path, {}, "get").perform
           end
         end
       end
