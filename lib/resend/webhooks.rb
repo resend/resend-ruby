@@ -125,7 +125,8 @@ module Resend
       #
       # @param params [Hash] The webhook verification parameters
       # @option params [String] :payload The raw webhook payload body (required)
-      # @option params [Hash] :headers The webhook headers containing svix-id, svix-timestamp, and svix-signature (required)
+      # @option params [Hash] :headers The webhook headers containing svix-id, svix-timestamp,
+      #   and svix-signature (required)
       # @option params [String] :webhook_secret The signing secret from webhook creation (required)
       #
       # @return [Boolean] true if verification succeeds
@@ -146,54 +147,74 @@ module Resend
         headers = params[:headers] || {}
         webhook_secret = params[:webhook_secret]
 
-        # Validate required parameters
+        validate_required_params(payload, headers, webhook_secret)
+        validate_timestamp(headers[:svix_timestamp])
+
+        signed_content = "#{headers[:svix_id]}.#{headers[:svix_timestamp]}.#{payload}"
+        decoded_secret = decode_secret(webhook_secret)
+        expected_signature = generate_signature(decoded_secret, signed_content)
+
+        verify_signature(headers[:svix_signature], expected_signature)
+      end
+
+      private
+
+      # Validate required parameters
+      def validate_required_params(payload, headers, webhook_secret)
+        validate_payload(payload)
+        validate_webhook_secret(webhook_secret)
+        validate_headers(headers)
+      end
+
+      # Validate payload is present
+      def validate_payload(payload)
         raise "payload cannot be empty" if payload.nil? || payload.empty?
+      end
+
+      # Validate webhook secret is present
+      def validate_webhook_secret(webhook_secret)
         raise "webhook_secret cannot be empty" if webhook_secret.nil? || webhook_secret.empty?
+      end
+
+      # Validate required headers are present
+      def validate_headers(headers)
         raise "svix-id header is required" if headers[:svix_id].nil? || headers[:svix_id].empty?
         raise "svix-timestamp header is required" if headers[:svix_timestamp].nil? || headers[:svix_timestamp].empty?
         raise "svix-signature header is required" if headers[:svix_signature].nil? || headers[:svix_signature].empty?
+      end
 
-        # Step 1: Validate timestamp to prevent replay attacks
-        timestamp = headers[:svix_timestamp].to_i
+      # Validate timestamp to prevent replay attacks
+      def validate_timestamp(timestamp_header)
+        timestamp = timestamp_header.to_i
         now = Time.now.to_i
         diff = now - timestamp
 
-        if diff > WEBHOOK_TOLERANCE_SECONDS || diff < -WEBHOOK_TOLERANCE_SECONDS
-          raise "Timestamp outside tolerance window: difference of #{diff} seconds"
-        end
+        return unless diff > WEBHOOK_TOLERANCE_SECONDS || diff < -WEBHOOK_TOLERANCE_SECONDS
 
-        # Step 2: Construct signed content: {id}.{timestamp}.{payload}
-        signed_content = "#{headers[:svix_id]}.#{headers[:svix_timestamp]}.#{payload}"
+        raise "Timestamp outside tolerance window: difference of #{diff} seconds"
+      end
 
-        # Step 3: Decode the signing secret (strip whsec_ prefix and base64 decode)
+      # Decode the signing secret (strip whsec_ prefix and base64 decode)
+      def decode_secret(webhook_secret)
         secret = webhook_secret.sub(/^whsec_/, "")
-        begin
-          decoded_secret = Base64.strict_decode64(secret)
-        rescue ArgumentError => e
-          raise "Failed to decode webhook secret: #{e.message}"
-        end
+        Base64.strict_decode64(secret)
+      rescue ArgumentError => e
+        raise "Failed to decode webhook secret: #{e.message}"
+      end
 
-        # Step 4: Calculate expected signature using HMAC-SHA256
-        expected_signature = generate_signature(decoded_secret, signed_content)
-
-        # Step 5: Compare signatures using constant-time comparison
-        # The signature header contains space-separated signatures with version prefixes (e.g., "v1,sig1 v1,sig2")
-        signatures = headers[:svix_signature].split(" ")
+      # Verify signature using constant-time comparison
+      def verify_signature(signature_header, expected_signature)
+        signatures = signature_header.split(" ")
         signatures.each do |sig|
-          # Strip version prefix (e.g., "v1,")
           parts = sig.split(",", 2)
           next if parts.length != 2
 
           received_signature = parts[1]
-          if secure_compare(expected_signature, received_signature)
-            return true
-          end
+          return true if secure_compare(expected_signature, received_signature)
         end
 
         raise "No matching signature found"
       end
-
-      private
 
       # Generate HMAC-SHA256 signature and return it as base64
       def generate_signature(secret, content)
@@ -203,9 +224,10 @@ module Resend
 
       # Constant-time string comparison to prevent timing attacks
       # Uses Ruby's built-in secure comparison (similar to Python's hmac.compare_digest)
-      def secure_compare(a, b)
-        return false if a.nil? || b.nil? || a.bytesize != b.bytesize
-        OpenSSL.fixed_length_secure_compare(a, b)
+      def secure_compare(str_a, str_b)
+        return false if str_a.nil? || str_b.nil? || str_a.bytesize != str_b.bytesize
+
+        OpenSSL.fixed_length_secure_compare(str_a, str_b)
       end
     end
   end
