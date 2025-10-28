@@ -21,6 +21,7 @@ require "resend/contacts"
 require "resend/domains"
 require "resend/emails"
 require "resend/emails/receiving"
+require "resend/attachments"
 require "resend/attachments/receiving"
 require "resend/topics"
 
