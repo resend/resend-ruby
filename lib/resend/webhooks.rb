@@ -223,11 +223,16 @@ module Resend
       end
 
       # Constant-time string comparison to prevent timing attacks
-      # Uses Ruby's built-in secure comparison (similar to Python's hmac.compare_digest)
+      #
+      # Note: We implement this manually for Ruby 2.7 compatibility.
+      # Ruby 3.0+ could use OpenSSL.fixed_length_secure_compare instead.
       def secure_compare(str_a, str_b)
         return false if str_a.nil? || str_b.nil? || str_a.bytesize != str_b.bytesize
 
-        OpenSSL.fixed_length_secure_compare(str_a, str_b)
+        bytes_a = str_a.unpack("C*")
+        result = 0
+        str_b.each_byte.with_index { |byte_b, i| result |= byte_b ^ bytes_a[i] }
+        result.zero?
       end
     end
   end
