@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe "Attachments::Receiving" do
+RSpec.describe "Emails::Receiving::Attachments" do
   before do
     Resend.api_key = "re_123"
   end
@@ -20,7 +20,7 @@ RSpec.describe "Attachments::Receiving" do
       allow(resp).to receive(:body).and_return(resp)
       allow(HTTParty).to receive(:send).and_return(resp)
 
-      attachment = Resend::Attachments::Receiving.get(
+      attachment = Resend::Emails::Receiving::Attachments.get(
         id: "2a0c9ce0-3112-4728-976e-47ddcd16a318",
         email_id: "4ef9a417-02e9-4d39-ad75-9611e0fcc33c"
       )
@@ -40,7 +40,7 @@ RSpec.describe "Attachments::Receiving" do
       allow(resp).to receive(:body).and_return(resp)
       allow(HTTParty).to receive(:send).and_return(resp)
 
-      Resend::Attachments::Receiving.get(
+      Resend::Emails::Receiving::Attachments.get(
         id: "2a0c9ce0-3112-4728-976e-47ddcd16a318",
         email_id: "4ef9a417-02e9-4d39-ad75-9611e0fcc33c"
       )
@@ -69,7 +69,7 @@ RSpec.describe "Attachments::Receiving" do
       allow(HTTParty).to receive(:send).and_return(resp)
 
       expect {
-        Resend::Attachments::Receiving.get(
+        Resend::Emails::Receiving::Attachments.get(
           id: "invalid_id",
           email_id: "invalid_email_id"
         )
@@ -100,7 +100,7 @@ RSpec.describe "Attachments::Receiving" do
       allow(resp).to receive(:body).and_return(resp)
       allow(HTTParty).to receive(:send).and_return(resp)
 
-      result = Resend::Attachments::Receiving.list(
+      result = Resend::Emails::Receiving::Attachments.list(
         email_id: "4ef9a417-02e9-4d39-ad75-9611e0fcc33c"
       )
 
@@ -119,18 +119,16 @@ RSpec.describe "Attachments::Receiving" do
       allow(resp).to receive(:body).and_return(resp)
       allow(HTTParty).to receive(:send).and_return(resp)
 
-      result = Resend::Attachments::Receiving.list(
+      result = Resend::Emails::Receiving::Attachments.list(
         email_id: "4ef9a417-02e9-4d39-ad75-9611e0fcc33c",
         limit: 50
       )
 
-      expect(HTTParty).to have_received(:send).with(
-        :get,
-        "#{Resend::Request::BASE_URL}emails/receiving/4ef9a417-02e9-4d39-ad75-9611e0fcc33c/attachments",
-        hash_including(
-          query: { limit: 50 }
-        )
-      )
+      expect(HTTParty).to have_received(:send) do |method, url, options|
+        expect(method).to eq(:get)
+        expect(url).to include("emails/receiving/4ef9a417-02e9-4d39-ad75-9611e0fcc33c/attachments")
+        expect(url).to include("limit=50")
+      end
       expect(result[:object]).to eql("list")
       expect(result[:has_more]).to eql(false)
     end
@@ -144,20 +142,20 @@ RSpec.describe "Attachments::Receiving" do
       allow(resp).to receive(:body).and_return(resp)
       allow(HTTParty).to receive(:send).and_return(resp)
 
-      result = Resend::Attachments::Receiving.list(
+      result = Resend::Emails::Receiving::Attachments.list(
         email_id: "4ef9a417-02e9-4d39-ad75-9611e0fcc33c",
         limit: 20,
         after: "cursor_123",
         before: "cursor_456"
       )
 
-      expect(HTTParty).to have_received(:send).with(
-        :get,
-        "#{Resend::Request::BASE_URL}emails/receiving/4ef9a417-02e9-4d39-ad75-9611e0fcc33c/attachments",
-        hash_including(
-          query: { limit: 20, after: "cursor_123", before: "cursor_456" }
-        )
-      )
+      expect(HTTParty).to have_received(:send) do |method, url, options|
+        expect(method).to eq(:get)
+        expect(url).to include("emails/receiving/4ef9a417-02e9-4d39-ad75-9611e0fcc33c/attachments")
+        expect(url).to include("limit=20")
+        expect(url).to include("after=cursor_123")
+        expect(url).to include("before=cursor_456")
+      end
       expect(result[:object]).to eql("list")
       expect(result[:has_more]).to eql(true)
     end
@@ -171,7 +169,7 @@ RSpec.describe "Attachments::Receiving" do
       allow(resp).to receive(:body).and_return(resp)
       allow(HTTParty).to receive(:send).and_return(resp)
 
-      Resend::Attachments::Receiving.list(
+      Resend::Emails::Receiving::Attachments.list(
         email_id: "4ef9a417-02e9-4d39-ad75-9611e0fcc33c"
       )
 
@@ -190,3 +188,4 @@ RSpec.describe "Attachments::Receiving" do
     end
   end
 end
+

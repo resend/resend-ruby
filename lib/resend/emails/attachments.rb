@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
 module Resend
-  module Attachments
-    # Module for receiving email attachments API operations
-    module Receiving
+  module Emails
+    # Module for sent email attachments API operations
+    module Attachments
       class << self
-        # Retrieve a single attachment from a received email
+        # Retrieve a single attachment from a sent email
         #
         # @param params [Hash] Parameters for retrieving the attachment
         # @option params [String] :id The attachment ID (required)
@@ -13,7 +13,7 @@ module Resend
         # @return [Hash] The attachment object
         #
         # @example
-        #   Resend::Attachments::Receiving.get(
+        #   Resend::Emails::Attachments.get(
         #     id: "2a0c9ce0-3112-4728-976e-47ddcd16a318",
         #     email_id: "4ef9a417-02e9-4d39-ad75-9611e0fcc33c"
         #   )
@@ -21,11 +21,11 @@ module Resend
           attachment_id = params[:id]
           email_id = params[:email_id]
 
-          path = "emails/receiving/#{email_id}/attachments/#{attachment_id}"
+          path = "emails/#{email_id}/attachments/#{attachment_id}"
           Resend::Request.new(path, {}, "get").perform
         end
 
-        # List attachments from a received email with optional pagination
+        # List attachments from a sent email with optional pagination
         #
         # @param params [Hash] Parameters for listing attachments
         # @option params [String] :email_id The email ID (required)
@@ -35,33 +35,31 @@ module Resend
         # @return [Hash] List of attachments with pagination info
         #
         # @example List all attachments
-        #   Resend::Attachments::Receiving.list(
+        #   Resend::Emails::Attachments.list(
         #     email_id: "4ef9a417-02e9-4d39-ad75-9611e0fcc33c"
         #   )
         #
         # @example List with custom limit
-        #   Resend::Attachments::Receiving.list(
+        #   Resend::Emails::Attachments.list(
         #     email_id: "4ef9a417-02e9-4d39-ad75-9611e0fcc33c",
         #     limit: 50
         #   )
         #
         # @example List with pagination
-        #   Resend::Attachments::Receiving.list(
+        #   Resend::Emails::Attachments.list(
         #     email_id: "4ef9a417-02e9-4d39-ad75-9611e0fcc33c",
         #     limit: 20,
         #     after: "attachment_id_123"
         #   )
         def list(params = {})
           email_id = params[:email_id]
-          path = "emails/receiving/#{email_id}/attachments"
+          base_path = "emails/#{email_id}/attachments"
 
-          # Build query parameters, filtering out nil values
-          query_params = {}
-          query_params[:limit] = params[:limit] if params[:limit]
-          query_params[:after] = params[:after] if params[:after]
-          query_params[:before] = params[:before] if params[:before]
+          # Extract pagination parameters
+          pagination_params = params.slice(:limit, :after, :before)
 
-          Resend::Request.new(path, query_params, "get").perform
+          path = Resend::PaginationHelper.build_paginated_path(base_path, pagination_params)
+          Resend::Request.new(path, {}, "get").perform
         end
       end
     end
