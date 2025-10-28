@@ -8,7 +8,7 @@ RSpec.describe "Emails" do
       Resend.api_key = "re_123"
     end
 
-    it "should send email" do
+    it "sends email" do
       resp = {"id"=>"872d1f17-0f08-424c-a18c-d425324acab6"}
       params = {
         "from": "from@e.io",
@@ -23,7 +23,7 @@ RSpec.describe "Emails" do
       expect(Resend::Emails.send(params)[:id]).to eql(resp[:id])
     end
 
-    it "should update email" do
+    it "updates email" do
       resp = {"id"=>"872d1f17-0f08-424c-a18c-d425324acab6", "object": "email"}
       params = {
         "id": "872d1f17-0f08-424c-a18c-d425324acab6",
@@ -33,7 +33,7 @@ RSpec.describe "Emails" do
       expect(Resend::Emails.update(params)[:id]).to eql(resp[:id])
     end
 
-    it "should retrieve email" do
+    it "retrieves email" do
       resp = {
         "object": "email",
         "id": "4ef9a417-02e9-4d39-ad75-9611e0fcc33c",
@@ -55,7 +55,7 @@ RSpec.describe "Emails" do
       expect(email[:id]).to eql "4ef9a417-02e9-4d39-ad75-9611e0fcc33c"
     end
 
-    it "should cancel email" do
+    it "cancels email" do
       resp = {
         "object": "email",
         "id": "49a3999c-0ce1-4ea6-ab68-afcd6dc2e794"
@@ -67,7 +67,7 @@ RSpec.describe "Emails" do
       expect(email[:id]).to eql "49a3999c-0ce1-4ea6-ab68-afcd6dc2e794"
     end
 
-    it "should raise when to is missing" do
+    it "raises when to is missing" do
       resp = {
         "statusCode"=>422,
         "name"=>"missing_required_field",
@@ -86,7 +86,7 @@ RSpec.describe "Emails" do
       expect { Resend::Emails.send params }.to raise_error(Resend::Error::InvalidRequestError, /Missing `to` field/)
     end
 
-    it "should raise when from is missing" do
+    it "raises when from is missing" do
       resp = {
         "statusCode"=>422,
         "name"=>"missing_required_field",
@@ -206,7 +206,7 @@ RSpec.describe "Emails" do
       )
     end
 
-    it "should list emails without parameters" do
+    it "lists emails without parameters" do
       resp = {
         "object" => "list",
         "has_more" => false,
@@ -230,7 +230,7 @@ RSpec.describe "Emails" do
       expect(result[:data].length).to eql(1)
     end
 
-    it "should list emails with limit parameter" do
+    it "lists emails with limit parameter" do
       resp = {
         "object" => "list",
         "has_more" => true,
@@ -252,7 +252,7 @@ RSpec.describe "Emails" do
       expect(result[:has_more]).to eql(true)
     end
 
-    it "should list emails with pagination parameters" do
+    it "lists emails with pagination parameters" do
       resp = {
         "object" => "list",
         "has_more" => false,
@@ -272,6 +272,36 @@ RSpec.describe "Emails" do
       )
       expect(result[:object]).to eql("list")
       expect(result[:has_more]).to eql(false)
+    end
+
+    it "sends email with template without variables" do
+      resp = {"id"=>"49a3999c-0ce1-4ea6-ab68-afcd6dc2e794"}
+      params = {
+        from: "onboarding@resend.dev",
+        to: ["delivered@resend.dev"],
+        template: {
+          id: "d91cd9bd-f5ab-4bbe-89c8-c890a4caced4"
+        }
+      }
+      allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
+      expect(Resend::Emails.send(params)[:id]).to eql(resp[:id])
+    end
+
+    it "sends email with template with variables" do
+      resp = {"id"=>"49a3999c-0ce1-4ea6-ab68-afcd6dc2e794"}
+      params = {
+        from: "onboarding@resend.dev",
+        to: ["delivered@resend.dev"],
+        template: {
+          id: "d91cd9bd-f5ab-4bbe-89c8-c890a4caced4",
+          variables: {
+            name: "Alice",
+            age: 30
+          }
+        }
+      }
+      allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
+      expect(Resend::Emails.send(params)[:id]).to eql(resp[:id])
     end
   end
 end
