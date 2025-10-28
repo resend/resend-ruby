@@ -7,7 +7,7 @@ RSpec.describe "Batch" do
       Resend.api_key = "re_123"
     end
 
-    it "should send batch email" do
+    it "sends batch email" do
       resp = {
         "data": [
           {
@@ -266,7 +266,7 @@ RSpec.describe "Batch" do
       expect(result[:errors][0][:message]).to include("valid email address")
     end
 
-    it "should send batch email with templates" do
+    it "sends batch email with templates" do
       resp = {
         "data": [
           { "id": "ae2014de-c168-4c61-8267-70d2662a1ce1" },
