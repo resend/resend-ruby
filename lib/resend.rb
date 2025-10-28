@@ -21,7 +21,8 @@ require "resend/contacts"
 require "resend/domains"
 require "resend/emails"
 require "resend/emails/receiving"
-require "resend/attachments/receiving"
+require "resend/emails/attachments"
+require "resend/emails/receiving/attachments"
 require "resend/topics"
 
 # Rails

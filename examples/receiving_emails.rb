@@ -74,7 +74,7 @@ if email[:attachments] && !email[:attachments].empty?
   end
 
   puts "\n  Listing all attachments for email: #{email[:id]}"
-  attachments_list = Resend::Attachments::Receiving.list(
+  attachments_list = Resend::Emails::Receiving::Attachments.list(
     email_id: email[:id]
   )
 
@@ -86,7 +86,7 @@ if email[:attachments] && !email[:attachments].empty?
     first_attachment_id = email[:attachments].first["id"]
     puts "\n  Retrieving full attachment details for: #{first_attachment_id}"
 
-    attachment_details = Resend::Attachments::Receiving.get(
+    attachment_details = Resend::Emails::Receiving::Attachments.get(
       id: first_attachment_id,
       email_id: email[:id]
     )
