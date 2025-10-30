@@ -56,3 +56,38 @@ if limited_emails["has_more"] && limited_emails["data"].last
   next_page = Resend::Emails.list(limit: 5, after: last_id)
   puts "Next page has #{next_page["data"].length} emails"
 end
+
+attachments = Resend::Emails::Attachments.list(email_id: email[:id])
+
+puts "Total attachments: #{attachments[:data].length}"
+puts "Has more: #{attachments[:has_more]}"
+
+if attachments[:data] && !attachments[:data].empty?
+  attachments[:data].each do |attachment|
+    puts "\n  Attachment:"
+    puts "    ID: #{attachment[:id]}"
+    puts "    Filename: #{attachment[:filename]}"
+    puts "    Size: #{attachment[:size]} bytes"
+    puts "    Content Type: #{attachment[:content_type]}"
+  end
+
+  # Retrieve details for the first attachment
+  puts "\n=== Retrieving Single Attachment ==="
+  attachment_id = attachments[:data].first[:id]
+  puts "Retrieving attachment: #{attachment_id}"
+
+  attachment = Resend::Emails::Attachments.get(
+    id: attachment_id,
+    email_id: email[:id]
+  )
+
+  puts "\nAttachment Details:"
+  puts "  ID: #{attachment[:id]}"
+  puts "  Filename: #{attachment[:filename]}"
+  puts "  Size: #{attachment[:size]} bytes"
+  puts "  Content Type: #{attachment[:content_type]}"
+  puts "  Download URL: #{attachment[:download_url]}"
+  puts "  Expires At: #{attachment[:expires_at]}"
+else
+  puts "No attachments found for this email"
+end
