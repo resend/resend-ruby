@@ -13,7 +13,7 @@ require "resend/request"
 require "resend/pagination_helper"
 
 # API Operations
-require "resend/audiences"
+require "resend/segments"
 require "resend/api_keys"
 require "resend/broadcasts"
 require "resend/batch"
@@ -41,4 +41,7 @@ module Resend
     end
     alias config configure
   end
+
+  # @deprecated Use Segments instead
+  Audiences = Segments
 end

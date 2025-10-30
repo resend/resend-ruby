@@ -110,6 +110,7 @@ RSpec.describe "Pagination" do
       request_instance = instance_double(Resend::Request)
       allow(request_instance).to receive(:perform).and_return(resp)
       allow(Resend::Request).to receive(:new) do |path, body, verb|
+        expect(path).to include("segments")  # Audiences is now an alias to Segments
         expect(path).to include("limit=5")
         request_instance
       end
@@ -164,13 +165,13 @@ RSpec.describe "Pagination" do
       request_instance = instance_double(Resend::Request)
       allow(request_instance).to receive(:perform).and_return(resp)
       allow(Resend::Request).to receive(:new) do |path, body, verb|
-        expect(path).to include("audiences/audience_123/contacts")
+        expect(path).to include("segments/segment_123/contacts")
         expect(path).to include("limit=20")
         request_instance
       end
 
       params = { limit: 20 }
-      result = Resend::Contacts.list("audience_123", params)
+      result = Resend::Contacts.list("segment_123", params)
       expect(result[:object]).to eql("list")
       expect(result[:has_more]).to be false
     end

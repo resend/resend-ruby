@@ -6,42 +6,42 @@ module Resend
     class << self
       # https://resend.com/docs/api-reference/contacts/create-contact
       def create(params)
-        path = "audiences/#{params[:audience_id]}/contacts"
+        path = "segments/#{params[:segment_id]}/contacts"
         Resend::Request.new(path, params, "post").perform
       end
 
       #
-      # Retrieves a contact from an audience
+      # Retrieves a contact from a segment
       #
-      # @param audience_id [String] the audience id
+      # @param segment_id [String] the segment id
       # @param id [String] either the contact id or contact's email
       #
       # https://resend.com/docs/api-reference/contacts/get-contact
-      def get(audience_id, id)
-        path = "audiences/#{audience_id}/contacts/#{id}"
+      def get(segment_id, id)
+        path = "segments/#{segment_id}/contacts/#{id}"
         Resend::Request.new(path, {}, "get").perform
       end
 
       #
-      # List contacts in an audience
+      # List contacts in a segment
       #
-      # @param audience_id [String] the audience id
+      # @param segment_id [String] the segment id
       # @param params [Hash] optional pagination parameters
       # https://resend.com/docs/api-reference/contacts/list-contacts
-      def list(audience_id, params = {})
-        path = Resend::PaginationHelper.build_paginated_path("audiences/#{audience_id}/contacts", params)
+      def list(segment_id, params = {})
+        path = Resend::PaginationHelper.build_paginated_path("segments/#{segment_id}/contacts", params)
         Resend::Request.new(path, {}, "get").perform
       end
 
       #
-      # Remove a contact from an audience
+      # Remove a contact from a segment
       #
-      # @param audience_id [String] the audience id
+      # @param segment_id [String] the segment id
       # @param contact_id [String] either the contact id or contact email
       #
       # see also: https://resend.com/docs/api-reference/contacts/delete-contact
-      def remove(audience_id, contact_id)
-        path = "audiences/#{audience_id}/contacts/#{contact_id}"
+      def remove(segment_id, contact_id)
+        path = "segments/#{segment_id}/contacts/#{contact_id}"
         Resend::Request.new(path, {}, "delete").perform
       end
 
@@ -53,7 +53,7 @@ module Resend
       def update(params)
         raise ArgumentError, "id or email is required" if params[:id].nil? && params[:email].nil?
 
-        path = "audiences/#{params[:audience_id]}/contacts/#{params[:id] || params[:email]}"
+        path = "segments/#{params[:segment_id]}/contacts/#{params[:id] || params[:email]}"
         Resend::Request.new(path, params, "patch").perform
       end
     end

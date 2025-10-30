@@ -9,12 +9,35 @@ RSpec.describe "Broadcasts" do
   end
 
   describe "create" do
-    it "should create broadcast" do
+    it "should create broadcast with audience_id" do
       resp = {
         "id": "49a3999c-0ce1-4ea6-ab68-afcd6dc2e794"
       }
       params = {
         "audience_id": "123123"
+      }
+      allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
+      expect(Resend::Broadcasts.create(params)[:id]).to eql("49a3999c-0ce1-4ea6-ab68-afcd6dc2e794")
+    end
+
+    it "should create broadcast with segment_id" do
+      resp = {
+        "id": "49a3999c-0ce1-4ea6-ab68-afcd6dc2e794"
+      }
+      params = {
+        "segment_id": "123123"
+      }
+      allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
+      expect(Resend::Broadcasts.create(params)[:id]).to eql("49a3999c-0ce1-4ea6-ab68-afcd6dc2e794")
+    end
+
+    it "should create broadcast with both segment_id and audience_id (segment_id takes precedence)" do
+      resp = {
+        "id": "49a3999c-0ce1-4ea6-ab68-afcd6dc2e794"
+      }
+      params = {
+        "segment_id": "segment123",
+        "audience_id": "audience123"
       }
       allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
       expect(Resend::Broadcasts.create(params)[:id]).to eql("49a3999c-0ce1-4ea6-ab68-afcd6dc2e794")

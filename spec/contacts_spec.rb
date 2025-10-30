@@ -2,7 +2,7 @@
 
 RSpec.describe "Contacts" do
 
-  let(:audience_id) { "48c269ed-9873-4d60-bdd9-cd7e6fc0b9b8" }
+  let(:segment_id) { "78b8d3bc-a55a-45a3-aee6-6ec0a5e13d7e" }
 
   describe "create contact" do
 
@@ -19,7 +19,7 @@ RSpec.describe "Contacts" do
       }
 
       params = {
-        audience_id: audience_id,
+        segment_id: segment_id,
         email: "steve@woz.com",
         first_name: "Steve",
         last_name: "Woz",
@@ -50,7 +50,7 @@ RSpec.describe "Contacts" do
       allow(resp).to receive(:body).and_return(resp)
       allow(HTTParty).to receive(:send).and_return(resp)
 
-      contact = Resend::Contacts.get(audience_id, resp[:id])
+      contact = Resend::Contacts.get(segment_id, resp[:id])
 
       expect(contact[:object]).to eql "contact"
       expect(contact[:id]).to eql "e169aa45-1ecf-4183-9955-b1499d5701d3"
@@ -75,7 +75,7 @@ RSpec.describe "Contacts" do
       allow(resp).to receive(:body).and_return(resp)
       allow(HTTParty).to receive(:send).and_return(resp)
 
-      contact = Resend::Contacts.get(audience_id, resp[:email])
+      contact = Resend::Contacts.get(segment_id, resp[:email])
 
       expect(contact[:object]).to eql "contact"
       expect(contact[:id]).to eql "e169aa45-1ecf-4183-9955-b1499d5701d3"
@@ -106,7 +106,7 @@ RSpec.describe "Contacts" do
       }
 
       allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
-      contacts = Resend::Contacts.list(audience_id)
+      contacts = Resend::Contacts.list(segment_id)
       expect(contacts[:object]).to eql "list"
       expect(contacts[:data].length).to eql 1
       expect(contacts[:data][0][:id]).to eql "e169aa45-1ecf-4183-9955-b1499d5701d3"
@@ -129,7 +129,7 @@ RSpec.describe "Contacts" do
       allow(resp).to receive(:body).and_return(resp)
       allow(HTTParty).to receive(:send).and_return(resp)
 
-      deleted = Resend::Contacts.remove(audience_id, resp[:id])
+      deleted = Resend::Contacts.remove(segment_id, resp[:id])
       expect(deleted[:object]).to eql("contact")
       expect(deleted[:id]).to eql(resp[:id])
       expect(deleted[:deleted]).to be true
@@ -151,7 +151,7 @@ RSpec.describe "Contacts" do
       }
 
       update_params = {
-        audience_id: audience_id,
+        segment_id: segment_id,
         id: "479e3145-dd38-476b-932c-529ceb705947",
         unsubscribed: false,
       }
@@ -164,7 +164,7 @@ RSpec.describe "Contacts" do
 
     it "raise when required fields are not provided" do
       begin
-        Resend::Contacts.update({ audience_id: "123" })
+        Resend::Contacts.update({ segment_id: "123" })
       rescue ArgumentError => e
         expect(e.message).to eql("id or email is required")
       end
