@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 module Resend
+  # Module for managing contact properties
+  #
+  # Contact properties allow you to store custom data about your contacts
   module ContactProperties
     class << self
       # Create a custom property for your contacts
@@ -68,7 +71,8 @@ module Resend
       #
       # @param params [Hash] Parameters for updating a contact property
       # @option params [String] :id The Contact Property ID (required)
-      # @option params [String, Integer] :fallback_value The default value when property is not set (must match property type)
+      # @option params [String, Integer] :fallback_value The default value when property is not set
+      #   (must match property type)
       #
       # @return [Hash] Response containing the updated contact property
       #

@@ -2,6 +2,9 @@
 
 module Resend
   module Contacts
+    # Module for managing contact topic subscriptions
+    #
+    # Allows you to manage which topics contacts are subscribed to
     module Topics
       class << self
         # Retrieve a list of topics subscriptions for a contact
