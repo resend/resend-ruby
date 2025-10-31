@@ -16,9 +16,10 @@ This major release introduces breaking changes to the Contacts API and deprecate
 #### Contacts API Changes
 
 - ⚠️ **Change `Contacts.create` to accept hash parameter with optional `audience_id`** - Previously required `audience_id` in params, now it's optional. Supports global contacts.
-- ⚠️ **Change `Contacts.get` from `get(audience_id, id)` to `get(params)`** - Now accepts a hash with optional `audience_id` and required `id` or `email`
+- ⚠️ **Change `Contacts.get` from `get(audience_id, id)` to `get(params)`** - Now accepts a hash with optional `audience_id` and required `id` or `email`. Raises `ArgumentError: "Missing \`id\` or \`email\` field"` when neither is provided.
 - ⚠️ **Change `Contacts.list` from `list(audience_id, params = {})` to `list(params = {})`** - Now accepts a hash with optional `audience_id` and pagination params
-- ⚠️ **Change `Contacts.remove` from `remove(audience_id, contact_id)` to `remove(params)`** - Now accepts a hash with optional `audience_id` and required `id` or `email`
+- ⚠️ **Change `Contacts.remove` from `remove(audience_id, contact_id)` to `remove(params)`** - Now accepts a hash with optional `audience_id` and required `id` or `email`. Raises `ArgumentError: "Missing \`id\` or \`email\` field"` when neither is provided.
+- ⚠️ **Change `Contacts.update` error message** - Error changed from `"id or email is required"` to `"Missing \`id\` or \`email\` field"` to match Node.js SDK format
 - ⚠️ **Change `Contacts.update` to accept optional `audience_id`** - Previously required `audience_id` in params, now it's optional
 
 **Before (v0.x):**
@@ -82,9 +83,11 @@ Resend::Segments.remove("segment_123")
 
 - Add `Resend::Segments` API for managing segments (replacement for Audiences)
 - Add `Resend::ContactProperties` API for managing custom contact properties
+  - `ContactProperties.update` validates and raises `ArgumentError: "Missing \`id\` field"` when id is not provided
 - Add `Resend::Contacts::Segments` API for managing contact-segment relationships
 - Add `Resend::Contacts::Topics` API for managing contact topic subscriptions
 - Add support for `email` parameter in `Contacts.get` and `Contacts.remove` methods
 - Add `audience_id` support in Contacts API methods for scoped operations
+- Add validation error messages matching Node.js SDK format with backticks around field names
 
 [1.0.0]: https://github.com/resend/resend-ruby/compare/v0.26.0...v1.0.0
