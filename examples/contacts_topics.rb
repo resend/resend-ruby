@@ -60,7 +60,16 @@ def example
   topics_paginated = Resend::Contacts::Topics.list(id: contact_id, limit: 10)
   puts "Topics with pagination: #{topics_paginated}"
 
-  puts "\nUnsubscribing from topic '#{topic_name}'..."
+  puts "\nYou can also update topics by email (use 'email' key instead of 'id')..."
+  result_by_email = Resend::Contacts::Topics.update(
+    email: contact_email,
+    topics: [
+      { id: topic_id, subscription: "opt_out" }
+    ]
+  )
+  puts "Updated contact topics by email: #{result_by_email}"
+
+  puts "\nUnsubscribing from topic '#{topic_name}' using contact ID..."
   result = Resend::Contacts::Topics.update(
     id: contact_id,
     topics: [
