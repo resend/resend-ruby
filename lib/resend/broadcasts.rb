@@ -5,13 +5,23 @@ module Resend
   module Broadcasts
     class << self
       # https://resend.com/docs/api-reference/broadcasts/create-broadcast
+      # @note Supports both segment_id and audience_id. At least one is required.
+      #   audience_id is deprecated - use segment_id instead.
       def create(params = {})
+        if params[:audience_id] && !params[:segment_id]
+          warn "[DEPRECATION] Using audience_id in broadcasts is deprecated. Use segment_id instead."
+        end
         path = "broadcasts"
         Resend::Request.new(path, params, "post").perform
       end
 
       # https://resend.com/docs/api-reference/broadcasts/update-broadcast
+      # @note Supports both segment_id and audience_id. At least one may be required.
+      #   audience_id is deprecated - use segment_id instead.
       def update(params = {})
+        if params[:audience_id] && !params[:segment_id]
+          warn "[DEPRECATION] Using audience_id in broadcasts is deprecated. Use segment_id instead."
+        end
         path = "broadcasts/#{params[:broadcast_id]}"
         Resend::Request.new(path, params, "patch").perform
       end

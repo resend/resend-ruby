@@ -7,8 +7,8 @@ RSpec.describe "Contacts::Topics" do
     end
   end
 
-  describe "get contact topics" do
-    it "should retrieve topics by contact id" do
+  describe "list contact topics" do
+    it "should list topics by contact id" do
       resp = {
         object: "list",
         has_more: false,
@@ -25,7 +25,7 @@ RSpec.describe "Contacts::Topics" do
       contact_id = "e169aa45-1ecf-4183-9955-b1499d5701d3"
       allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
 
-      topics = Resend::Contacts::Topics.get(contact_id)
+      topics = Resend::Contacts::Topics.list(id: contact_id)
 
       expect(topics[:object]).to eql("list")
       expect(topics[:has_more]).to eql(false)
@@ -34,7 +34,7 @@ RSpec.describe "Contacts::Topics" do
       expect(topics[:data].first[:subscription]).to eql("opt_in")
     end
 
-    it "should retrieve topics by contact email" do
+    it "should list topics by contact email" do
       resp = {
         object: "list",
         has_more: false,
@@ -51,13 +51,13 @@ RSpec.describe "Contacts::Topics" do
       contact_email = "steve.wozniak@gmail.com"
       allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
 
-      topics = Resend::Contacts::Topics.get(contact_email)
+      topics = Resend::Contacts::Topics.list(email: contact_email)
 
       expect(topics[:object]).to eql("list")
       expect(topics[:data]).to be_an(Array)
     end
 
-    it "should retrieve topics with pagination parameters" do
+    it "should list topics with pagination parameters" do
       resp = {
         object: "list",
         has_more: true,
@@ -65,11 +65,10 @@ RSpec.describe "Contacts::Topics" do
       }
 
       contact_id = "e169aa45-1ecf-4183-9955-b1499d5701d3"
-      params = { limit: 10, after: "cursor_123" }
 
       allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
 
-      topics = Resend::Contacts::Topics.get(contact_id, params)
+      topics = Resend::Contacts::Topics.list(id: contact_id, limit: 10, after: "cursor_123")
 
       expect(topics[:object]).to eql("list")
       expect(topics[:has_more]).to eql(true)

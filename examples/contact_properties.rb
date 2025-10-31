@@ -7,7 +7,6 @@ raise if ENV["RESEND_API_KEY"].nil?
 Resend.api_key = ENV["RESEND_API_KEY"]
 
 def example
-  # Create a contact property with string type
   puts "Creating a string contact property..."
   string_property = Resend::ContactProperties.create({
     key: "company_name",
@@ -18,7 +17,6 @@ def example
 
   property_id = string_property[:id]
 
-  # Create a contact property with number type
   puts "\nCreating a number contact property..."
   number_property = Resend::ContactProperties.create({
     key: "age",
@@ -27,22 +25,18 @@ def example
   })
   puts "Created property: #{number_property}"
 
-  # Retrieve a contact property
   puts "\nRetrieving contact property by ID..."
   retrieved_property = Resend::ContactProperties.get(property_id)
   puts "Retrieved property: #{retrieved_property}"
 
-  # List all contact properties
   puts "\nListing all contact properties..."
   all_properties = Resend::ContactProperties.list
   puts "All properties: #{all_properties}"
 
-  # List contact properties with pagination
   puts "\nListing contact properties with pagination..."
   paginated_properties = Resend::ContactProperties.list({ limit: 10 })
   puts "Paginated properties: #{paginated_properties}"
 
-  # Update a contact property
   puts "\nUpdating contact property..."
   updated_property = Resend::ContactProperties.update({
     id: property_id,
@@ -50,7 +44,6 @@ def example
   })
   puts "Updated property: #{updated_property}"
 
-  # Delete a contact property
   puts "\nDeleting contact property..."
   deleted = Resend::ContactProperties.remove(property_id)
   puts "Deleted property: #{deleted}"

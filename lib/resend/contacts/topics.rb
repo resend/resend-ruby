@@ -9,23 +9,27 @@ module Resend
       class << self
         # Retrieve a list of topics subscriptions for a contact
         #
-        # @param contact_identifier [String] The Contact ID or Email
-        # @param params [Hash] Optional query parameters
+        # @param params [Hash] Parameters for listing topics
+        # @option params [String] :id The Contact ID (either :id or :email must be provided)
+        # @option params [String] :email The Contact Email (either :id or :email must be provided)
         # @option params [Integer] :limit Number of topics to retrieve (1-100)
         # @option params [String] :after The ID after which to retrieve more topics
         # @option params [String] :before The ID before which to retrieve more topics
         #
         # @return [Hash] Response containing list of topics with subscription status
         #
-        # @example Get topics by contact ID
-        #   Resend::Contacts::Topics.get('e169aa45-1ecf-4183-9955-b1499d5701d3')
+        # @example List topics by contact ID
+        #   Resend::Contacts::Topics.list(id: 'e169aa45-1ecf-4183-9955-b1499d5701d3')
         #
-        # @example Get topics by contact email
-        #   Resend::Contacts::Topics.get('steve.wozniak@gmail.com')
+        # @example List topics by contact email
+        #   Resend::Contacts::Topics.list(email: 'steve.wozniak@gmail.com')
         #
-        # @example Get topics with pagination
-        #   Resend::Contacts::Topics.get('contact-id', { limit: 10, after: 'cursor_123' })
-        def get(contact_identifier, params = {})
+        # @example List topics with pagination
+        #   Resend::Contacts::Topics.list(id: 'contact-id', limit: 10, after: 'cursor_123')
+        def list(params = {})
+          contact_identifier = params[:id] || params[:email]
+          raise ArgumentError, "Either :id or :email must be provided" if contact_identifier.nil?
+
           pagination_params = params.slice(:limit, :after, :before)
           base_path = "contacts/#{contact_identifier}/topics"
           path = Resend::PaginationHelper.build_paginated_path(base_path, pagination_params)
