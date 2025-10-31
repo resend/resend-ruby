@@ -82,6 +82,8 @@ module Resend
       #     fallback_value: 'Example Company'
       #   })
       def update(params)
+        raise ArgumentError, "Missing `id` field" if params[:id].nil?
+
         contact_property_id = params[:id]
         path = "contact-properties/#{contact_property_id}"
         Resend::Request.new(path, params, "patch").perform

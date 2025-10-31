@@ -43,18 +43,13 @@ complete_params = {
   from: "Acme <onboarding@resend.dev>",
   subject: "Welcome to Acme",
   reply_to: "support@resend.dev",
-  html: "<h1>Hello {{{FIRST_NAME}}} {{{LAST_NAME}}}</h1><p>Welcome to our platform!</p>",
-  text: "Hello {{{FIRST_NAME}}} {{{LAST_NAME}}}\n\nWelcome to our platform!",
+  html: "<h1>Hello {{{FIRST_NAME}}} {{{LAST_NAME}}}</h1><p>Your membership level: {{{TIER}}}</p>",
+  text: "Hello {{{FIRST_NAME}}} {{{LAST_NAME}}}\n\nYour membership level: {{{TIER}}}",
   variables: [
     {
-      key: "FIRST_NAME",
+      key: "TIER",
       type: "string",
-      fallback_value: "John"
-    },
-    {
-      key: "LAST_NAME",
-      type: "string",
-      fallback_value: "Doe"
+      fallback_value: "free"
     }
   ]
 }

@@ -29,22 +29,22 @@ def example
     first_name: "Updated",
   }
 
-  retrieved = Resend::Contacts.get(audience_id, contact[:id])
+  retrieved = Resend::Contacts.get(id: contact[:id], audience_id: audience_id)
   puts "Retrived contact by ID"
   puts retrieved
 
-  retrieved_by_email = Resend::Contacts.get(audience_id, contact[:email])
+  retrieved_by_email = Resend::Contacts.get(email: params[:email], audience_id: audience_id)
   puts "Retrived contact by Email"
   puts retrieved_by_email
 
   updated = Resend::Contacts.update(update_params)
   puts "Updated contact: #{updated}"
 
-  contacts = Resend::Contacts.list(audience_id)
+  contacts = Resend::Contacts.list(audience_id: audience_id)
   puts contacts
 
   # Example with pagination
-  paginated_contacts = Resend::Contacts.list(audience_id, { limit: 10 })
+  paginated_contacts = Resend::Contacts.list(audience_id: audience_id, limit: 10)
   puts "Paginated contacts (limit 10):"
   puts paginated_contacts
 
@@ -62,9 +62,9 @@ def example
   puts "Topic created: #{topic}"
   topic_id = topic[:id]
 
-  # Get contact topics
-  puts "\nGetting contact topics..."
-  contact_topics = Resend::Contacts::Topics.get(contact[:id])
+  # List contact topics
+  puts "\nListing contact topics..."
+  contact_topics = Resend::Contacts::Topics.list(id: contact[:id])
   puts "Contact topics: #{contact_topics}"
 
   # Update contact topic subscriptions - opt in to the topic
@@ -79,9 +79,9 @@ def example
   updated_topics = Resend::Contacts::Topics.update(update_topics_params)
   puts "Updated topic subscription: #{updated_topics}"
 
-  # Get contact topics again to see the updated subscription
-  puts "\nGetting contact topics after opt-in..."
-  contact_topics_after = Resend::Contacts::Topics.get(contact[:id])
+  # List contact topics again to see the updated subscription
+  puts "\nListing contact topics after opt-in..."
+  contact_topics_after = Resend::Contacts::Topics.list(id: contact[:id])
   puts "Contact topics after update: #{contact_topics_after}"
 
   # Update contact topic subscriptions - opt out from the topic
@@ -99,10 +99,10 @@ def example
   puts "Topic deleted"
 
   # delete by id
-  del = Resend::Contacts.remove(audience_id, contact[:id])
+  del = Resend::Contacts.remove(id: contact[:id], audience_id: audience_id)
 
   # delete by email
-  # del = Resend::Contacts.remove(audience_id, "steve@example.com")
+  # del = Resend::Contacts.remove(email: "steve@example.com", audience_id: audience_id)
 
   puts "Deleted #{del}"
 end

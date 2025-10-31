@@ -6,42 +6,93 @@ module Resend
     class << self
       # https://resend.com/docs/api-reference/contacts/create-contact
       def create(params)
-        path = "audiences/#{params[:audience_id]}/contacts"
+        path = if params[:audience_id]
+                 "audiences/#{params[:audience_id]}/contacts"
+               else
+                 "contacts"
+               end
         Resend::Request.new(path, params, "post").perform
       end
 
       #
-      # Retrieves a contact from an audience
+      # Retrieves a contact
       #
-      # @param audience_id [String] the audience id
-      # @param id [String] either the contact id or contact's email
+      # @param params [Hash] the parameters
+      # @option params [String] :id either the contact id or contact's email (required)
+      # @option params [String] :audience_id optional audience id to scope the operation
+      #
+      # @example Get contact by ID
+      #   Resend::Contacts.get(id: "contact_123")
+      #
+      # @example Get contact scoped to an audience
+      #   Resend::Contacts.get(id: "contact_123", audience_id: "aud_456")
       #
       # https://resend.com/docs/api-reference/contacts/get-contact
-      def get(audience_id, id)
-        path = "audiences/#{audience_id}/contacts/#{id}"
+      def get(params = {})
+        raise ArgumentError, "Missing `id` or `email` field" if params[:id].nil? && params[:email].nil?
+
+        audience_id = params[:audience_id]
+        contact_id = params[:id] || params[:email]
+        path = if audience_id
+                 "audiences/#{audience_id}/contacts/#{contact_id}"
+               else
+                 "contacts/#{contact_id}"
+               end
         Resend::Request.new(path, {}, "get").perform
       end
 
       #
-      # List contacts in an audience
+      # List contacts
       #
-      # @param audience_id [String] the audience id
-      # @param params [Hash] optional pagination parameters
+      # @param params [Hash] optional parameters including pagination
+      # @option params [String] :audience_id optional audience id to scope the operation
+      # @option params [Integer] :limit number of records to return
+      # @option params [String] :cursor pagination cursor
+      #
+      # @example List all contacts
+      #   Resend::Contacts.list
+      #
+      # @example List contacts with pagination
+      #   Resend::Contacts.list(limit: 10)
+      #
+      # @example List contacts scoped to an audience
+      #   Resend::Contacts.list(audience_id: "aud_456", limit: 10)
+      #
       # https://resend.com/docs/api-reference/contacts/list-contacts
-      def list(audience_id, params = {})
-        path = Resend::PaginationHelper.build_paginated_path("audiences/#{audience_id}/contacts", params)
+      def list(params = {})
+        audience_id = params[:audience_id]
+        path = if audience_id
+                 Resend::PaginationHelper.build_paginated_path("audiences/#{audience_id}/contacts", params)
+               else
+                 Resend::PaginationHelper.build_paginated_path("contacts", params)
+               end
         Resend::Request.new(path, {}, "get").perform
       end
 
       #
-      # Remove a contact from an audience
+      # Remove a contact
       #
-      # @param audience_id [String] the audience id
-      # @param contact_id [String] either the contact id or contact email
+      # @param params [Hash] the parameters
+      # @option params [String] :id either the contact id or contact email (required)
+      # @option params [String] :audience_id optional audience id to scope the operation
       #
-      # see also: https://resend.com/docs/api-reference/contacts/delete-contact
-      def remove(audience_id, contact_id)
-        path = "audiences/#{audience_id}/contacts/#{contact_id}"
+      # @example Remove contact by ID
+      #   Resend::Contacts.remove(id: "contact_123")
+      #
+      # @example Remove contact scoped to an audience
+      #   Resend::Contacts.remove(id: "contact_123", audience_id: "aud_456")
+      #
+      # https://resend.com/docs/api-reference/contacts/delete-contact
+      def remove(params = {})
+        raise ArgumentError, "Missing `id` or `email` field" if params[:id].nil? && params[:email].nil?
+
+        audience_id = params[:audience_id]
+        contact_id = params[:id] || params[:email]
+        path = if audience_id
+                 "audiences/#{audience_id}/contacts/#{contact_id}"
+               else
+                 "contacts/#{contact_id}"
+               end
         Resend::Request.new(path, {}, "delete").perform
       end
 
@@ -51,9 +102,14 @@ module Resend
       # @param params [Hash] the contact params
       # https://resend.com/docs/api-reference/contacts/update-contact
       def update(params)
-        raise ArgumentError, "id or email is required" if params[:id].nil? && params[:email].nil?
+        raise ArgumentError, "Missing `id` or `email` field" if params[:id].nil? && params[:email].nil?
 
-        path = "audiences/#{params[:audience_id]}/contacts/#{params[:id] || params[:email]}"
+        contact_id = params[:id] || params[:email]
+        path = if params[:audience_id]
+                 "audiences/#{params[:audience_id]}/contacts/#{contact_id}"
+               else
+                 "contacts/#{contact_id}"
+               end
         Resend::Request.new(path, params, "patch").perform
       end
     end

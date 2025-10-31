@@ -6,13 +6,13 @@ raise if ENV["RESEND_API_KEY"].nil?
 
 Resend.api_key = ENV["RESEND_API_KEY"]
 
-# replace with an existing audience id
-audience_id = "78b8d3bc-a55a-45a3-aee6-6ec0a5e13d7e"
+# replace with an existing segment id
+segment_id = "78b8d3bc-a55a-45a3-aee6-6ec0a5e13d7e"
 
 create_params = {
   from: "onboarding@resend.dev",
   subject: "Hello from Ruby SDK",
-  audience_id: audience_id,
+  segment_id: segment_id,
   text: "Hello, how are you?",
   name: "Hello from Ruby SDK",
 }
@@ -39,10 +39,16 @@ puts "sent broadcast: #{sent_broadcast[:id]}"
 broadcasts = Resend::Broadcasts.list
 puts broadcasts
 
-# Example with pagination
-paginated_broadcasts = Resend::Broadcasts.list({ limit: 15, after: "broadcast_id_here" })
-puts "Paginated broadcasts (limit 15, after broadcast_id_here):"
-puts paginated_broadcasts
+# Example with pagination - only demonstrate if has_more is true
+if broadcasts[:has_more]
+  # In real usage, you'd use the cursor from the previous response
+  # For this example, we just show pagination with limit
+  paginated_broadcasts = Resend::Broadcasts.list({ limit: 5 })
+  puts "\nPaginated broadcasts (limit 5):"
+  puts paginated_broadcasts
+else
+  puts "\nNo more broadcasts to paginate through"
+end
 
 retrieved = Resend::Broadcasts.get(broadcast[:id])
 puts "retrieved #{retrieved[:id]}"
