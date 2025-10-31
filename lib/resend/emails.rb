@@ -51,12 +51,5 @@ module Resend
         Resend::Request.new(path, query_params, "get").perform
       end
     end
-
-    # This method is kept here for backwards compatibility
-    # Use Resend::Emails.send instead.
-    def send_email(params)
-      warn "[DEPRECATION] `send_email` is deprecated.  Please use `Resend::Emails.send` instead."
-      Resend::Emails.send(params)
-    end
   end
 end

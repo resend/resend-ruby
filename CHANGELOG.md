@@ -81,13 +81,51 @@ Resend::Segments.remove("segment_123")
 
 ### Added
 
+#### New API Modules
+
+- Add `Resend::Templates` API for managing email templates
+  - `Templates.create` - Create a new template
+  - `Templates.get` - Retrieve a template by ID
+  - `Templates.update` - Update an existing template
+  - `Templates.publish` - Publish a template
+  - `Templates.duplicate` - Duplicate an existing template
+  - `Templates.list` - List all templates with pagination
+  - `Templates.remove` - Delete a template
+- Add `Resend::Topics` API for managing topics
+  - `Topics.create` - Create a new topic
+  - `Topics.get` - Retrieve a topic by ID
+  - `Topics.update` - Update a topic
+  - `Topics.list` - List all topics with pagination
+  - `Topics.remove` - Delete a topic
 - Add `Resend::Segments` API for managing segments (replacement for Audiences)
+  - `Segments.create` - Create a new segment
+  - `Segments.get` - Retrieve a segment by ID
+  - `Segments.list` - List all segments
+  - `Segments.remove` - Delete a segment
 - Add `Resend::ContactProperties` API for managing custom contact properties
-  - `ContactProperties.update` validates and raises `ArgumentError: "Missing \`id\` field"` when id is not provided
+  - `ContactProperties.update` - Update contact properties (validates and raises `ArgumentError: "Missing \`id\` field"` when id is not provided)
+  - `ContactProperties.get` - Retrieve contact properties by ID
 - Add `Resend::Contacts::Segments` API for managing contact-segment relationships
+  - `Contacts::Segments.list` - List all segments for a contact
+  - `Contacts::Segments.add` - Add a contact to a segment
+  - `Contacts::Segments.remove` - Remove a contact from a segment
 - Add `Resend::Contacts::Topics` API for managing contact topic subscriptions
-- Add support for `email` parameter in `Contacts.get` and `Contacts.remove` methods
+  - `Contacts::Topics.list` - List topic subscriptions for a contact
+  - `Contacts::Topics.update` - Update topic subscriptions (opt-in/opt-out) for a contact
+
+#### Contacts API Enhancements
+
+- Add support for `email` parameter in `Contacts.get` and `Contacts.remove` methods (can now use email instead of ID)
 - Add `audience_id` support in Contacts API methods for scoped operations
+- Add support for global contacts (contacts not scoped to a specific audience/segment)
 - Add validation error messages matching Node.js SDK format with backticks around field names
+
+#### Broadcasts API Updates
+
+- Add deprecation warnings for `audience_id` in `Broadcasts.create` and `Broadcasts.update` (use `segment_id` instead)
+
+### Removed
+
+- Remove deprecated `send_email` method from `Resend::Emails` module (use `Resend::Emails.send` instead)
 
 [1.0.0]: https://github.com/resend/resend-ruby/compare/v0.26.0...v1.0.0
