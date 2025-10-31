@@ -29,11 +29,11 @@ def example
     first_name: "Updated",
   }
 
-  retrieved = Resend::Contacts.get(contact[:id], audience_id: audience_id)
+  retrieved = Resend::Contacts.get(id: contact[:id], audience_id: audience_id)
   puts "Retrived contact by ID"
   puts retrieved
 
-  retrieved_by_email = Resend::Contacts.get(contact[:email], audience_id: audience_id)
+  retrieved_by_email = Resend::Contacts.get(email: params[:email], audience_id: audience_id)
   puts "Retrived contact by Email"
   puts retrieved_by_email
 
@@ -49,10 +49,10 @@ def example
   puts paginated_contacts
 
   # delete by id
-  del = Resend::Contacts.remove(contact[:id], audience_id: audience_id)
+  del = Resend::Contacts.remove(id: contact[:id], audience_id: audience_id)
 
   # delete by email
-  # del = Resend::Contacts.remove("steve@example.com", audience_id: audience_id)
+  # del = Resend::Contacts.remove(email: "steve@example.com", audience_id: audience_id)
 
   puts "Deleted #{del}"
 end

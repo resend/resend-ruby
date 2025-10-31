@@ -15,32 +15,24 @@ module Resend
       end
 
       #
-      # Retrieves a contact from an audience
+      # Retrieves a contact
       #
-      # @overload get(audience_id, id)
-      #   Original signature for backward compatibility
-      #   @param audience_id [String] the audience id
-      #   @param id [String] either the contact id or contact's email
+      # @param params [Hash] the parameters
+      # @option params [String] :id either the contact id or contact's email (required)
+      # @option params [String] :audience_id optional audience id to scope the operation
       #
-      # @overload get(id, audience_id: nil)
-      #   New signature with optional audience_id
-      #   @param id [String] either the contact id or contact's email
-      #   @param audience_id [String] optional audience id to scope the operation
+      # @example Get contact by ID
+      #   Resend::Contacts.get(id: "contact_123")
+      #
+      # @example Get contact scoped to an audience
+      #   Resend::Contacts.get(id: "contact_123", audience_id: "aud_456")
       #
       # https://resend.com/docs/api-reference/contacts/get-contact
-      def get(audience_id_or_id, id_or_options = nil, **kwargs)
-        # Handle both calling styles for backward compatibility
-        if id_or_options.is_a?(String) || (id_or_options.nil? && kwargs.empty?)
-          # Old style: get(audience_id, contact_id) or get(audience_id, email)
-          # OR new style without audience_id: get(contact_id)
-          audience_id = id_or_options.nil? ? nil : audience_id_or_id
-          contact_id = id_or_options.nil? ? audience_id_or_id : id_or_options
-        else
-          # New style with keyword arg: get(contact_id, audience_id: 'xxx')
-          contact_id = audience_id_or_id
-          audience_id = kwargs[:audience_id]
-        end
+      def get(params = {})
+        raise ArgumentError, "Missing `id` or `email` field" if params[:id].nil? && params[:email].nil?
 
+        audience_id = params[:audience_id]
+        contact_id = params[:id] || params[:email]
         path = if audience_id
                  "audiences/#{audience_id}/contacts/#{contact_id}"
                else
@@ -50,64 +42,52 @@ module Resend
       end
 
       #
-      # List contacts in an audience
+      # List contacts
       #
-      # @overload list(audience_id, params = {})
-      #   Original signature for backward compatibility
-      #   @param audience_id [String] the audience id
-      #   @param params [Hash] optional pagination parameters
+      # @param params [Hash] optional parameters including pagination
+      # @option params [String] :audience_id optional audience id to scope the operation
+      # @option params [Integer] :limit number of records to return
+      # @option params [String] :cursor pagination cursor
       #
-      # @overload list(params = {})
-      #   New signature with optional audience_id in params
-      #   @param params [Hash] optional parameters including audience_id and pagination
+      # @example List all contacts
+      #   Resend::Contacts.list
+      #
+      # @example List contacts with pagination
+      #   Resend::Contacts.list(limit: 10)
+      #
+      # @example List contacts scoped to an audience
+      #   Resend::Contacts.list(audience_id: "aud_456", limit: 10)
       #
       # https://resend.com/docs/api-reference/contacts/list-contacts
-      def list(audience_id_or_params = {}, params = {})
-        # Handle both calling styles for backward compatibility
-        if audience_id_or_params.is_a?(String)
-          # Old style: list(audience_id, params)
-          audience_id = audience_id_or_params
-          query_params = params
-        else
-          # New style: list(params) or list(audience_id: 'xxx', limit: 10)
-          audience_id = audience_id_or_params[:audience_id]
-          query_params = audience_id_or_params
-        end
-
+      def list(params = {})
+        audience_id = params[:audience_id]
         path = if audience_id
-                 Resend::PaginationHelper.build_paginated_path("audiences/#{audience_id}/contacts", query_params)
+                 Resend::PaginationHelper.build_paginated_path("audiences/#{audience_id}/contacts", params)
                else
-                 Resend::PaginationHelper.build_paginated_path("contacts", query_params)
+                 Resend::PaginationHelper.build_paginated_path("contacts", params)
                end
         Resend::Request.new(path, {}, "get").perform
       end
 
       #
-      # Remove a contact from an audience
+      # Remove a contact
       #
-      # @overload remove(audience_id, contact_id)
-      #   Original signature for backward compatibility
-      #   @param audience_id [String] the audience id
-      #   @param contact_id [String] either the contact id or contact email
+      # @param params [Hash] the parameters
+      # @option params [String] :id either the contact id or contact email (required)
+      # @option params [String] :audience_id optional audience id to scope the operation
       #
-      # @overload remove(contact_id, audience_id: nil)
-      #   New signature with optional audience_id
-      #   @param contact_id [String] either the contact id or contact email
-      #   @param audience_id [String] optional audience id to scope the operation
+      # @example Remove contact by ID
+      #   Resend::Contacts.remove(id: "contact_123")
       #
-      # see also: https://resend.com/docs/api-reference/contacts/delete-contact
-      def remove(audience_id_or_contact_id, contact_id_or_options = nil, **kwargs)
-        # Handle both calling styles for backward compatibility
-        if contact_id_or_options.is_a?(String) || (contact_id_or_options.nil? && kwargs.empty?)
-          # Old style: remove(audience_id, contact_id) or new style: remove(contact_id)
-          audience_id = contact_id_or_options.nil? ? nil : audience_id_or_contact_id
-          contact_id = contact_id_or_options.nil? ? audience_id_or_contact_id : contact_id_or_options
-        else
-          # New style with keyword arg: remove(contact_id, audience_id: 'xxx')
-          contact_id = audience_id_or_contact_id
-          audience_id = kwargs[:audience_id]
-        end
+      # @example Remove contact scoped to an audience
+      #   Resend::Contacts.remove(id: "contact_123", audience_id: "aud_456")
+      #
+      # https://resend.com/docs/api-reference/contacts/delete-contact
+      def remove(params = {})
+        raise ArgumentError, "Missing `id` or `email` field" if params[:id].nil? && params[:email].nil?
 
+        audience_id = params[:audience_id]
+        contact_id = params[:id] || params[:email]
         path = if audience_id
                  "audiences/#{audience_id}/contacts/#{contact_id}"
                else
@@ -122,7 +102,7 @@ module Resend
       # @param params [Hash] the contact params
       # https://resend.com/docs/api-reference/contacts/update-contact
       def update(params)
-        raise ArgumentError, "id or email is required" if params[:id].nil? && params[:email].nil?
+        raise ArgumentError, "Missing `id` or `email` field" if params[:id].nil? && params[:email].nil?
 
         contact_id = params[:id] || params[:email]
         path = if params[:audience_id]

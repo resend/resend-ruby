@@ -7,12 +7,26 @@ raise if ENV["RESEND_API_KEY"].nil?
 Resend.api_key = ENV["RESEND_API_KEY"]
 
 def example
-  # Note: You'll need to create a topic first via the Topics API
-  # For this example, we'll assume you have a topic_id available
-  topic_id = ENV["TOPIC_ID"] || "your_topic_id_here"
+  puts "Fetching available topics..."
+  all_topics = Resend::Topics.list
 
-  # Step 1: Create a contact
-  puts "Creating a contact..."
+  # Handle both symbol and string keys (top-level keys are symbols, nested keys are strings)
+  data = all_topics[:data]
+
+  if data.empty?
+    puts "No topics found. Please create a topic first using Resend::Topics.create"
+    return
+  end
+
+  # Use the first available topic for this example
+  first_topic = data.first
+  topic_id = first_topic["id"]
+  topic_name = first_topic["name"]
+
+  puts "Using topic: #{topic_name} (#{topic_id})"
+
+  # Step 2: Create a contact
+  puts "\nCreating a contact..."
   contact_email = "test-#{Time.now.to_i}@example.com"
   contact = Resend::Contacts.create(
     email: contact_email,
@@ -22,30 +36,27 @@ def example
   contact_id = contact[:id]
   puts "Created contact: #{contact_id} (#{contact_email})"
 
-  # Step 2: List all topics for the contact (should be empty initially)
-  puts "\nListing topics for contact (should be empty)..."
+  puts "\nListing topics for contact..."
   topics = Resend::Contacts::Topics.list(contact_id: contact_id)
   puts "Contact topics: #{topics}"
 
-  # Step 3: Update contact topics (subscribe to topics)
-  puts "\nSubscribing contact to topics..."
+  puts "\nSubscribing contact to topic '#{topic_name}'..."
   result = Resend::Contacts::Topics.update(
     contact_id: contact_id,
-    topics: [topic_id]
+    topics: [
+      { id: topic_id, subscription: "opt_in" }
+    ]
   )
   puts "Updated contact topics: #{result}"
 
-  # Step 4: List topics again (should now include our topic)
-  puts "\nListing topics for contact (should now include the topic)..."
+  puts "\nListing topics for contact (should show updated subscription)..."
   topics = Resend::Contacts::Topics.list(contact_id: contact_id)
   puts "Contact topics: #{topics}"
 
-  # Step 5: You can also use email instead of contact_id
   puts "\nYou can also use email to list topics..."
   topics_by_email = Resend::Contacts::Topics.list(email: contact_email)
   puts "Topics by email: #{topics_by_email}"
 
-  # Step 6: You can also use pagination parameters
   puts "\nYou can also use pagination parameters..."
   topics_paginated = Resend::Contacts::Topics.list(
     contact_id: contact_id,
@@ -53,17 +64,17 @@ def example
   )
   puts "Topics with pagination: #{topics_paginated}"
 
-  # Step 7: Unsubscribe from all topics
-  puts "\nUnsubscribing from all topics..."
+  puts "\nUnsubscribing from topic '#{topic_name}'..."
   result = Resend::Contacts::Topics.update(
     contact_id: contact_id,
-    topics: []
+    topics: [
+      { id: topic_id, subscription: "opt_out" }
+    ]
   )
   puts "Updated contact topics: #{result}"
 
-  # Step 8: Cleanup - remove contact
   puts "\nCleaning up..."
-  Resend::Contacts.remove(contact_id)
+  Resend::Contacts.remove(id: contact_id)
   puts "Deleted contact: #{contact_id}"
 
   puts "\n✓ Example completed successfully!"

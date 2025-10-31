@@ -24,9 +24,10 @@ module Resend
 
       # https://resend.com/docs/api-reference/contact-properties/update-contact-property
       def update(params)
-        raise ArgumentError, "id is required" if params[:id].nil?
+        raise ArgumentError, "Missing `id` field" if params[:id].nil?
 
-        path = "contact-properties/#{params[:id]}"
+        contact_property_id = params[:id]
+        path = "contact-properties/#{contact_property_id}"
         Resend::Request.new(path, params, "patch").perform
       end
 

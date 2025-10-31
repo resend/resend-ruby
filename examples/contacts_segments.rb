@@ -65,7 +65,7 @@ def example
 
   # Step 8: Cleanup - remove contact and segment
   puts "\nCleaning up..."
-  Resend::Contacts.remove(contact_id)
+  Resend::Contacts.remove(id: contact_id)
   puts "Deleted contact: #{contact_id}"
 
   Resend::Segments.remove(segment_id)
