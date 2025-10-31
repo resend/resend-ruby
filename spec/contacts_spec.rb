@@ -303,4 +303,106 @@ RSpec.describe "Contacts" do
       expect(deleted[:deleted]).to be true
     end
   end
+
+  describe "properties handling" do
+    before do
+      Resend.configure do |config|
+        config.api_key = "re_123"
+      end
+    end
+
+    it "should include properties when creating a global contact" do
+      resp = {
+        "object": "contact",
+        "id": "479e3145-dd38-476b-932c-529ceb705947"
+      }
+
+      params = {
+        email: "test@example.com",
+        first_name: "Test",
+        properties: { custom_field: "value" }
+      }
+
+      # Verify that properties are passed to the Request
+      expect(Resend::Request).to receive(:new).with(
+        "contacts",
+        hash_including(properties: { custom_field: "value" }),
+        "post"
+      ).and_call_original
+
+      allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
+      Resend::Contacts.create(params)
+    end
+
+    it "should exclude properties when creating an audience-scoped contact" do
+      resp = {
+        "object": "contact",
+        "id": "479e3145-dd38-476b-932c-529ceb705947"
+      }
+
+      params = {
+        audience_id: "aud_123",
+        email: "test@example.com",
+        first_name: "Test",
+        properties: { custom_field: "value" }
+      }
+
+      # Verify that properties are NOT passed to the Request
+      expect(Resend::Request).to receive(:new).with(
+        "audiences/aud_123/contacts",
+        hash_excluding(:properties),
+        "post"
+      ).and_call_original
+
+      allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
+      Resend::Contacts.create(params)
+    end
+
+    it "should include properties when updating a global contact" do
+      resp = {
+        "object": "contact",
+        "id": "479e3145-dd38-476b-932c-529ceb705947"
+      }
+
+      params = {
+        id: "479e3145-dd38-476b-932c-529ceb705947",
+        first_name: "Updated",
+        properties: { custom_field: "new_value" }
+      }
+
+      # Verify that properties are passed to the Request
+      expect(Resend::Request).to receive(:new).with(
+        "contacts/479e3145-dd38-476b-932c-529ceb705947",
+        hash_including(properties: { custom_field: "new_value" }),
+        "patch"
+      ).and_call_original
+
+      allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
+      Resend::Contacts.update(params)
+    end
+
+    it "should exclude properties when updating an audience-scoped contact" do
+      resp = {
+        "object": "contact",
+        "id": "479e3145-dd38-476b-932c-529ceb705947"
+      }
+
+      params = {
+        audience_id: "aud_123",
+        id: "479e3145-dd38-476b-932c-529ceb705947",
+        first_name: "Updated",
+        properties: { custom_field: "new_value" }
+      }
+
+      # Verify that properties are NOT passed to the Request
+      expect(Resend::Request).to receive(:new).with(
+        "audiences/aud_123/contacts/479e3145-dd38-476b-932c-529ceb705947",
+        hash_excluding(:properties),
+        "patch"
+      ).and_call_original
+
+      allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
+      Resend::Contacts.update(params)
+    end
+  end
 end

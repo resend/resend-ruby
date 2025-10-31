@@ -6,12 +6,15 @@ module Resend
     class << self
       # https://resend.com/docs/api-reference/contacts/create-contact
       def create(params)
-        path = if params[:audience_id]
-                 "audiences/#{params[:audience_id]}/contacts"
-               else
-                 "contacts"
-               end
-        Resend::Request.new(path, params, "post").perform
+        if params[:audience_id]
+          path = "audiences/#{params[:audience_id]}/contacts"
+          # Audience-scoped contacts don't support properties
+          payload = params.reject { |key, _| key == :properties }
+        else
+          path = "contacts"
+          payload = params
+        end
+        Resend::Request.new(path, payload, "post").perform
       end
 
       #
@@ -105,12 +108,15 @@ module Resend
         raise ArgumentError, "Missing `id` or `email` field" if params[:id].nil? && params[:email].nil?
 
         contact_id = params[:id] || params[:email]
-        path = if params[:audience_id]
-                 "audiences/#{params[:audience_id]}/contacts/#{contact_id}"
-               else
-                 "contacts/#{contact_id}"
-               end
-        Resend::Request.new(path, params, "patch").perform
+        if params[:audience_id]
+          path = "audiences/#{params[:audience_id]}/contacts/#{contact_id}"
+          # Audience-scoped contacts don't support properties
+          payload = params.reject { |key, _| key == :properties }
+        else
+          path = "contacts/#{contact_id}"
+          payload = params
+        end
+        Resend::Request.new(path, payload, "patch").perform
       end
     end
   end
