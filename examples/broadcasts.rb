@@ -20,6 +20,25 @@ create_params = {
 broadcast = Resend::Broadcasts.create(create_params)
 puts "created broadcast: #{broadcast[:id]}"
 
+# Example using deprecated audience_id (still works for backwards compatibility)
+create_params_deprecated = {
+  from: "onboarding@resend.dev",
+  subject: "Hello from Ruby SDK (deprecated audience_id)",
+  audience_id: segment_id, # deprecated: use segment_id instead
+  text: "This example shows audience_id still works",
+  name: "Broadcast with deprecated audience_id",
+}
+
+broadcast_deprecated = Resend::Broadcasts.create(create_params_deprecated)
+puts "created broadcast with deprecated audience_id: #{broadcast_deprecated[:id]}"
+
+# Clean up the deprecated example if it's in draft status
+retrieved_deprecated = Resend::Broadcasts.get(broadcast_deprecated[:id])
+if retrieved_deprecated[:status] == 'draft'
+  Resend::Broadcasts.remove(broadcast_deprecated[:id])
+  puts "removed deprecated example broadcast: #{broadcast_deprecated[:id]}"
+end
+
 update_params = {
   broadcast_id: broadcast[:id],
   name: "Hello from Ruby SDK - updated",
