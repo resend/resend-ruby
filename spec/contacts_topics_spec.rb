@@ -11,8 +11,8 @@ RSpec.describe "Contacts::Topics" do
     end
   end
 
-  describe "get contact topics" do
-    it "should retrieve topics by contact id" do
+  describe "list contact topics" do
+    it "should list topics by contact id" do
       resp = {
         "object": "list",
         "data": [
@@ -25,26 +25,32 @@ RSpec.describe "Contacts::Topics" do
       }
 
       allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
-      topics = Resend::Contacts::Topics.get(contact_id)
+      topics = Resend::Contacts::Topics.list(id: contact_id)
       expect(topics[:object]).to eql "list"
       expect(topics[:data].length).to eql 1
       expect(topics[:data][0][:id]).to eql topic_id
       expect(topics[:data][0][:name]).to eql "Product Updates"
     end
 
-    it "should retrieve topics by contact email" do
+    it "should list topics by contact email" do
       resp = {
         "object": "list",
         "data": []
       }
 
       allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
-      topics = Resend::Contacts::Topics.get("steve@example.com")
+      topics = Resend::Contacts::Topics.list(email: "steve@example.com")
       expect(topics[:object]).to eql "list"
       expect(topics[:data].length).to eql 0
     end
 
-    it "should retrieve topics with pagination parameters" do
+    it "should raise error when neither id nor email is provided" do
+      expect {
+        Resend::Contacts::Topics.list({})
+      }.to raise_error(ArgumentError, "Either :id or :email must be provided")
+    end
+
+    it "should list topics with pagination parameters" do
       resp = {
         "object": "list",
         "data": [
@@ -58,7 +64,7 @@ RSpec.describe "Contacts::Topics" do
       }
 
       allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
-      topics = Resend::Contacts::Topics.get(contact_id, limit: 10, after: "cursor123")
+      topics = Resend::Contacts::Topics.list(id: contact_id, limit: 10, after: "cursor123")
       expect(topics[:object]).to eql "list"
       expect(topics[:data].length).to eql 1
       expect(topics[:has_more]).to be true

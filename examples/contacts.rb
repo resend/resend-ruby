@@ -62,9 +62,9 @@ def example
   puts "Topic created: #{topic}"
   topic_id = topic[:id]
 
-  # Get contact topics
-  puts "\nGetting contact topics..."
-  contact_topics = Resend::Contacts::Topics.get(contact[:id])
+  # List contact topics
+  puts "\nListing contact topics..."
+  contact_topics = Resend::Contacts::Topics.list(id: contact[:id])
   puts "Contact topics: #{contact_topics}"
 
   # Update contact topic subscriptions - opt in to the topic
@@ -79,9 +79,9 @@ def example
   updated_topics = Resend::Contacts::Topics.update(update_topics_params)
   puts "Updated topic subscription: #{updated_topics}"
 
-  # Get contact topics again to see the updated subscription
-  puts "\nGetting contact topics after opt-in..."
-  contact_topics_after = Resend::Contacts::Topics.get(contact[:id])
+  # List contact topics again to see the updated subscription
+  puts "\nListing contact topics after opt-in..."
+  contact_topics_after = Resend::Contacts::Topics.list(id: contact[:id])
   puts "Contact topics after update: #{contact_topics_after}"
 
   # Update contact topic subscriptions - opt out from the topic

@@ -10,7 +10,6 @@ def example
   puts "Fetching available topics..."
   all_topics = Resend::Topics.list
 
-  # Handle both symbol and string keys (top-level keys are symbols, nested keys are strings)
   data = all_topics[:data]
 
   if data.empty?
@@ -37,12 +36,12 @@ def example
   puts "Created contact: #{contact_id} (#{contact_email})"
 
   puts "\nListing topics for contact..."
-  topics = Resend::Contacts::Topics.list(contact_id: contact_id)
+  topics = Resend::Contacts::Topics.list(id: contact_id)
   puts "Contact topics: #{topics}"
 
   puts "\nSubscribing contact to topic '#{topic_name}'..."
   result = Resend::Contacts::Topics.update(
-    contact_id: contact_id,
+    id: contact_id,
     topics: [
       { id: topic_id, subscription: "opt_in" }
     ]
@@ -50,7 +49,7 @@ def example
   puts "Updated contact topics: #{result}"
 
   puts "\nListing topics for contact (should show updated subscription)..."
-  topics = Resend::Contacts::Topics.list(contact_id: contact_id)
+  topics = Resend::Contacts::Topics.list(id: contact_id)
   puts "Contact topics: #{topics}"
 
   puts "\nYou can also use email to list topics..."
@@ -58,15 +57,12 @@ def example
   puts "Topics by email: #{topics_by_email}"
 
   puts "\nYou can also use pagination parameters..."
-  topics_paginated = Resend::Contacts::Topics.list(
-    contact_id: contact_id,
-    limit: 10
-  )
+  topics_paginated = Resend::Contacts::Topics.list(id: contact_id, limit: 10)
   puts "Topics with pagination: #{topics_paginated}"
 
   puts "\nUnsubscribing from topic '#{topic_name}'..."
   result = Resend::Contacts::Topics.update(
-    contact_id: contact_id,
+    id: contact_id,
     topics: [
       { id: topic_id, subscription: "opt_out" }
     ]
