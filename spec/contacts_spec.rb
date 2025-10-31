@@ -35,7 +35,7 @@ RSpec.describe "Contacts" do
 
   describe "get contact" do
 
-    it "should retrieve a contact by id (new style with keyword arg)" do
+    it "should retrieve a contact by id" do
 
       resp = {
         "object": "contact",
@@ -50,7 +50,7 @@ RSpec.describe "Contacts" do
       allow(resp).to receive(:body).and_return(resp)
       allow(HTTParty).to receive(:send).and_return(resp)
 
-      contact = Resend::Contacts.get(resp[:id], audience_id: audience_id)
+      contact = Resend::Contacts.get(id: resp[:id], audience_id: audience_id)
 
       expect(contact[:object]).to eql "contact"
       expect(contact[:id]).to eql "e169aa45-1ecf-4183-9955-b1499d5701d3"
@@ -61,8 +61,7 @@ RSpec.describe "Contacts" do
       expect(contact[:created_at]).to eql "2023-10-06T23:47:56.678Z"
     end
 
-    it "should retrieve a contact by id (old style with positional args)" do
-
+    it "should retrieve a contact by email" do
       resp = {
         "object": "contact",
         "id": "e169aa45-1ecf-4183-9955-b1499d5701d3",
@@ -76,57 +75,7 @@ RSpec.describe "Contacts" do
       allow(resp).to receive(:body).and_return(resp)
       allow(HTTParty).to receive(:send).and_return(resp)
 
-      contact = Resend::Contacts.get(audience_id, resp[:id])
-
-      expect(contact[:object]).to eql "contact"
-      expect(contact[:id]).to eql "e169aa45-1ecf-4183-9955-b1499d5701d3"
-      expect(contact[:first_name]).to eql "Steve"
-      expect(contact[:last_name]).to eql "Wozniak"
-      expect(contact[:email]).to eql "steve.wozniak@gmail.com"
-      expect(contact[:unsubscribed]).to be false
-      expect(contact[:created_at]).to eql "2023-10-06T23:47:56.678Z"
-    end
-
-    it "should retrieve a contact by email (new style)" do
-      resp = {
-        "object": "contact",
-        "id": "e169aa45-1ecf-4183-9955-b1499d5701d3",
-        "email": "steve.wozniak@gmail.com",
-        "first_name": "Steve",
-        "last_name": "Wozniak",
-        "created_at": "2023-10-06T23:47:56.678Z",
-        "unsubscribed": false
-      }
-
-      allow(resp).to receive(:body).and_return(resp)
-      allow(HTTParty).to receive(:send).and_return(resp)
-
-      contact = Resend::Contacts.get(resp[:email], audience_id: audience_id)
-
-      expect(contact[:object]).to eql "contact"
-      expect(contact[:id]).to eql "e169aa45-1ecf-4183-9955-b1499d5701d3"
-      expect(contact[:first_name]).to eql "Steve"
-      expect(contact[:last_name]).to eql "Wozniak"
-      expect(contact[:email]).to eql "steve.wozniak@gmail.com"
-      expect(contact[:unsubscribed]).to be false
-      expect(contact[:created_at]).to eql "2023-10-06T23:47:56.678Z"
-    end
-
-    it "should retrieve a contact by email (old style)" do
-      resp = {
-        "object": "contact",
-        "id": "e169aa45-1ecf-4183-9955-b1499d5701d3",
-        "email": "steve.wozniak@gmail.com",
-        "first_name": "Steve",
-        "last_name": "Wozniak",
-        "created_at": "2023-10-06T23:47:56.678Z",
-        "unsubscribed": false
-      }
-
-      allow(resp).to receive(:body).and_return(resp)
-      allow(HTTParty).to receive(:send).and_return(resp)
-
-      contact = Resend::Contacts.get(audience_id, resp[:email])
+      contact = Resend::Contacts.get(email: resp[:email], audience_id: audience_id)
 
       expect(contact[:object]).to eql "contact"
       expect(contact[:id]).to eql "e169aa45-1ecf-4183-9955-b1499d5701d3"
@@ -167,7 +116,7 @@ RSpec.describe "Contacts" do
       expect(contacts[:data][0][:unsubscribed]).to be false
     end
 
-    it "should list contacts (old style with positional args)" do
+    it "should list contacts with pagination" do
 
       resp = {
         "object": "list",
@@ -184,7 +133,7 @@ RSpec.describe "Contacts" do
       }
 
       allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
-      contacts = Resend::Contacts.list(audience_id, { limit: 10 })
+      contacts = Resend::Contacts.list(audience_id: audience_id, limit: 10)
       expect(contacts[:object]).to eql "list"
       expect(contacts[:data].length).to eql 1
       expect(contacts[:data][0][:id]).to eql "e169aa45-1ecf-4183-9955-b1499d5701d3"

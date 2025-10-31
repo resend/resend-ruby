@@ -2,58 +2,73 @@
 
 module Resend
   module Contacts
-    # Contact Topics api wrapper
+    # Module for managing contact topic subscriptions
+    #
+    # Allows you to manage which topics contacts are subscribed to
     module Topics
       class << self
+        # Retrieve a list of topics subscriptions for a contact
         #
-        # List all topics for a contact
+        # @param contact_identifier [String] The Contact ID or Email
+        # @param params [Hash] Optional query parameters
+        # @option params [Integer] :limit Number of topics to retrieve (1-100)
+        # @option params [String] :after The ID after which to retrieve more topics
+        # @option params [String] :before The ID before which to retrieve more topics
         #
-        # @param params [Hash] the parameters
-        # @option params [String] :contact_id the contact id (either contact_id or email is required)
-        # @option params [String] :email the contact email (either contact_id or email is required)
-        # @option params [Integer] :limit the maximum number of results to return (optional)
-        # @option params [String] :after the cursor for pagination (optional)
-        # @option params [String] :before the cursor for pagination (optional)
+        # @return [Hash] Response containing list of topics with subscription status
         #
-        # https://resend.com/docs/api-reference/contacts/list-contact-topics
-        def list(params)
-          raise ArgumentError, "contact_id or email is required" if params[:contact_id].nil? && params[:email].nil?
+        # @example Get topics by contact ID
+        #   Resend::Contacts::Topics.get('e169aa45-1ecf-4183-9955-b1499d5701d3')
+        #
+        # @example Get topics by contact email
+        #   Resend::Contacts::Topics.get('steve.wozniak@gmail.com')
+        #
+        # @example Get topics with pagination
+        #   Resend::Contacts::Topics.get('contact-id', { limit: 10, after: 'cursor_123' })
+        def get(contact_identifier, params = {})
+          pagination_params = params.slice(:limit, :after, :before)
+          base_path = "contacts/#{contact_identifier}/topics"
+          path = Resend::PaginationHelper.build_paginated_path(base_path, pagination_params)
 
-          identifier = params[:contact_id] || params[:email]
-          base_path = "contacts/#{identifier}/topics"
-          path = Resend::PaginationHelper.build_paginated_path(base_path, params)
           Resend::Request.new(path, {}, "get").perform
         end
 
+        # Update topic subscriptions for a contact
         #
-        # Update topics for a contact
+        # @param params [Hash] Parameters for updating topics
+        # @option params [String] :id The Contact ID (either :id or :email must be provided)
+        # @option params [String] :email The Contact Email (either :id or :email must be provided)
+        # @option params [Array<Hash>] :topics Array of topic subscription updates
+        #   Each topic hash should contain:
+        #   - :id [String] The Topic ID (required)
+        #   - :subscription [String] The subscription action: 'opt_in' or 'opt_out' (required)
         #
-        # @param params [Hash] the parameters
-        # @option params [String] :contact_id the contact id (either contact_id or email is required)
-        # @option params [String] :email the contact email (either contact_id or email is required)
-        # @option params [Array<Hash>] :topics array of topic subscription objects
-        #   Each object must have:
-        #   - id [String] the topic id
-        #   - subscription [String] either "opt_in" or "opt_out"
+        # @return [Hash] Response containing the contact ID
         #
-        # @example
-        #   Resend::Contacts::Topics.update(
-        #     contact_id: "contact_123",
+        # @example Update by contact ID
+        #   Resend::Contacts::Topics.update({
+        #     id: 'e169aa45-1ecf-4183-9955-b1499d5701d3',
         #     topics: [
-        #       { id: "topic_abc", subscription: "opt_in" },
-        #       { id: "topic_xyz", subscription: "opt_out" }
+        #       { id: 'b6d24b8e-af0b-4c3c-be0c-359bbd97381e', subscription: 'opt_out' },
+        #       { id: '07d84122-7224-4881-9c31-1c048e204602', subscription: 'opt_in' }
         #     ]
-        #   )
+        #   })
         #
-        # https://resend.com/docs/api-reference/contacts/update-contact-topics
+        # @example Update by contact email
+        #   Resend::Contacts::Topics.update({
+        #     email: 'steve.wozniak@gmail.com',
+        #     topics: [
+        #       { id: '07d84122-7224-4881-9c31-1c048e204602', subscription: 'opt_out' }
+        #     ]
+        #   })
         def update(params)
-          raise ArgumentError, "contact_id or email is required" if params[:contact_id].nil? && params[:email].nil?
-          raise ArgumentError, "topics is required" if params[:topics].nil?
+          contact_identifier = params[:id] || params[:email]
+          raise ArgumentError, "Either :id or :email must be provided" if contact_identifier.nil?
 
-          identifier = params[:contact_id] || params[:email]
-          path = "contacts/#{identifier}/topics"
-          # The API expects a direct array of topic objects, not a hash with a topics key
-          Resend::Request.new(path, params[:topics], "patch").perform
+          path = "contacts/#{contact_identifier}/topics"
+          body = params[:topics]
+
+          Resend::Request.new(path, body, "patch").perform
         end
       end
     end

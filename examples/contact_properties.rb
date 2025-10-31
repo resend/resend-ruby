@@ -7,40 +7,53 @@ raise if ENV["RESEND_API_KEY"].nil?
 Resend.api_key = ENV["RESEND_API_KEY"]
 
 def example
-  puts "Creating a contact property..."
-  property = Resend::ContactProperties.create(
-    key: "user_tier",
+  # Create a contact property with string type
+  puts "Creating a string contact property..."
+  string_property = Resend::ContactProperties.create({
+    key: "company_name",
     type: "string",
-    fallback_value: "free"
-  )
-  property_id = property[:id]
-  puts "Created contact property: #{property_id}"
-  puts "Property details: #{property}"
+    fallback_value: "Acme Corp"
+  })
+  puts "Created property: #{string_property}"
 
+  property_id = string_property[:id]
+
+  # Create a contact property with number type
+  puts "\nCreating a number contact property..."
+  number_property = Resend::ContactProperties.create({
+    key: "age",
+    type: "number",
+    fallback_value: 0
+  })
+  puts "Created property: #{number_property}"
+
+  # Retrieve a contact property
+  puts "\nRetrieving contact property by ID..."
+  retrieved_property = Resend::ContactProperties.get(property_id)
+  puts "Retrieved property: #{retrieved_property}"
+
+  # List all contact properties
   puts "\nListing all contact properties..."
-  properties = Resend::ContactProperties.list
-  puts "Contact properties: #{properties}"
+  all_properties = Resend::ContactProperties.list
+  puts "All properties: #{all_properties}"
 
+  # List contact properties with pagination
   puts "\nListing contact properties with pagination..."
-  properties_paginated = Resend::ContactProperties.list(limit: 10)
-  puts "Paginated properties: #{properties_paginated}"
+  paginated_properties = Resend::ContactProperties.list({ limit: 10 })
+  puts "Paginated properties: #{paginated_properties}"
 
-  puts "\nGetting contact property by id..."
-  property_details = Resend::ContactProperties.get(property_id)
-  puts "Property details: #{property_details}"
-
+  # Update a contact property
   puts "\nUpdating contact property..."
-  updated_property = Resend::ContactProperties.update(
+  updated_property = Resend::ContactProperties.update({
     id: property_id,
-    fallback_value: "premium"
-  )
+    fallback_value: "Example Company"
+  })
   puts "Updated property: #{updated_property}"
 
-  puts "\nCleaning up..."
+  # Delete a contact property
+  puts "\nDeleting contact property..."
   deleted = Resend::ContactProperties.remove(property_id)
-  puts "Deleted contact property: #{deleted}"
-
-  puts "\n✓ Example completed successfully!"
+  puts "Deleted property: #{deleted}"
 end
 
 example
