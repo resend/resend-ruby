@@ -11,8 +11,8 @@ RSpec.describe "Contacts::Topics" do
     end
   end
 
-  describe "list contact topics" do
-    it "should list topics for a contact using contact_id" do
+  describe "get contact topics" do
+    it "should retrieve topics by contact id" do
       resp = {
         "object": "list",
         "data": [
@@ -25,32 +25,26 @@ RSpec.describe "Contacts::Topics" do
       }
 
       allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
-      topics = Resend::Contacts::Topics.list(contact_id: contact_id)
+      topics = Resend::Contacts::Topics.get(contact_id)
       expect(topics[:object]).to eql "list"
       expect(topics[:data].length).to eql 1
       expect(topics[:data][0][:id]).to eql topic_id
       expect(topics[:data][0][:name]).to eql "Product Updates"
     end
 
-    it "should list topics for a contact using email" do
+    it "should retrieve topics by contact email" do
       resp = {
         "object": "list",
         "data": []
       }
 
       allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
-      topics = Resend::Contacts::Topics.list(email: "steve@example.com")
+      topics = Resend::Contacts::Topics.get("steve@example.com")
       expect(topics[:object]).to eql "list"
       expect(topics[:data].length).to eql 0
     end
 
-    it "should raise error when contact_id and email are both missing" do
-      expect {
-        Resend::Contacts::Topics.list({})
-      }.to raise_error(ArgumentError, "contact_id or email is required")
-    end
-
-    it "should support pagination parameters" do
+    it "should retrieve topics with pagination parameters" do
       resp = {
         "object": "list",
         "data": [
@@ -64,11 +58,7 @@ RSpec.describe "Contacts::Topics" do
       }
 
       allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
-      topics = Resend::Contacts::Topics.list(
-        contact_id: contact_id,
-        limit: 10,
-        after: "cursor123"
-      )
+      topics = Resend::Contacts::Topics.get(contact_id, limit: 10, after: "cursor123")
       expect(topics[:object]).to eql "list"
       expect(topics[:data].length).to eql 1
       expect(topics[:has_more]).to be true
@@ -76,7 +66,7 @@ RSpec.describe "Contacts::Topics" do
   end
 
   describe "update contact topics" do
-    it "should update topics for a contact using contact_id" do
+    it "should update topics by contact id" do
       resp = {
         "object": "contact",
         "id": contact_id
@@ -84,14 +74,14 @@ RSpec.describe "Contacts::Topics" do
 
       allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
       result = Resend::Contacts::Topics.update(
-        contact_id: contact_id,
-        topics: [topic_id, "tp_456def"]
+        id: contact_id,
+        topics: [{ id: topic_id, subscription: 'opt_in' }]
       )
       expect(result[:id]).to eql contact_id
       expect(result[:object]).to eql "contact"
     end
 
-    it "should update topics for a contact using email" do
+    it "should update topics by contact email" do
       resp = {
         "object": "contact",
         "id": contact_id
@@ -100,16 +90,16 @@ RSpec.describe "Contacts::Topics" do
       allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
       result = Resend::Contacts::Topics.update(
         email: "steve@example.com",
-        topics: [topic_id]
+        topics: [{ id: topic_id, subscription: 'opt_out' }]
       )
       expect(result[:id]).to eql contact_id
       expect(result[:object]).to eql "contact"
     end
 
-    it "should raise error when contact_id and email are both missing" do
+    it "should raise error when neither id nor email is provided" do
       expect {
         Resend::Contacts::Topics.update(topics: [topic_id])
-      }.to raise_error(ArgumentError, "contact_id or email is required")
+      }.to raise_error(ArgumentError, "Either :id or :email must be provided")
     end
   end
 end

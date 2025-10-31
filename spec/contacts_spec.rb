@@ -145,7 +145,7 @@ RSpec.describe "Contacts" do
   end
 
   describe "remove contact" do
-    it "should remove contact by id (new style)" do
+    it "should remove contact by id" do
 
       resp = {
         "object": "contact",
@@ -156,24 +156,7 @@ RSpec.describe "Contacts" do
       allow(resp).to receive(:body).and_return(resp)
       allow(HTTParty).to receive(:send).and_return(resp)
 
-      deleted = Resend::Contacts.remove(resp[:id], audience_id: audience_id)
-      expect(deleted[:object]).to eql("contact")
-      expect(deleted[:id]).to eql(resp[:id])
-      expect(deleted[:deleted]).to be true
-    end
-
-    it "should remove contact by id (old style)" do
-
-      resp = {
-        "object": "contact",
-        "id": "520784e2-887d-4c25-b53c-4ad46ad38100",
-        "deleted": true
-      }
-
-      allow(resp).to receive(:body).and_return(resp)
-      allow(HTTParty).to receive(:send).and_return(resp)
-
-      deleted = Resend::Contacts.remove(audience_id, resp[:id])
+      deleted = Resend::Contacts.remove(id: resp[:id], audience_id: audience_id)
       expect(deleted[:object]).to eql("contact")
       expect(deleted[:id]).to eql(resp[:id])
       expect(deleted[:deleted]).to be true
@@ -210,7 +193,7 @@ RSpec.describe "Contacts" do
       begin
         Resend::Contacts.update({ audience_id: "123" })
       rescue ArgumentError => e
-        expect(e.message).to eql("id or email is required")
+        expect(e.message).to eql("Missing `id` or `email` field")
       end
     end
   end
@@ -254,7 +237,7 @@ RSpec.describe "Contacts" do
       allow(resp).to receive(:body).and_return(resp)
       allow(HTTParty).to receive(:send).and_return(resp)
 
-      contact = Resend::Contacts.get(resp[:id])
+      contact = Resend::Contacts.get(id: resp[:id])
 
       expect(contact[:object]).to eql "contact"
       expect(contact[:id]).to eql "e169aa45-1ecf-4183-9955-b1499d5701d3"
@@ -314,7 +297,7 @@ RSpec.describe "Contacts" do
       allow(resp).to receive(:body).and_return(resp)
       allow(HTTParty).to receive(:send).and_return(resp)
 
-      deleted = Resend::Contacts.remove(resp[:id])
+      deleted = Resend::Contacts.remove(id: resp[:id])
       expect(deleted[:object]).to eql("contact")
       expect(deleted[:id]).to eql(resp[:id])
       expect(deleted[:deleted]).to be true

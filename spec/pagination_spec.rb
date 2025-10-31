@@ -176,7 +176,7 @@ RSpec.describe "Pagination" do
       expect(result[:has_more]).to be false
     end
 
-    it "should accept pagination parameters (old style)" do
+    it "should accept pagination parameters with audience_id" do
       resp = {
         "object": "list",
         "data": [
@@ -196,7 +196,7 @@ RSpec.describe "Pagination" do
         request_instance
       end
 
-      result = Resend::Contacts.list("audience_123", { limit: 20 })
+      result = Resend::Contacts.list(audience_id: "audience_123", limit: 20)
       expect(result[:object]).to eql("list")
       expect(result[:has_more]).to be false
     end
