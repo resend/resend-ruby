@@ -34,7 +34,10 @@ module Resend
       resp = HTTParty.send(@verb.to_sym, "#{BASE_URL}#{@path}", options)
 
       check_json!(resp)
-      process_response(resp)
+      data = process_response(resp)
+      headers = extract_headers(resp)
+
+      Resend::Response.new(data, headers)
     end
 
     def handle_error!(resp)
@@ -100,6 +103,13 @@ module Resend
       end
     rescue JSON::ParserError, TypeError
       raise Resend::Error::InternalServerError.new("Resend API returned an unexpected response", nil)
+    end
+
+    # Extract and normalize headers from the HTTParty response
+    def extract_headers(resp)
+      return {} unless resp.respond_to?(:headers)
+
+      resp.headers.to_h.transform_keys { |k| k.to_s.downcase }
     end
   end
 end

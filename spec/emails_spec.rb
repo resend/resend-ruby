@@ -303,5 +303,47 @@ RSpec.describe "Emails" do
       allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
       expect(Resend::Emails.send(params)[:id]).to eql(resp[:id])
     end
+
+    it "exposes response headers" do
+      resp_data = {id: "872d1f17-0f08-424c-a18c-d425324acab6"}
+      resp_headers = {"content-type" => "application/json", "x-ratelimit-remaining" => "50"}
+      mock_response = Resend::Response.new(resp_data, resp_headers)
+
+      params = {
+        "from": "from@e.io",
+        "to": ["email1@email.com"],
+        "text": "test",
+        "subject": "test"
+      }
+
+      allow_any_instance_of(Resend::Request).to receive(:perform).and_return(mock_response)
+
+      result = Resend::Emails.send(params)
+
+      # Backwards compatible hash access
+      expect(result[:id]).to eql("872d1f17-0f08-424c-a18c-d425324acab6")
+
+      # New headers functionality
+      expect(result.headers).to be_a(Hash)
+      expect(result.headers["content-type"]).to eq("application/json")
+      expect(result.headers["x-ratelimit-remaining"]).to eq("50")
+    end
+
+    it "maintains backwards compatibility with hash operations" do
+      resp_data = {id: "872d1f17-0f08-424c-a18c-d425324acab6", status: "sent"}
+      resp_headers = {"content-type" => "application/json"}
+      mock_response = Resend::Response.new(resp_data, resp_headers)
+
+      allow_any_instance_of(Resend::Request).to receive(:perform).and_return(mock_response)
+
+      result = Resend::Emails.send({ from: "test@example.com", to: ["user@example.com"] })
+
+      # All hash-like operations should still work
+      expect(result[:id]).to eq("872d1f17-0f08-424c-a18c-d425324acab6")
+      expect(result[:status]).to eq("sent")
+      expect(result.dig(:id)).to eq("872d1f17-0f08-424c-a18c-d425324acab6")
+      expect(result.keys).to include(:id, :status)
+      expect(result.values).to include("872d1f17-0f08-424c-a18c-d425324acab6", "sent")
+    end
   end
 end
