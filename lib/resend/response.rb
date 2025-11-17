@@ -26,9 +26,7 @@ module Resend
 
     # Access response headers
     # @return [Hash] Response headers as a hash with lowercase string keys
-    def headers
-      @headers
-    end
+    attr_reader :headers
 
     # Hash-like access via []
     # @param key [Symbol, String] The key to access
@@ -57,7 +55,7 @@ module Resend
       @data
     end
 
-    alias_method :to_hash, :to_h
+    alias to_hash to_h
 
     # Get all keys from the data
     # @return [Array] Array of keys
@@ -78,7 +76,7 @@ module Resend
       @data.key?(key)
     end
 
-    alias_method :has_key?, :key?
+    alias has_key? key?
 
     # Enable enumeration over the data
     def each(&block)
@@ -129,9 +127,7 @@ module Resend
       return {} if headers.nil?
 
       # Handle HTTParty::Response object
-      if headers.respond_to?(:headers)
-        headers = headers.headers
-      end
+      headers = headers.headers if headers.respond_to?(:headers)
 
       # Convert to hash and normalize keys to lowercase strings
       case headers
