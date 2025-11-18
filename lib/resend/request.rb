@@ -40,10 +40,10 @@ module Resend
       Resend::Response.new(data, headers)
     end
 
-    def handle_error!(resp)
-      code = resp[:statusCode]
-      body = resp[:message]
-      headers = resp.respond_to?(:headers) ? resp.headers : (resp[:headers] || {})
+    def handle_error!(data, resp = nil)
+      code = data[:statusCode]
+      body = data[:message]
+      headers = resp&.respond_to?(:headers) ? resp.headers : (data[:headers] || {})
 
       # get error from the known list of errors
       error_class = Resend::Error::ERRORS[code] || Resend::Error
@@ -69,9 +69,12 @@ module Resend
     end
 
     def process_response(resp)
-      resp.transform_keys!(&:to_sym) unless resp.body.empty?
-      handle_error!(resp) if error_response?(resp)
-      resp
+      # Extract the parsed data from HTTParty response or use the hash directly (for tests/mocks)
+      data = resp.respond_to?(:parsed_response) ? resp.parsed_response : resp
+      data ||= {}
+      data.transform_keys!(&:to_sym) unless resp.body.empty?
+      handle_error!(data, resp) if error_response?(data)
+      data
     end
 
     def error_response?(resp)
