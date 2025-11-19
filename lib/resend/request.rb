@@ -43,7 +43,7 @@ module Resend
     def handle_error!(data, resp = nil)
       code = data[:statusCode]
       body = data[:message]
-      headers = resp&.respond_to?(:headers) ? resp.headers : (data[:headers] || {})
+      headers = resp.respond_to?(:headers) ? resp.headers : (data[:headers] || {})
 
       # get error from the known list of errors
       error_class = Resend::Error::ERRORS[code] || Resend::Error
