@@ -23,13 +23,8 @@ puts "  All headers: #{response.headers.keys.inspect}"
 
 # Common use cases for headers:
 # - Rate limiting information
-if response.headers['x-ratelimit-remaining']
-  puts "  Rate Limit Remaining: #{response.headers['x-ratelimit-remaining']}"
-end
-
-# - Request tracking
-if response.headers['x-request-id']
-  puts "  Request ID: #{response.headers['x-request-id']}"
+if response.headers['ratelimit-remaining']
+  puts "  Rate Limit Remaining: #{response.headers['ratelimit-remaining']}"
 end
 
 # - Response metadata
