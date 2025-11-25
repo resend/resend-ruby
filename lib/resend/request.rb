@@ -34,13 +34,16 @@ module Resend
       resp = HTTParty.send(@verb.to_sym, "#{BASE_URL}#{@path}", options)
 
       check_json!(resp)
-      process_response(resp)
+      data = process_response(resp)
+      headers = extract_headers(resp)
+
+      Resend::Response.new(data, headers)
     end
 
-    def handle_error!(resp)
-      code = resp[:statusCode]
-      body = resp[:message]
-      headers = resp.respond_to?(:headers) ? resp.headers : (resp[:headers] || {})
+    def handle_error!(data, resp = nil)
+      code = data[:statusCode]
+      body = data[:message]
+      headers = resp.respond_to?(:headers) ? resp.headers : (data[:headers] || {})
 
       # get error from the known list of errors
       error_class = Resend::Error::ERRORS[code] || Resend::Error
@@ -66,9 +69,12 @@ module Resend
     end
 
     def process_response(resp)
-      resp.transform_keys!(&:to_sym) unless resp.body.empty?
-      handle_error!(resp) if error_response?(resp)
-      resp
+      # Extract the parsed data from HTTParty response or use the hash directly (for tests/mocks)
+      data = resp.respond_to?(:parsed_response) ? resp.parsed_response : resp
+      data ||= {}
+      data.transform_keys!(&:to_sym) unless resp.body.empty?
+      handle_error!(data, resp) if error_response?(data)
+      data
     end
 
     def error_response?(resp)
@@ -100,6 +106,13 @@ module Resend
       end
     rescue JSON::ParserError, TypeError
       raise Resend::Error::InternalServerError.new("Resend API returned an unexpected response", nil)
+    end
+
+    # Extract and normalize headers from the HTTParty response
+    def extract_headers(resp)
+      return {} unless resp.respond_to?(:headers)
+
+      resp.headers.to_h.transform_keys { |k| k.to_s.downcase }
     end
   end
 end
