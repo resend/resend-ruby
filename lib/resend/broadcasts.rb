@@ -7,6 +7,9 @@ module Resend
       # https://resend.com/docs/api-reference/broadcasts/create-broadcast
       # @note Supports both segment_id and audience_id. At least one is required.
       #   audience_id is deprecated - use segment_id instead.
+      # @note When send: true is passed, the broadcast is sent immediately instead of
+      #   creating a draft. When using send: true, you can also include scheduled_at
+      #   to schedule the broadcast. Passing scheduled_at without send: true is an error.
       def create(params = {})
         if params[:audience_id] && !params[:segment_id]
           warn "[DEPRECATION] Using audience_id in broadcasts is deprecated. Use segment_id instead."
