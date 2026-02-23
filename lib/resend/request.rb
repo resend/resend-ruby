@@ -78,14 +78,14 @@ module Resend
     end
 
     def error_response?(resp)
-      resp[:statusCode] && (resp[:statusCode] != 200 && resp[:statusCode] != 201)
+      resp[:statusCode] && resp[:statusCode] != 200 && resp[:statusCode] != 201
     end
 
     def set_idempotency_key
       # Only set idempotency key if the verb is POST for now.
       #
       # Does not set it if the idempotency_key is nil or empty
-      if @verb.downcase == "post" && (!@options[:idempotency_key].nil? && !@options[:idempotency_key].empty?)
+      if @verb.downcase == "post" && !@options[:idempotency_key].nil? && !@options[:idempotency_key].empty?
         @headers["Idempotency-Key"] = @options[:idempotency_key]
       end
     end
