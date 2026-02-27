@@ -207,4 +207,13 @@ RSpec.describe "Resend::Mailer" do
     body = @mailer.build_resend_params(message)
     expect(body[:headers].keys).to eq(["custom-header2"])
   end
+
+  it "filters content-transfer-encoding from custom headers" do
+    expect(Resend::Mailer::IGNORED_HEADERS).to include("content-transfer-encoding")
+
+    message = TestMailer.html_text_msg("test@example.org", "Test!")
+    body = @mailer.build_resend_params(message)
+    headers = body[:headers] || {}
+    expect(headers).not_to have_key("Content-Transfer-Encoding")
+  end
 end

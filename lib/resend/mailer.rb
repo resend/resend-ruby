@@ -14,7 +14,7 @@ module Resend
       cc bcc
       from reply-to to subject mime-version
       html text
-      content-type tags scheduled_at
+      content-type content-transfer-encoding tags scheduled_at
       headers options
     ].freeze
 
