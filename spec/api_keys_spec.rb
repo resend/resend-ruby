@@ -45,12 +45,21 @@ RSpec.describe "API Keys" do
             {
               "id":"6e3c3d83-05dc-4b51-acfc-fe8972738bd0",
               "name":"test1",
-              "created_at":"2023-04-21T01:31:02.671414+00:00"
+              "created_at":"2023-04-21T01:31:02.671414+00:00",
+              "last_used_at":"2023-04-22T10:00:00.000000+00:00"
+            },
+            {
+              "id":"7f4d4e94-16ed-5c62-bdfd-gf9083849ce1",
+              "name":"test2",
+              "created_at":"2023-04-21T01:31:02.671414+00:00",
+              "last_used_at":nil
             }
           ]
         }
         allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
-        expect(Resend::ApiKeys.list.length).to eql(1)
+        expect(Resend::ApiKeys.list.length).to eql(2)
+        expect(Resend::ApiKeys.list.first[:last_used_at]).to eql("2023-04-22T10:00:00.000000+00:00")
+        expect(Resend::ApiKeys.list.last[:last_used_at]).to be_nil
       end
     end
 
@@ -106,12 +115,21 @@ RSpec.describe "API Keys" do
             {
               "id":"6e3c3d83-05dc-4b51-acfc-fe8972738bd0",
               "name":"test1",
-              "created_at":"2023-04-21T01:31:02.671414+00:00"
+              "created_at":"2023-04-21T01:31:02.671414+00:00",
+              "last_used_at":"2023-04-22T10:00:00.000000+00:00"
+            },
+            {
+              "id":"7f4d4e94-16ed-5c62-bdfd-gf9083849ce1",
+              "name":"test2",
+              "created_at":"2023-04-21T01:31:02.671414+00:00",
+              "last_used_at":nil
             }
           ]
         }
         allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
-        expect(Resend::ApiKeys.list.length).to eql(1)
+        expect(Resend::ApiKeys.list.length).to eql(2)
+        expect(Resend::ApiKeys.list.first[:last_used_at]).to eql("2023-04-22T10:00:00.000000+00:00")
+        expect(Resend::ApiKeys.list.last[:last_used_at]).to be_nil
       end
     end
 
