@@ -57,9 +57,9 @@ RSpec.describe "API Keys" do
           ]
         }
         allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
-        expect(Resend::ApiKeys.list.length).to eql(2)
-        expect(Resend::ApiKeys.list.first[:last_used_at]).to eql("2023-04-22T10:00:00.000000+00:00")
-        expect(Resend::ApiKeys.list.last[:last_used_at]).to be_nil
+        expect(Resend::ApiKeys.list[:data].length).to eql(2)
+        expect(Resend::ApiKeys.list[:data].first[:last_used_at]).to eql("2023-04-22T10:00:00.000000+00:00")
+        expect(Resend::ApiKeys.list[:data].last[:last_used_at]).to be_nil
       end
     end
 
@@ -127,9 +127,9 @@ RSpec.describe "API Keys" do
           ]
         }
         allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
-        expect(Resend::ApiKeys.list.length).to eql(2)
-        expect(Resend::ApiKeys.list.first[:last_used_at]).to eql("2023-04-22T10:00:00.000000+00:00")
-        expect(Resend::ApiKeys.list.last[:last_used_at]).to be_nil
+        expect(Resend::ApiKeys.list[:data].length).to eql(2)
+        expect(Resend::ApiKeys.list[:data].first[:last_used_at]).to eql("2023-04-22T10:00:00.000000+00:00")
+        expect(Resend::ApiKeys.list[:data].last[:last_used_at]).to be_nil
       end
     end
 
