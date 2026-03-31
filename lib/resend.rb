@@ -28,6 +28,7 @@ require "resend/templates"
 require "resend/emails/receiving"
 require "resend/emails/attachments"
 require "resend/emails/receiving/attachments"
+require "resend/logs"
 require "resend/topics"
 require "resend/webhooks"
 
