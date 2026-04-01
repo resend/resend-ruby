@@ -23,5 +23,5 @@ def list_paginated
 end
 
 get_log
-# list
-# list_paginated
+list
+list_paginated
