@@ -24,4 +24,4 @@ end
 
 get_log
 list
-list_paginated
+# list_paginated
