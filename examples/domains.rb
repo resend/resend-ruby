@@ -19,6 +19,22 @@ def create
   puts "deleted #{domain[:id]}"
 end
 
+def create_with_tracking
+  params = {
+    name: "example@example.com",
+    region: "us-east-1",
+    tracking_subdomain: "links",
+  }
+  domain = Resend::Domains.create(params)
+  puts "open_tracking: #{domain[:open_tracking]}"
+  puts "click_tracking: #{domain[:click_tracking]}"
+  puts "tracking_subdomain: #{domain[:tracking_subdomain]}"
+  puts domain
+
+  Resend::Domains.remove domain[:id]
+  puts "deleted #{domain[:id]}"
+end
+
 def get
   domain = Resend::Domains.create({name: "test"})
   puts "created domain id: #{domain[:id]}"
@@ -39,7 +55,8 @@ def update
     id: domain[:id],
     open_tracking: false,
     click_tracking: false,
-    tls: "enforced"
+    tls: "enforced",
+    tracking_subdomain: "links",
   }
   updated = Resend::Domains.update(params)
   puts "updated domain: #{updated[:id]}"
@@ -75,6 +92,7 @@ def verify
 end
 
 create
+create_with_tracking
 get
 update
 list
