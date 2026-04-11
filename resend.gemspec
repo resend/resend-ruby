@@ -14,7 +14,7 @@ Gem::Specification.new do |spec|
 
   spec.files         = Dir["*.{md,txt}", "{lib}/**/*"]
   spec.require_path  = "lib"
-  spec.required_ruby_version = ">= 2.6"
-  spec.add_dependency "httparty", ">= 0.21.0"
-  spec.add_development_dependency "rails"
+  spec.required_ruby_version = ">= 3.2"
+  spec.add_dependency "base64"
+  spec.add_dependency "httparty", ">= 0.22.0"
 end
