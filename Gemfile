@@ -14,7 +14,7 @@ gem "rubocop", "~> 1.21"
 gem "httparty", "~> 0.22.0"
 
 # parallel 2.0+ requires Ruby >= 3.3; constrain to 1.x to support Ruby 3.2
-gem "parallel", "< 2.0"
+gem "parallel", "< 2.1"
 
 group :development do
   gem "pry-byebug"
