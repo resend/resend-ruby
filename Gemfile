@@ -11,6 +11,13 @@ gem "rspec", "~> 3.0"
 
 gem "rubocop", "~> 1.21"
 
-gem "httparty", "~> 0.21.0"
+gem "httparty", "~> 0.22.0"
 
-gem "pry-byebug"
+# parallel 2.0+ requires Ruby >= 3.3; constrain to 1.x to support Ruby 3.2
+gem "parallel", "< 2.0"
+
+group :development do
+  gem "pry-byebug"
+
+  gem "rails"
+end
