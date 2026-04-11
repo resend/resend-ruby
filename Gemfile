@@ -11,6 +11,10 @@ gem "rspec", "~> 3.0"
 
 gem "rubocop", "~> 1.21"
 
-gem "httparty", "~> 0.21.0"
+gem "httparty", "~> 0.22.0"
 
 gem "pry-byebug"
+
+group :development do
+  gem "rails"
+end
