@@ -31,6 +31,9 @@ require "resend/emails/receiving/attachments"
 require "resend/logs"
 require "resend/topics"
 require "resend/webhooks"
+require "resend/automations"
+require "resend/automations/runs"
+require "resend/events"
 
 # Rails
 require "resend/railtie" if defined?(Rails) && defined?(ActionMailer)
