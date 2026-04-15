@@ -105,6 +105,14 @@ RSpec.describe "Domains" do
             "type": "CNAME",
             "ttl": "Auto",
             "status": "not_started"
+          },
+          {
+            "record": "TrackingCAA",
+            "name": "",
+            "value": "0 issue \"amazon.com\"",
+            "type": "CAA",
+            "ttl": "Auto",
+            "status": "not_started"
           }
         ],
         "region": "us-east-1",
@@ -128,6 +136,10 @@ RSpec.describe "Domains" do
       expect(tracking_record[:type]).to eql("CNAME")
       expect(tracking_record[:ttl]).to eql("Auto")
       expect(tracking_record[:status]).to eql("not_started")
+      tracking_caa_record = domain[:records].find { |r| r[:record] == "TrackingCAA" }
+      expect(tracking_caa_record).not_to be_nil
+      expect(tracking_caa_record[:type]).to eql("CAA")
+      expect(tracking_caa_record[:value]).to eql("0 issue \"amazon.com\"")
     end
 
     it "should raise when domain is already registered" do
