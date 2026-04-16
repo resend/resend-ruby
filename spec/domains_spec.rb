@@ -121,7 +121,9 @@ RSpec.describe "Domains" do
       params = {
         "name": "example.com",
         "region": "us-east-1",
-        "tracking_subdomain": "links"
+        "tracking_subdomain": "links",
+        "click_tracking": true,
+        "open_tracking": true
       }
       allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
       domain = Resend::Domains.create(params)
