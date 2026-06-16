@@ -8,12 +8,20 @@ module Resend
         # Retrieve a single received email
         #
         # @param email_id [String] The ID of the received email
+        # @param params [Hash] Optional query parameters
+        # @option params [String] :html_format Format of the HTML content (e.g., "sanitized", "raw")
         # @return [Hash] The received email object
         #
         # @example
         #   Resend::Emails::Receiving.get("4ef9a417-02e9-4d39-ad75-9611e0fcc33c")
-        def get(email_id = "")
+        #
+        # @example With html_format
+        #   Resend::Emails::Receiving.get("4ef9a417-02e9-4d39-ad75-9611e0fcc33c", html_format: "sanitized")
+        def get(email_id = "", params = {})
           path = "emails/receiving/#{email_id}"
+
+          path += "?html_format=#{CGI.escape(params[:html_format].to_s)}" if params[:html_format]
+
           Resend::Request.new(path, {}, "get").perform
         end
 

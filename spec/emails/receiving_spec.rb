@@ -65,6 +65,24 @@ RSpec.describe "Emails::Receiving" do
       )
     end
 
+    it "should retrieve a received email with html_format param" do
+      resp = {
+        object: "email",
+        id: "4ef9a417-02e9-4d39-ad75-9611e0fcc33c",
+        html: "<p>sanitized</p>"
+      }
+
+      request_instance = instance_double(Resend::Request)
+      allow(request_instance).to receive(:perform).and_return(resp)
+      allow(Resend::Request).to receive(:new) do |path, body, verb|
+        expect(path).to include("html_format=sanitized")
+        request_instance
+      end
+
+      email = Resend::Emails::Receiving.get(resp[:id], html_format: "sanitized")
+      expect(email[:id]).to eql("4ef9a417-02e9-4d39-ad75-9611e0fcc33c")
+    end
+
     it "should raise an error when email is not found" do
       resp = {
         "statusCode" => 404,
