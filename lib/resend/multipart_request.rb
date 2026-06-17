@@ -19,15 +19,13 @@ module Resend
     end
 
     def build_multipart_body(boundary)
-      parts = []
+      body = "".b
 
-      file_bytes = read_file(@body[:file])
-      parts << part(boundary, "file", file_bytes, filename: "import.csv", content_type: "text/csv")
+      body << part(boundary, "file", read_file(@body[:file]), filename: "import.csv", content_type: "text/csv")
+      optional_fields.each { |name, value| body << part(boundary, name, value) }
+      body << "--#{boundary}--#{NEWLINE}".b
 
-      optional_fields.each { |name, value| parts << part(boundary, name, value) }
-
-      parts << "--#{boundary}--#{NEWLINE}"
-      parts.join.b
+      body
     end
 
     def part(boundary, name, value, filename: nil, content_type: nil)
@@ -38,16 +36,16 @@ module Resend
       header += "Content-Type: #{content_type}#{NEWLINE}" if content_type
       header += NEWLINE
 
-      "#{header}#{value}#{NEWLINE}"
+      header.b + value.to_s.b + NEWLINE.b
     end
 
     def read_file(file_data)
       if file_data.respond_to?(:read)
         content = file_data.read
         file_data.rewind if file_data.respond_to?(:rewind)
-        content
+        content.b
       else
-        file_data.to_s
+        file_data.to_s.b
       end
     end
 
