@@ -25,7 +25,9 @@ module Resend
           raise ArgumentError, "Missing required `file` field" if params[:file].nil?
 
           # Normalize segments: convert array of IDs to [{id: ...}] format
-          params = params.merge(segments: params[:segments].map { |id| { id: id } }) if params[:segments].is_a?(Array)
+          if params[:segments].is_a?(Array)
+            params = params.merge(segments: params[:segments].map { |s| s.is_a?(String) ? { id: s } : s })
+          end
 
           Resend::MultipartRequest.new("contacts/imports", params, "post").perform
         end

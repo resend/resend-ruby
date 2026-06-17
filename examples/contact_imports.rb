@@ -7,8 +7,6 @@ raise if ENV["RESEND_API_KEY"].nil?
 Resend.api_key = ENV["RESEND_API_KEY"]
 
 def example
-  audience_id = "ca4e37c5-a82a-4199-a3b8-bf912a6472aa"
-
   csv_content = <<~CSV
     email,first_name,last_name
     alice@example.com,Alice,Smith
@@ -28,11 +26,11 @@ def example
   puts "Import created: #{result}"
   import_id = result[:id]
 
-  # Import with segments
+  # Import with segments (object form, matching API reference)
   result_with_segments = Resend::Contacts::Imports.create(
     file: csv_content,
     on_conflict: "upsert",
-    segments: ["seg-uuid-1", "seg-uuid-2"]
+    segments: [{ id: "60a2ac5e-0774-456e-817d-ebf40f6dba31" }]
   )
   puts "Import with segments: #{result_with_segments}"
 
@@ -41,8 +39,7 @@ def example
     file: csv_content,
     on_conflict: "upsert",
     topics: [
-      { id: "topic-uuid-1", subscription: "opt_in" },
-      { id: "topic-uuid-2", subscription: "opt_out" }
+      { id: "6eb54030-9489-4e9c-8de6-cd337c5fef1e", subscription: "opt_in" }
     ]
   )
   puts "Import with topics: #{result_with_topics}"
