@@ -52,6 +52,21 @@ RSpec.describe "Contacts::Imports" do
       allow_any_instance_of(Resend::MultipartRequest).to receive(:perform).and_return(resp)
       Resend::Contacts::Imports.create(file: "email\nsteve@example.com", segments: ["seg-123"])
     end
+
+    it "should pass topics option" do
+      resp = { object: "contact_import", id: "479e3145-dd38-476b-932c-529ceb705947" }
+
+      topics = [{ id: "topic-uuid-1", subscription: "opt_in" }]
+
+      expect(Resend::MultipartRequest).to receive(:new).with(
+        "contacts/imports",
+        hash_including(topics: topics),
+        "post"
+      ).and_call_original
+
+      allow_any_instance_of(Resend::MultipartRequest).to receive(:perform).and_return(resp)
+      Resend::Contacts::Imports.create(file: "email\nsteve@example.com", topics: topics)
+    end
   end
 
   describe "get" do
@@ -62,14 +77,14 @@ RSpec.describe "Contacts::Imports" do
         id: import_id,
         status: "completed",
         created_at: "2023-10-06T23:47:56.678Z",
-        counts: { total: 100, created: 80, updated: 10, skipped: 5, failed: 5 }
+        counts: { "total" => 100, "created" => 80, "updated" => 10, "skipped" => 5, "failed" => 5 }
       }
 
       allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
       result = Resend::Contacts::Imports.get(import_id)
       expect(result[:id]).to eql(import_id)
       expect(result[:status]).to eql("completed")
-      expect(result[:counts][:total]).to eql(100)
+      expect(result[:counts]["total"]).to eql(100)
     end
 
     it "should raise when id is missing" do
@@ -105,7 +120,7 @@ RSpec.describe "Contacts::Imports" do
       resp = { object: "list", has_more: false, data: [] }
 
       expect(Resend::Request).to receive(:new).with(
-        include("status=completed"),
+        "contacts/imports?status=completed",
         {},
         "get"
       ).and_call_original

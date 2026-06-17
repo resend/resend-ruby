@@ -16,15 +16,16 @@ module Resend
         # @option params [Array, String] :segments optional list of segment IDs to add contacts to.
         #   Accepts an Array of segment ID strings (will be JSON-encoded as [{"id":"..."}])
         #   or a pre-encoded JSON String.
+        # @option params [Array, String] :topics optional list of topic subscription objects.
+        #   Each element must be a Hash with `id` (String) and `subscription` ('opt_in' or 'opt_out').
+        #   Accepts an Array of Hashes (will be JSON-encoded) or a pre-encoded JSON String.
         #
         # https://resend.com/docs/api-reference/contacts/create-contact-import
         def create(params)
           raise ArgumentError, "Missing required `file` field" if params[:file].nil?
 
           # Normalize segments: convert array of IDs to [{id: ...}] format
-          if params[:segments].is_a?(Array)
-            params = params.merge(segments: params[:segments].map { |id| { id: id } })
-          end
+          params = params.merge(segments: params[:segments].map { |id| { id: id } }) if params[:segments].is_a?(Array)
 
           Resend::MultipartRequest.new("contacts/imports", params, "post").perform
         end
@@ -53,10 +54,6 @@ module Resend
         # https://resend.com/docs/api-reference/contacts/list-contact-imports
         def list(params = {})
           path = Resend::PaginationHelper.build_paginated_path("contacts/imports", params)
-          if params[:status]
-            separator = path.include?("?") ? "&" : "?"
-            path = "#{path}#{separator}status=#{params[:status]}"
-          end
           Resend::Request.new(path, {}, "get").perform
         end
       end

@@ -10,25 +10,26 @@ module Resend
     private
 
     def build_request_options
-      file_data = @body[:file]
-
-      # Wrap raw bytes/string in StringIO so HTTParty can stream the content
-      file_io = if file_data.respond_to?(:read)
-                  file_data
-                else
-                  StringIO.new(file_data.b)
-                end
-
-      body = { file: file_io }
-      body[:column_map] = serialize_json(@body[:column_map]) if @body[:column_map]
-      body[:on_conflict] = @body[:on_conflict] if @body[:on_conflict]
-      body[:segments] = serialize_json(@body[:segments]) if @body[:segments]
-
-      # HTTParty sets Content-Type automatically when multipart: true is set.
-      # Remove the application/json Content-Type so it doesn't conflict.
       multipart_headers = @headers.reject { |k, _| k == "Content-Type" }
+      { headers: multipart_headers, body: build_multipart_body, multipart: true }
+    end
 
-      { headers: multipart_headers, body: body, multipart: true }
+    def build_multipart_body
+      { file: wrap_file(@body[:file]) }.merge(optional_fields)
+    end
+
+    def optional_fields
+      {
+        column_map: @body[:column_map] && serialize_json(@body[:column_map]),
+        on_conflict: @body[:on_conflict],
+        segments: @body[:segments] && serialize_json(@body[:segments]),
+        topics: @body[:topics] && serialize_json(@body[:topics])
+      }.compact
+    end
+
+    # Wrap raw bytes/string in StringIO so HTTParty can stream the content
+    def wrap_file(file_data)
+      file_data.respond_to?(:read) ? file_data : StringIO.new(file_data.b)
     end
 
     def serialize_json(value)
