@@ -1,13 +1,4 @@
 module Resend
   VERSION: String
-
-  def self.api_key: () -> String?
-  def self.api_key=: (String api_key) -> String
-  def self.configure: () { (Resend) -> void } -> bool
-  alias config configure
+  # See the writing guide of rbs: https://github.com/ruby/rbs#guides
 end
-
-require "resend/response"
-require "resend/emails"
-require "resend/emails/receiving"
-require "resend/webhooks"
