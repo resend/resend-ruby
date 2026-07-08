@@ -13,6 +13,8 @@ module Resend
 
       # Retrieve a single email.
       # see more: https://resend.com/docs/api-reference/emails/retrieve-email
+      #
+      # @return [Resend::Response] The email object, including +message_id+ (RFC Message-ID header value)
       def get(email_id = "")
         path = "emails/#{email_id}"
         Resend::Request.new(path, {}, "get").perform

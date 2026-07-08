@@ -46,13 +46,15 @@ RSpec.describe "Emails" do
         "bcc": [nil],
         "cc": [nil],
         "reply_to": [nil],
-        "last_event": "delivered"
+        "last_event": "delivered",
+        "message_id": "<111-222-333@email.example.com>"
       }
       allow(resp).to receive(:body).and_return(resp)
       allow(HTTParty).to receive(:send).and_return(resp)
       email = Resend::Emails.get(resp[:id])
       expect(email[:subject]).to eql "Hello World"
       expect(email[:id]).to eql "4ef9a417-02e9-4d39-ad75-9611e0fcc33c"
+      expect(email[:message_id]).to eql "<111-222-333@email.example.com>"
     end
 
     it "cancels email" do
@@ -217,7 +219,8 @@ RSpec.describe "Emails" do
             "from" => "onboarding@resend.dev",
             "created_at" => "2023-04-03T22:13:42.674981+00:00",
             "subject" => "Hello World",
-            "last_event" => "delivered"
+            "last_event" => "delivered",
+            "message_id" => "<111-222-333@email.example.com>"
           }
         ]
       }

@@ -39,6 +39,7 @@ RSpec.describe "Emails::Receiving" do
       expect(email[:from]).to eql("Acme <onboarding@resend.dev>")
       expect(email[:to]).to eql(["delivered@resend.dev"])
       expect(email[:attachments].length).to eql(1)
+      expect(email[:message_id]).to eql("<example+123>")
     end
 
     it "should call the correct API endpoint" do

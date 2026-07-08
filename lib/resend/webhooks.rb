@@ -9,6 +9,9 @@ module Resend
   #
   # Default tolerance for timestamp validation (5 minutes)
   WEBHOOK_TOLERANCE_SECONDS = 300
+
+  # Webhook event payloads include +message_id+ on all email events.
+  # See +Resend::Webhooks+ RBS types in +sig/resend/webhooks.rbs+ for the full payload shapes.
   #
   # @example Create a webhook
   #   Resend::Webhooks.create(

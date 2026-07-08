@@ -229,7 +229,20 @@ RSpec.describe "Webhooks" do
 
   describe "verify" do
     let(:webhook_secret) { "whsec_MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw" }
-    let(:payload) { '{"type":"email.sent","created_at":"2024-01-01T00:00:00.000Z"}' }
+    let(:payload) do
+      {
+        type: "email.delivered",
+        created_at: "2024-01-01T00:00:00.000Z",
+        data: {
+          email_id: "56761188-7520-42d8-8898-ff6fc54ce618",
+          message_id: "<111-222-333@email.example.com>",
+          created_at: "2024-01-01T00:00:00.000Z",
+          from: "onboarding@resend.dev",
+          to: ["delivered@resend.dev"],
+          subject: "Sending this example"
+        }
+      }.to_json
+    end
     let(:msg_id) { "msg_2Lh9KX9FZ5Z5Z5Z5Z5Z5Z5Z5Z" }
     let(:timestamp) { Time.now.to_i.to_s }
 

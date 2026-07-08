@@ -10,7 +10,7 @@ module Resend
         # @param email_id [String] The ID of the received email
         # @param params [Hash] Optional query parameters
         # @option params [String] :html_format Format of the HTML content (e.g., "sanitized", "raw")
-        # @return [Hash] The received email object
+        # @return [Resend::Response] The received email object, including +message_id+ (RFC Message-ID header value)
         #
         # @example
         #   Resend::Emails::Receiving.get("4ef9a417-02e9-4d39-ad75-9611e0fcc33c")

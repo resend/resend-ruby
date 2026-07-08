@@ -1,0 +1,19 @@
+module Resend
+  class Response
+    include Enumerable[untyped]
+
+    attr_reader headers: Hash[String, String]
+
+    def initialize: (Hash[Symbol | String, untyped] data, Hash[Symbol | String, untyped] | HTTParty::Response? headers) -> void
+    def []: (Symbol | String key) -> untyped
+    def []=: (Symbol | String key, untyped value) -> untyped
+    def dig: (*Symbol | String keys) -> untyped
+    def to_h: () -> Hash[Symbol | String, untyped]
+    alias to_hash to_h
+    def keys: () -> Array[Symbol | String]
+    def values: () -> Array[untyped]
+    def key?: (Symbol | String key) -> bool
+    def each: () { (?(Symbol | String), untyped) -> void } -> self
+    def empty?: () -> bool
+  end
+end
