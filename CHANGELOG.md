@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.0] - 2026-07-09
+
+### Added
+
+- **OAuth grants** - New `Resend::OAuthGrants` module to list (`GET /oauth/grants`) and revoke (`DELETE /oauth/grants/:id`) OAuth grants. `list` supports the standard `limit`/`after`/`before` pagination params. ([#197](https://github.com/resend/resend-ruby/pull/197))
+- **Domain claims** - New `Resend::Domains::Claims` module to claim a domain verified by another account (`create`), retrieve the latest claim (`get`), and trigger verification/ownership transfer (`verify`). ([#194](https://github.com/resend/resend-ruby/pull/194))
+
 ## [1.0.0] - 2025-10-31
 
 ### Overview
