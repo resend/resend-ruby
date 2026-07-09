@@ -11,7 +11,7 @@ module Resend
       end
 
       # https://resend.com/docs/api-reference/oauth/revoke-grant
-      def remove(oauth_grant_id = "")
+      def revoke(oauth_grant_id = "")
         path = "oauth/grants/#{oauth_grant_id}"
         Resend::Request.new(path, {}, "delete").perform
       end

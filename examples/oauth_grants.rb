@@ -18,11 +18,11 @@ def list_paginated
   puts "Has more: #{paginated_grants[:has_more]}" if paginated_grants[:has_more]
 end
 
-def remove
-  grant = Resend::OAuthGrants.remove("oauth_grant_id_here")
+def revoke
+  grant = Resend::OAuthGrants.revoke("oauth_grant_id_here")
   puts grant
 end
 
 list
 # list_paginated
-# remove
+# revoke

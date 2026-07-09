@@ -39,7 +39,7 @@ RSpec.describe "OAuth Grants" do
       end
     end
 
-    describe "remove" do
+    describe "revoke" do
       it "should revoke an oauth grant" do
         resp = {
           "object": "oauth_grant",
@@ -48,7 +48,7 @@ RSpec.describe "OAuth Grants" do
           "revoked_reason": "user_requested"
         }
         allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
-        grant = Resend::OAuthGrants.remove("b6d24b8e-af0b-4c3c-be0c-359bbd97381e")
+        grant = Resend::OAuthGrants.revoke("b6d24b8e-af0b-4c3c-be0c-359bbd97381e")
         expect(grant[:id]).to eql("b6d24b8e-af0b-4c3c-be0c-359bbd97381e")
         expect(grant[:revoked_reason]).to eql("user_requested")
       end
