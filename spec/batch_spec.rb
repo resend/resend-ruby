@@ -266,7 +266,7 @@ RSpec.describe "Batch" do
       expect(result[:errors][0][:message]).to include("valid email address")
     end
 
-    it "passes scheduled_at, tags, and attachments in the request body" do
+    it "passes tags in the request body" do
       resp = {
         "data": [
           { "id": "ae2014de-c168-4c61-8267-70d2662a1ce1" }
@@ -277,17 +277,10 @@ RSpec.describe "Batch" do
         {
           from: "from@e.io",
           to: ["email1@email.com"],
-          subject: "Scheduled with metadata",
+          subject: "Tagged email",
           html: "<p>Hello</p>",
-          scheduled_at: "2024-09-05T11:52:01.858Z",
           tags: [
             { name: "category", value: "welcome" }
-          ],
-          attachments: [
-            {
-              filename: "invoice.pdf",
-              content: "dGVzdA=="
-            }
           ]
         }
       ]
