@@ -7,11 +7,10 @@ module Resend
       # Send a batch of emails
       #
       # Each email in +params+ accepts the same fields as {Resend::Emails.send},
-      # except +scheduled_at+ and +attachments+, which are not supported in batch.
-      # +tags+ are supported per email.
+      # including +tags+ per email.
       #
       # @param params [Array<Hash>] Array of email parameters (max 100 emails).
-      #   Each hash accepts the same fields as {Resend::Emails.send}, except:
+      #   Each hash accepts the same fields as {Resend::Emails.send}, including:
       #   - +tags+ [Array<Hash>] Key/value tags, e.g. [{ name: "category", value: "welcome" }]
       # @param options [Hash] Additional options for the request
       # @option options [String] :idempotency_key Optional idempotency key
