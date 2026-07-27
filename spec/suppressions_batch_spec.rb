@@ -11,16 +11,16 @@ RSpec.describe "Suppressions::Batch" do
     it "should add multiple suppressions" do
       resp = {
         data: [
-          { object: "suppression", id: "e169aa45-1ecf-4183-9955-b1499d5701d3" },
-          { object: "suppression", id: "1b3d4b95-2b7d-4c5f-9b1f-2d1a5a3f8e12" }
+          { "object" => "suppression", "id" => "e169aa45-1ecf-4183-9955-b1499d5701d3" },
+          { "object" => "suppression", "id" => "1b3d4b95-2b7d-4c5f-9b1f-2d1a5a3f8e12" }
         ]
       }
 
       allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
       result = Resend::Suppressions::Batch.add(emails: ["steve.wozniak@gmail.com", "steve.jobs@gmail.com"])
       expect(result[:data].length).to eql(2)
-      expect(result[:data][0][:id]).to eql("e169aa45-1ecf-4183-9955-b1499d5701d3")
-      expect(result[:data][0][:object]).to eql("suppression")
+      expect(result[:data][0]["id"]).to eql("e169aa45-1ecf-4183-9955-b1499d5701d3")
+      expect(result[:data][0]["object"]).to eql("suppression")
     end
 
     it "should post the emails to the batch add path" do
@@ -38,20 +38,20 @@ RSpec.describe "Suppressions::Batch" do
     it "should remove multiple suppressions by email" do
       resp = {
         data: [
-          { object: "suppression", id: "e169aa45-1ecf-4183-9955-b1499d5701d3", deleted: true }
+          { "object" => "suppression", "id" => "e169aa45-1ecf-4183-9955-b1499d5701d3", "deleted" => true }
         ]
       }
 
       allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
       result = Resend::Suppressions::Batch.remove(emails: ["steve.wozniak@gmail.com"])
       expect(result[:data].length).to eql(1)
-      expect(result[:data][0][:deleted]).to be(true)
+      expect(result[:data][0]["deleted"]).to be(true)
     end
 
     it "should remove multiple suppressions by id" do
       resp = {
         data: [
-          { object: "suppression", id: "e169aa45-1ecf-4183-9955-b1499d5701d3", deleted: true }
+          { "object" => "suppression", "id" => "e169aa45-1ecf-4183-9955-b1499d5701d3", "deleted" => true }
         ]
       }
 
@@ -63,7 +63,7 @@ RSpec.describe "Suppressions::Batch" do
 
       allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
       result = Resend::Suppressions::Batch.remove(ids: ["e169aa45-1ecf-4183-9955-b1499d5701d3"])
-      expect(result[:data][0][:id]).to eql("e169aa45-1ecf-4183-9955-b1499d5701d3")
+      expect(result[:data][0]["id"]).to eql("e169aa45-1ecf-4183-9955-b1499d5701d3")
     end
 
     it "should omit ids from the request body when removing by email" do

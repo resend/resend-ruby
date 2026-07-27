@@ -13,7 +13,7 @@ def suppressions
   # List: filter by origin and paginate.
   list = Resend::Suppressions.list(origin: "manual", limit: 10)
   list[:data].each do |entry|
-    puts "#{entry[:email]} suppressed by #{entry[:origin]} (source: #{entry[:source_id] || "none"})"
+    puts "#{entry["email"]} suppressed by #{entry["origin"]} (source: #{entry["source_id"] || "none"})"
   end
 
   # Get: the path segment accepts either the suppression ID or the email address.
@@ -31,7 +31,7 @@ def batch_suppressions
   puts "Added #{added[:data].length} suppressions"
 
   # Remove: pass either `emails` or `ids`, never both.
-  removed = Resend::Suppressions::Batch.remove(ids: added[:data].map { |entry| entry[:id] })
+  removed = Resend::Suppressions::Batch.remove(ids: added[:data].map { |entry| entry["id"] })
   puts "Removed #{removed[:data].length} suppressions"
 end
 

@@ -38,11 +38,11 @@ RSpec.describe "Suppressions" do
         has_more: false,
         data: [
           {
-            id: "e169aa45-1ecf-4183-9955-b1499d5701d3",
-            email: "steve.wozniak@gmail.com",
-            origin: "bounce",
-            source_id: "479e3145-dd38-476b-932c-529ceb705947",
-            created_at: "2023-10-06T23:47:56.678Z"
+            "id" => "e169aa45-1ecf-4183-9955-b1499d5701d3",
+            "email" => "steve.wozniak@gmail.com",
+            "origin" => "bounce",
+            "source_id" => "479e3145-dd38-476b-932c-529ceb705947",
+            "created_at" => "2023-10-06T23:47:56.678Z"
           }
         ]
       }
@@ -52,10 +52,10 @@ RSpec.describe "Suppressions" do
       expect(result[:object]).to eql("list")
       expect(result[:has_more]).to be(false)
       expect(result[:data].length).to eql(1)
-      expect(result[:data][0][:id]).to eql("e169aa45-1ecf-4183-9955-b1499d5701d3")
-      expect(result[:data][0][:origin]).to eql("bounce")
-      expect(result[:data][0][:source_id]).to eql("479e3145-dd38-476b-932c-529ceb705947")
-      expect(result[:data][0][:created_at]).to eql("2023-10-06T23:47:56.678Z")
+      expect(result[:data][0]["id"]).to eql("e169aa45-1ecf-4183-9955-b1499d5701d3")
+      expect(result[:data][0]["origin"]).to eql("bounce")
+      expect(result[:data][0]["source_id"]).to eql("479e3145-dd38-476b-932c-529ceb705947")
+      expect(result[:data][0]["created_at"]).to eql("2023-10-06T23:47:56.678Z")
     end
 
     it "should not expose an object field on list entries" do
@@ -64,19 +64,19 @@ RSpec.describe "Suppressions" do
         has_more: false,
         data: [
           {
-            id: "e169aa45-1ecf-4183-9955-b1499d5701d3",
-            email: "steve.wozniak@gmail.com",
-            origin: "bounce",
-            source_id: "479e3145-dd38-476b-932c-529ceb705947",
-            created_at: "2023-10-06T23:47:56.678Z"
+            "id" => "e169aa45-1ecf-4183-9955-b1499d5701d3",
+            "email" => "steve.wozniak@gmail.com",
+            "origin" => "bounce",
+            "source_id" => "479e3145-dd38-476b-932c-529ceb705947",
+            "created_at" => "2023-10-06T23:47:56.678Z"
           }
         ]
       }
 
       allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
       result = Resend::Suppressions.list
-      expect(result[:data][0]).not_to have_key(:object)
-      expect(result[:data][0].keys).to eql(%i[id email origin source_id created_at])
+      expect(result[:data][0]).not_to have_key("object")
+      expect(result[:data][0].keys).to eql(%w[id email origin source_id created_at])
     end
 
     it "should list suppressions with a null source_id" do
@@ -85,19 +85,19 @@ RSpec.describe "Suppressions" do
         has_more: false,
         data: [
           {
-            id: "e169aa45-1ecf-4183-9955-b1499d5701d3",
-            email: "steve.wozniak@gmail.com",
-            origin: "manual",
-            source_id: nil,
-            created_at: "2023-10-06T23:47:56.678Z"
+            "id" => "e169aa45-1ecf-4183-9955-b1499d5701d3",
+            "email" => "steve.wozniak@gmail.com",
+            "origin" => "manual",
+            "source_id" => nil,
+            "created_at" => "2023-10-06T23:47:56.678Z"
           }
         ]
       }
 
       allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
       result = Resend::Suppressions.list
-      expect(result[:data][0][:origin]).to eql("manual")
-      expect(result[:data][0][:source_id]).to be_nil
+      expect(result[:data][0]["origin"]).to eql("manual")
+      expect(result[:data][0]["source_id"]).to be_nil
     end
 
     it "should list suppressions with origin and pagination params" do
