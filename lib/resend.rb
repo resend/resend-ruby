@@ -7,6 +7,7 @@ require "resend/version"
 require "httparty"
 require "json"
 require "cgi"
+require "erb"
 require "resend/errors"
 require "resend/response"
 require "resend/client"
@@ -38,6 +39,8 @@ require "resend/oauth_grants"
 require "resend/automations"
 require "resend/automations/runs"
 require "resend/events"
+require "resend/suppressions"
+require "resend/suppressions/batch"
 
 # Rails
 require "resend/railtie" if defined?(Rails) && defined?(ActionMailer)
