@@ -28,9 +28,11 @@ module Resend
         #
         # https://resend.com/docs/api-reference/suppressions/remove-suppressions
         def remove(params)
-          emails = params[:emails]
-          ids = params[:ids]
-          raise ArgumentError, "Provide either `emails` or `ids`, but not both" if emails.nil? == ids.nil?
+          normalized = params.transform_keys(&:to_sym)
+          emails = normalized[:emails]
+          ids = normalized[:ids]
+          raise ArgumentError, "Missing required `emails` or `ids` field" if emails.nil? && ids.nil?
+          raise ArgumentError, "Provide either `emails` or `ids`, but not both" if !emails.nil? && !ids.nil?
 
           # The API rejects a null `emails`/`ids`, so the unused key is omitted rather than sent as nil.
           body = emails.nil? ? { ids: ids } : { emails: emails }

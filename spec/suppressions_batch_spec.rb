@@ -107,10 +107,47 @@ RSpec.describe "Suppressions::Batch" do
       expect(body.to_json).to eql('{"emails":["steve.wozniak@gmail.com"]}')
     end
 
+    it "should accept string keyed emails" do
+      body = nil
+
+      expect(Resend::Request).to receive(:new) do |_path, request_body, _verb|
+        body = request_body
+        instance_double(Resend::Request, perform: { data: [] })
+      end
+
+      Resend::Suppressions::Batch.remove("emails" => ["steve.wozniak@gmail.com"])
+
+      expect(body).not_to have_key(:ids)
+      expect(body.to_json).to eql('{"emails":["steve.wozniak@gmail.com"]}')
+    end
+
+    it "should accept string keyed ids" do
+      body = nil
+
+      expect(Resend::Request).to receive(:new) do |_path, request_body, _verb|
+        body = request_body
+        instance_double(Resend::Request, perform: { data: [] })
+      end
+
+      Resend::Suppressions::Batch.remove("ids" => ["e169aa45-1ecf-4183-9955-b1499d5701d3"])
+
+      expect(body).not_to have_key(:emails)
+      expect(body.to_json).to eql('{"ids":["e169aa45-1ecf-4183-9955-b1499d5701d3"]}')
+    end
+
+    it "should raise when both string keyed emails and ids are given" do
+      expect do
+        Resend::Suppressions::Batch.remove(
+          "emails" => ["steve.wozniak@gmail.com"],
+          "ids" => ["e169aa45-1ecf-4183-9955-b1499d5701d3"]
+        )
+      end.to raise_error(ArgumentError, "Provide either `emails` or `ids`, but not both")
+    end
+
     it "should raise when neither emails nor ids is given" do
       expect do
         Resend::Suppressions::Batch.remove({})
-      end.to raise_error(ArgumentError, "Provide either `emails` or `ids`, but not both")
+      end.to raise_error(ArgumentError, "Missing required `emails` or `ids` field")
     end
 
     it "should raise when both emails and ids are given" do
