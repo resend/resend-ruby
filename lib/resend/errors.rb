@@ -34,7 +34,7 @@ module Resend
 
     ERRORS = {
       401 => Resend::Error::InvalidRequestError,
-      404 => Resend::Error::InvalidRequestError,
+      404 => Resend::Error::NotFoundError,
       422 => Resend::Error::InvalidRequestError,
       429 => Resend::Error::RateLimitExceededError,
       400 => Resend::Error::InvalidRequestError,

@@ -76,7 +76,7 @@ RSpec.describe "Webhooks" do
       allow(resp).to receive(:body).and_return(resp.to_json)
       allow(HTTParty).to receive(:send).and_return(resp)
 
-      expect { Resend::Webhooks.get("invalid-id") }.to raise_error(Resend::Error::InvalidRequestError)
+      expect { Resend::Webhooks.get("invalid-id") }.to raise_error(Resend::Error::NotFoundError)
     end
   end
 
@@ -223,7 +223,7 @@ RSpec.describe "Webhooks" do
       allow(resp).to receive(:body).and_return(resp.to_json)
       allow(HTTParty).to receive(:send).and_return(resp)
 
-      expect { Resend::Webhooks.remove("invalid-id") }.to raise_error(Resend::Error::InvalidRequestError)
+      expect { Resend::Webhooks.remove("invalid-id") }.to raise_error(Resend::Error::NotFoundError)
     end
   end
 

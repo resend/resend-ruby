@@ -55,7 +55,7 @@ RSpec.describe "Logs" do
         }
         allow(resp).to receive(:body).and_return(resp)
         allow(HTTParty).to receive(:send).and_return(resp)
-        expect { Resend::Logs.get("missing-id") }.to raise_error(Resend::Error::InvalidRequestError, /Log not found/)
+        expect { Resend::Logs.get("missing-id") }.to raise_error(Resend::Error::NotFoundError, /Log not found/)
       end
 
       it "should raise when log_id is not a valid UUID" do

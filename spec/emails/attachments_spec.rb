@@ -73,7 +73,7 @@ RSpec.describe "Emails::Attachments" do
           email_id: "invalid_email_id"
         )
       }.to raise_error(
-        Resend::Error::InvalidRequestError,
+        Resend::Error::NotFoundError,
         /Attachment not found/
       )
     end

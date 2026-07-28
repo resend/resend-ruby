@@ -94,7 +94,7 @@ RSpec.describe "Emails::Receiving" do
       allow(HTTParty).to receive(:send).and_return(resp)
 
       expect { Resend::Emails::Receiving.get("invalid_id") }.to raise_error(
-        Resend::Error::InvalidRequestError,
+        Resend::Error::NotFoundError,
         /Email not found/
       )
     end
