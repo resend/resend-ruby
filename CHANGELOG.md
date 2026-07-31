@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- ⚠️ **404 responses now raise `Resend::Error::NotFoundError`** instead of `Resend::Error::InvalidRequestError`, matching the documented intent of the (previously unreachable) `NotFoundError` class. Code rescuing `Resend::Error` or `Resend::Error::ServerError` is unaffected; code rescuing `InvalidRequestError` specifically to catch 404s should rescue `NotFoundError` instead. ([#209](https://github.com/resend/resend-ruby/issues/209))
+
 ## [1.6.0] - 2026-07-09
 
 ### Added

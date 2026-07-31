@@ -68,6 +68,15 @@ RSpec.describe Resend::Request do
       expect { req.handle_error!(resp) }.to raise_error(Resend::Error::InvalidRequestError, /422/)
     end
 
+    it "Resend::Error::NotFoundError 404" do
+      req = described_class.new
+      resp = {
+        :statusCode => 404,
+        :message => "404"
+      }
+      expect { req.handle_error!(resp) }.to raise_error(Resend::Error::NotFoundError, /404/)
+    end
+
     it "Resend::Error::RateLimitExceededError 429 with headers" do
       req = described_class.new
       resp = {
