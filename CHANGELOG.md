@@ -5,11 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.7.0] - 2026-07-31
+
+### Added
+
+- **Suppressions** - New `Resend::Suppressions` module to add (`add`), list (`list`), retrieve (`get`), and remove (`remove`) suppressed email addresses. `get` and `remove` accept either a suppression ID or the suppressed email address. `list` supports `origin` filtering (`bounce`, `complaint`, `manual`) plus the standard `limit`/`after`/`before` pagination params. New `Resend::Suppressions::Batch` module handles up to 100 addresses at a time via `add` and `remove`. ([#208](https://github.com/resend/resend-ruby/pull/208))
 
 ### Changed
 
-- ⚠️ **404 responses now raise `Resend::Error::NotFoundError`** instead of `Resend::Error::InvalidRequestError`, matching the documented intent of the (previously unreachable) `NotFoundError` class. Code rescuing `Resend::Error` or `Resend::Error::ServerError` is unaffected; code rescuing `InvalidRequestError` specifically to catch 404s should rescue `NotFoundError` instead. ([#209](https://github.com/resend/resend-ruby/issues/209))
+- ⚠️ **404 responses now raise `Resend::Error::NotFoundError`** instead of `Resend::Error::InvalidRequestError`, matching the documented intent of the (previously unreachable) `NotFoundError` class. Code rescuing `Resend::Error` or `Resend::Error::ServerError` is unaffected; code rescuing `InvalidRequestError` specifically to catch 404s should rescue `NotFoundError` instead. ([#210](https://github.com/resend/resend-ruby/pull/210))
 
 ## [1.6.0] - 2026-07-09
 
@@ -141,4 +145,6 @@ Resend::Segments.remove("segment_123")
 
 - Remove deprecated `send_email` method from `Resend::Emails` module (use `Resend::Emails.send` instead)
 
+[1.7.0]: https://github.com/resend/resend-ruby/compare/v1.6.0...v1.7.0
+[1.6.0]: https://github.com/resend/resend-ruby/compare/v1.5.0...v1.6.0
 [1.0.0]: https://github.com/resend/resend-ruby/compare/v0.26.0...v1.0.0
