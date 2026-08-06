@@ -42,7 +42,7 @@ RSpec.describe "Suppressions" do
             "email" => "steve.wozniak@gmail.com",
             "origin" => "bounce",
             "source_id" => "479e3145-dd38-476b-932c-529ceb705947",
-            "created_at" => "2023-10-06T23:47:56.678Z"
+            "created_at" => "2023-10-06 23:47:56.678+00"
           }
         ]
       }
@@ -55,7 +55,7 @@ RSpec.describe "Suppressions" do
       expect(result[:data][0]["id"]).to eql("e169aa45-1ecf-4183-9955-b1499d5701d3")
       expect(result[:data][0]["origin"]).to eql("bounce")
       expect(result[:data][0]["source_id"]).to eql("479e3145-dd38-476b-932c-529ceb705947")
-      expect(result[:data][0]["created_at"]).to eql("2023-10-06T23:47:56.678Z")
+      expect(result[:data][0]["created_at"]).to eql("2023-10-06 23:47:56.678+00")
     end
 
     it "should not expose an object field on list entries" do
@@ -68,7 +68,7 @@ RSpec.describe "Suppressions" do
             "email" => "steve.wozniak@gmail.com",
             "origin" => "bounce",
             "source_id" => "479e3145-dd38-476b-932c-529ceb705947",
-            "created_at" => "2023-10-06T23:47:56.678Z"
+            "created_at" => "2023-10-06 23:47:56.678+00"
           }
         ]
       }
@@ -89,7 +89,7 @@ RSpec.describe "Suppressions" do
             "email" => "steve.wozniak@gmail.com",
             "origin" => "manual",
             "source_id" => nil,
-            "created_at" => "2023-10-06T23:47:56.678Z"
+            "created_at" => "2023-10-06 23:47:56.678+00"
           }
         ]
       }
@@ -122,7 +122,7 @@ RSpec.describe "Suppressions" do
         email: "steve.wozniak@gmail.com",
         origin: "complaint",
         source_id: "479e3145-dd38-476b-932c-529ceb705947",
-        created_at: "2023-10-06T23:47:56.678Z"
+        created_at: "2023-10-06 23:47:56.678+00"
       }
 
       allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
@@ -130,7 +130,7 @@ RSpec.describe "Suppressions" do
       expect(suppression[:id]).to eql("e169aa45-1ecf-4183-9955-b1499d5701d3")
       expect(suppression[:email]).to eql("steve.wozniak@gmail.com")
       expect(suppression[:origin]).to eql("complaint")
-      expect(suppression[:created_at]).to eql("2023-10-06T23:47:56.678Z")
+      expect(suppression[:created_at]).to eql("2023-10-06 23:47:56.678+00")
       expect(suppression[:object]).to eql("suppression")
     end
 
@@ -141,7 +141,7 @@ RSpec.describe "Suppressions" do
         email: "steve.wozniak@gmail.com",
         origin: "manual",
         source_id: nil,
-        created_at: "2023-10-06T23:47:56.678Z"
+        created_at: "2023-10-06 23:47:56.678+00"
       }
 
       allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)

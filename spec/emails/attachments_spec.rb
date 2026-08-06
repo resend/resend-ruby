@@ -14,7 +14,7 @@ RSpec.describe "Emails::Attachments" do
         "content_type" => "application/pdf",
         "content_disposition" => "attachment",
         "download_url" => "https://cdn.resend.com/4ef9a417-02e9-4d39-ad75-9611e0fcc33c/attachments/2a0c9ce0-3112-4728-976e-47ddcd16a318?some-params=example&signature=sig-123",
-        "expires_at" => "2025-10-17T14:29:41.521Z"
+        "expires_at" => "2025-10-17 14:29:41.521+00"
       }
       allow(resp).to receive(:body).and_return(resp)
       allow(HTTParty).to receive(:send).and_return(resp)
@@ -91,7 +91,7 @@ RSpec.describe "Emails::Attachments" do
             "content_type" => "application/pdf",
             "content_disposition" => "attachment",
             "download_url" => "https://cdn.resend.com/4ef9a417-02e9-4d39-ad75-9611e0fcc33c/attachments/2a0c9ce0-3112-4728-976e-47ddcd16a318?some-params=example&signature=sig-123",
-            "expires_at" => "2025-10-17T14:29:41.521Z"
+            "expires_at" => "2025-10-17 14:29:41.521+00"
           }
         ]
       }

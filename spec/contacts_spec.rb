@@ -43,7 +43,7 @@ RSpec.describe "Contacts" do
         "email": "steve.wozniak@gmail.com",
         "first_name": "Steve",
         "last_name": "Wozniak",
-        "created_at": "2023-10-06T23:47:56.678Z",
+        "created_at": "2023-10-06 23:47:56.678+00",
         "unsubscribed": false
       }
 
@@ -58,7 +58,7 @@ RSpec.describe "Contacts" do
       expect(contact[:last_name]).to eql "Wozniak"
       expect(contact[:email]).to eql "steve.wozniak@gmail.com"
       expect(contact[:unsubscribed]).to be false
-      expect(contact[:created_at]).to eql "2023-10-06T23:47:56.678Z"
+      expect(contact[:created_at]).to eql "2023-10-06 23:47:56.678+00"
     end
 
     it "should retrieve a contact by email" do
@@ -68,7 +68,7 @@ RSpec.describe "Contacts" do
         "email": "steve.wozniak@gmail.com",
         "first_name": "Steve",
         "last_name": "Wozniak",
-        "created_at": "2023-10-06T23:47:56.678Z",
+        "created_at": "2023-10-06 23:47:56.678+00",
         "unsubscribed": false
       }
 
@@ -83,7 +83,7 @@ RSpec.describe "Contacts" do
       expect(contact[:last_name]).to eql "Wozniak"
       expect(contact[:email]).to eql "steve.wozniak@gmail.com"
       expect(contact[:unsubscribed]).to be false
-      expect(contact[:created_at]).to eql "2023-10-06T23:47:56.678Z"
+      expect(contact[:created_at]).to eql "2023-10-06 23:47:56.678+00"
     end
   end
 
@@ -99,7 +99,7 @@ RSpec.describe "Contacts" do
             "email": "steve.wozniak@gmail.com",
             "first_name": "Steve",
             "last_name": "Wozniak",
-            "created_at": "2023-10-06T23:47:56.678Z",
+            "created_at": "2023-10-06 23:47:56.678+00",
             "unsubscribed": false
           }
         ]
@@ -126,7 +126,7 @@ RSpec.describe "Contacts" do
             "email": "steve.wozniak@gmail.com",
             "first_name": "Steve",
             "last_name": "Wozniak",
-            "created_at": "2023-10-06T23:47:56.678Z",
+            "created_at": "2023-10-06 23:47:56.678+00",
             "unsubscribed": false
           }
         ]
@@ -230,7 +230,7 @@ RSpec.describe "Contacts" do
         "email": "global@example.com",
         "first_name": "Global",
         "last_name": "Contact",
-        "created_at": "2023-10-06T23:47:56.678Z",
+        "created_at": "2023-10-06 23:47:56.678+00",
         "unsubscribed": false
       }
 
@@ -255,7 +255,7 @@ RSpec.describe "Contacts" do
             "email": "global@example.com",
             "first_name": "Global",
             "last_name": "Contact",
-            "created_at": "2023-10-06T23:47:56.678Z",
+            "created_at": "2023-10-06 23:47:56.678+00",
             "unsubscribed": false
           }
         ]

@@ -13,7 +13,7 @@ RSpec.describe "OAuth Grants" do
               "client_id": "client_123",
               "scopes": ["emails:send"],
               "resource": nil,
-              "created_at": "2023-04-21T01:31:02.671414+00:00",
+              "created_at": "2023-04-21 01:31:02.671414+00",
               "revoked_at": nil,
               "revoked_reason": nil,
               "client": {

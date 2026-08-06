@@ -33,7 +33,7 @@ RSpec.describe "Segments" do
         "object": "audience",
         "id": "78261eea-8f8b-4381-83c6-79fa7120f1cf",
         "name": "Registered Users",
-        "created_at": "2023-10-06T22:59:55.977Z"
+        "created_at": "2023-10-06 22:59:55.977+00"
       }
       allow(resp).to receive(:body).and_return(resp)
       allow(HTTParty).to receive(:send).and_return(resp)
@@ -43,7 +43,7 @@ RSpec.describe "Segments" do
       expect(segment[:object]).to eql "audience"
       expect(segment[:id]).to eql "78261eea-8f8b-4381-83c6-79fa7120f1cf"
       expect(segment[:name]).to eql "Registered Users"
-      expect(segment[:created_at]).to eql "2023-10-06T22:59:55.977Z"
+      expect(segment[:created_at]).to eql "2023-10-06 22:59:55.977+00"
     end
   end
 
@@ -55,7 +55,7 @@ RSpec.describe "Segments" do
           {
             "id": "78261eea-8f8b-4381-83c6-79fa7120f1cf",
             "name": "Registered Users",
-            "created_at": "2023-10-06T22:59:55.977Z"
+            "created_at": "2023-10-06 22:59:55.977+00"
           }
         ]
       }

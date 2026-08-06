@@ -39,7 +39,7 @@ RSpec.describe "Emails" do
         "id": "4ef9a417-02e9-4d39-ad75-9611e0fcc33c",
         "to": ["james@bond.com"],
         "from": "onboarding@resend.dev",
-        "created_at": "2023-04-03T22:13:42.674981+00:00",
+        "created_at": "2023-04-03 22:13:42.674981+00",
         "subject": "Hello World",
         "html": "Congrats on sending your <strong>first email</strong>!",
         "text": nil,
@@ -217,7 +217,7 @@ RSpec.describe "Emails" do
             "id" => "4ef9a417-02e9-4d39-ad75-9611e0fcc33c",
             "to" => ["james@bond.com"],
             "from" => "onboarding@resend.dev",
-            "created_at" => "2023-04-03T22:13:42.674981+00:00",
+            "created_at" => "2023-04-03 22:13:42.674981+00",
             "subject" => "Hello World",
             "last_event" => "delivered",
             "message_id" => "<111-222-333@email.example.com>"
