@@ -111,7 +111,7 @@ RSpec.describe "Broadcasts" do
             "id": "49a3999c-0ce1-4ea6-ab68-afcd6dc2e794",
             "audience_id": "78261eea-8f8b-4381-83c6-79fa7120f1cf",
             "status": "draft",
-            "created_at": "2024-11-01T15:13:31.723Z",
+            "created_at": "2024-11-01 15:13:31.723+00",
             "scheduled_at": nil,
             "sent_at": nil
           },
@@ -119,9 +119,9 @@ RSpec.describe "Broadcasts" do
             "id": "559ac32e-9ef5-46fb-82a1-b76b840c0f7b",
             "audience_id": "78261eea-8f8b-4381-83c6-79fa7120f1cf",
             "status": "sent",
-            "created_at": "2024-12-01T19:32:22.980Z",
-            "scheduled_at": "2024-12-02T19:32:22.980Z",
-            "sent_at": "2024-12-02T19:32:22.980Z"
+            "created_at": "2024-12-01 19:32:22.98+00",
+            "scheduled_at": "2024-12-02 19:32:22.98+00",
+            "sent_at": "2024-12-02 19:32:22.98+00"
           }
         ]
       }
@@ -134,16 +134,16 @@ RSpec.describe "Broadcasts" do
       expect(broadcasts[0][:id]).to eql("49a3999c-0ce1-4ea6-ab68-afcd6dc2e794")
       expect(broadcasts[0][:audience_id]).to eql("78261eea-8f8b-4381-83c6-79fa7120f1cf")
       expect(broadcasts[0][:status]).to eql("draft")
-      expect(broadcasts[0][:created_at]).to eql("2024-11-01T15:13:31.723Z")
+      expect(broadcasts[0][:created_at]).to eql("2024-11-01 15:13:31.723+00")
       expect(broadcasts[0][:scheduled_at]).to eql(nil)
       expect(broadcasts[0][:sent_at]).to eql(nil)
 
       expect(broadcasts[1][:id]).to eql("559ac32e-9ef5-46fb-82a1-b76b840c0f7b")
       expect(broadcasts[1][:audience_id]).to eql("78261eea-8f8b-4381-83c6-79fa7120f1cf")
       expect(broadcasts[1][:status]).to eql("sent")
-      expect(broadcasts[1][:created_at]).to eql("2024-12-01T19:32:22.980Z")
-      expect(broadcasts[1][:scheduled_at]).to eql("2024-12-02T19:32:22.980Z")
-      expect(broadcasts[1][:sent_at]).to eql("2024-12-02T19:32:22.980Z")
+      expect(broadcasts[1][:created_at]).to eql("2024-12-01 19:32:22.98+00")
+      expect(broadcasts[1][:scheduled_at]).to eql("2024-12-02 19:32:22.98+00")
+      expect(broadcasts[1][:sent_at]).to eql("2024-12-02 19:32:22.98+00")
     end
   end
 
@@ -168,7 +168,7 @@ RSpec.describe "Broadcasts" do
         "reply_to": nil,
         "preview_text": "Check out our latest announcements",
         "status": "draft",
-        "created_at": "2024-12-01T19:32:22.980Z",
+        "created_at": "2024-12-01 19:32:22.98+00",
         "scheduled_at": nil,
         "sent_at": nil,
         "html": "<p>hello world</p>",
@@ -189,7 +189,7 @@ RSpec.describe "Broadcasts" do
       expect(broadcast[:reply_to]).to eql nil
       expect(broadcast[:preview_text]).to eql "Check out our latest announcements"
       expect(broadcast[:status]).to eql "draft"
-      expect(broadcast[:created_at]).to eql "2024-12-01T19:32:22.980Z"
+      expect(broadcast[:created_at]).to eql "2024-12-01 19:32:22.98+00"
       expect(broadcast[:scheduled_at]).to eql nil
       expect(broadcast[:sent_at]).to eql nil
       expect(broadcast[:html]).to eql "<p>hello world</p>"

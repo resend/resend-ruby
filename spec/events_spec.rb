@@ -17,8 +17,8 @@ RSpec.describe "Events" do
         id: event_id,
         name: event_name,
         schema: nil,
-        created_at: "2024-01-01T00:00:00.000Z",
-        updated_at: "2024-01-01T00:00:00.000Z"
+        created_at: "2024-01-01 00:00:00+00",
+        updated_at: "2024-01-01 00:00:00+00"
       }
       params = { name: event_name }
       allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
@@ -35,8 +35,8 @@ RSpec.describe "Events" do
         id: event_id,
         name: event_name,
         schema: schema,
-        created_at: "2024-01-01T00:00:00.000Z",
-        updated_at: "2024-01-01T00:00:00.000Z"
+        created_at: "2024-01-01 00:00:00+00",
+        updated_at: "2024-01-01 00:00:00+00"
       }
       params = { name: event_name, schema: schema }
       allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
@@ -64,8 +64,8 @@ RSpec.describe "Events" do
         id: event_id,
         name: event_name,
         schema: nil,
-        created_at: "2024-01-01T00:00:00.000Z",
-        updated_at: "2024-01-01T00:00:00.000Z"
+        created_at: "2024-01-01 00:00:00+00",
+        updated_at: "2024-01-01 00:00:00+00"
       }
       allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
       result = Resend::Events.get(event_id)
@@ -79,8 +79,8 @@ RSpec.describe "Events" do
         id: event_id,
         name: event_name,
         schema: nil,
-        created_at: "2024-01-01T00:00:00.000Z",
-        updated_at: "2024-01-01T00:00:00.000Z"
+        created_at: "2024-01-01 00:00:00+00",
+        updated_at: "2024-01-01 00:00:00+00"
       }
       allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
       result = Resend::Events.get(event_name)
@@ -115,8 +115,8 @@ RSpec.describe "Events" do
         id: event_id,
         name: event_name,
         schema: new_schema,
-        created_at: "2024-01-01T00:00:00.000Z",
-        updated_at: "2024-01-02T00:00:00.000Z"
+        created_at: "2024-01-01 00:00:00+00",
+        updated_at: "2024-01-02 00:00:00+00"
       }
       params = { identifier: event_id, schema: new_schema }
       allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
@@ -225,8 +225,8 @@ RSpec.describe "Events" do
             id: event_id,
             name: event_name,
             schema: nil,
-            created_at: "2024-01-01T00:00:00.000Z",
-            updated_at: "2024-01-01T00:00:00.000Z"
+            created_at: "2024-01-01 00:00:00+00",
+            updated_at: "2024-01-01 00:00:00+00"
           }
         ]
       }

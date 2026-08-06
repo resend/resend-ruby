@@ -14,7 +14,7 @@ RSpec.describe "Domains" do
       resp = {
         "id": "4dd369bc-aa82-4ff3-97de-514ae3000ee0",
         "name": "example.com",
-        "createdAt": "2023-03-28T17:12:02.059593+00:00",
+        "createdAt": "2023-03-28 17:12:02.059593+00",
         "status": "not_started",
         "records": [
           {
@@ -75,7 +75,7 @@ RSpec.describe "Domains" do
       resp = {
         "id": "4dd369bc-aa82-4ff3-97de-514ae3000ee0",
         "name": "example.com",
-        "createdAt": "2023-03-28T17:12:02.059593+00:00",
+        "createdAt": "2023-03-28 17:12:02.059593+00",
         "status": "not_started",
         "open_tracking": true,
         "click_tracking": true,
@@ -208,7 +208,7 @@ RSpec.describe "Domains" do
         "id": "d91cd9bd-1176-453e-8fc1-35364d380206",
         "name": "example.com",
         "status": "not_started",
-        "created_at": "2023-04-26T20:21:26.347412+00:00",
+        "created_at": "2023-04-26 20:21:26.347412+00",
         "region": "us-east-1"
       }
       allow(resp).to receive(:body).and_return(resp)
@@ -220,7 +220,7 @@ RSpec.describe "Domains" do
       expect(email[:id]).to eql "d91cd9bd-1176-453e-8fc1-35364d380206"
       expect(email[:name]).to eql "example.com"
       expect(email[:status]).to eql "not_started"
-      expect(email[:created_at]).to eql "2023-04-26T20:21:26.347412+00:00"
+      expect(email[:created_at]).to eql "2023-04-26 20:21:26.347412+00"
       expect(email[:region]).to eql "us-east-1"
     end
 
@@ -230,7 +230,7 @@ RSpec.describe "Domains" do
         "id": "d91cd9bd-1176-453e-8fc1-35364d380206",
         "name": "example.com",
         "status": "not_started",
-        "created_at": "2023-04-26T20:21:26.347412+00:00",
+        "created_at": "2023-04-26 20:21:26.347412+00",
         "region": "us-east-1",
         "open_tracking": true,
         "click_tracking": true,
@@ -255,7 +255,7 @@ RSpec.describe "Domains" do
             "id": "d91cd9bd-1176-453e-8fc1-35364d380206",
             "name": "example.com",
             "status": "not_started",
-            "created_at": "2023-04-26T20:21:26.347412+00:00",
+            "created_at": "2023-04-26 20:21:26.347412+00",
             "region": "us-east-1"
           }
         ]

@@ -19,7 +19,7 @@ RSpec.describe "Contacts::Segments" do
           {
             "id": segment_id,
             "name": "Registered Users",
-            "created_at": "2023-10-06T22:59:55.977Z"
+            "created_at": "2023-10-06 22:59:55.977+00"
           }
         ]
       }
@@ -57,7 +57,7 @@ RSpec.describe "Contacts::Segments" do
           {
             "id": segment_id,
             "name": "Registered Users",
-            "created_at": "2023-10-06T22:59:55.977Z"
+            "created_at": "2023-10-06 22:59:55.977+00"
           }
         ],
         "has_more": true

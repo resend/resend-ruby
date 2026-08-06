@@ -72,7 +72,7 @@ RSpec.describe "Pagination" do
           {
             "id": "6e3c3d83-05dc-4b51-acfc-fe8972738bd0",
             "name": "test1",
-            "created_at": "2023-04-21T01:31:02.671414+00:00"
+            "created_at": "2023-04-21 01:31:02.671414+00"
           }
         ],
         "has_more": true

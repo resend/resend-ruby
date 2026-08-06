@@ -53,8 +53,8 @@ RSpec.describe "Automations" do
         id: automation_id,
         name: "Welcome Automation",
         status: "enabled",
-        created_at: "2024-01-01T00:00:00.000Z",
-        updated_at: "2024-01-01T00:00:00.000Z",
+        created_at: "2024-01-01 00:00:00+00",
+        updated_at: "2024-01-01 00:00:00+00",
         steps: steps,
         connections: connections
       }
@@ -155,7 +155,7 @@ RSpec.describe "Automations" do
         object: "list",
         has_more: false,
         data: [
-          { id: automation_id, name: "Welcome Automation", status: "enabled", created_at: "2024-01-01T00:00:00.000Z" }
+          { id: automation_id, name: "Welcome Automation", status: "enabled", created_at: "2024-01-01 00:00:00+00" }
         ]
       }
       allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
@@ -205,9 +205,9 @@ RSpec.describe "Automations" do
             {
               id: run_id,
               status: "completed",
-              started_at: "2024-01-01T00:00:00.000Z",
-              completed_at: "2024-01-01T00:01:00.000Z",
-              created_at: "2024-01-01T00:00:00.000Z"
+              started_at: "2024-01-01 00:00:00+00",
+              completed_at: "2024-01-01 00:01:00+00",
+              created_at: "2024-01-01 00:00:00+00"
             }
           ]
         }
@@ -243,9 +243,9 @@ RSpec.describe "Automations" do
           object: "automation_run",
           id: run_id,
           status: "completed",
-          started_at: "2024-01-01T00:00:00.000Z",
-          completed_at: "2024-01-01T00:01:00.000Z",
-          created_at: "2024-01-01T00:00:00.000Z",
+          started_at: "2024-01-01 00:00:00+00",
+          completed_at: "2024-01-01 00:01:00+00",
+          created_at: "2024-01-01 00:00:00+00",
           steps: []
         }
         allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)

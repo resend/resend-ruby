@@ -46,7 +46,7 @@ RSpec.describe "Webhooks" do
       resp = {
         "object": "webhook",
         "id": "4dd369bc-aa82-4ff3-97de-514ae3000ee0",
-        "created_at": "2023-08-22T15:28:00.000Z",
+        "created_at": "2023-08-22 15:28:00+00",
         "status": "enabled",
         "endpoint": "https://webhook.example.com/handler",
         "events": ["email.sent", "email.received"],
@@ -64,7 +64,7 @@ RSpec.describe "Webhooks" do
       expect(webhook[:endpoint]).to eql("https://webhook.example.com/handler")
       expect(webhook[:events]).to eql(["email.sent", "email.received"])
       expect(webhook[:signing_secret]).to eql("whsec_xxxxxxxxxx")
-      expect(webhook[:created_at]).to eql("2023-08-22T15:28:00.000Z")
+      expect(webhook[:created_at]).to eql("2023-08-22 15:28:00+00")
     end
 
     it "should handle webhook not found" do
@@ -125,14 +125,14 @@ RSpec.describe "Webhooks" do
         "data": [
           {
             "id": "7ab123cd-ef45-6789-abcd-ef0123456789",
-            "created_at": "2023-09-10T10:15:30.000Z",
+            "created_at": "2023-09-10 10:15:30+00",
             "status": "disabled",
             "endpoint": "https://first-webhook.example.com/handler",
             "events": ["email.delivered", "email.bounced"]
           },
           {
             "id": "4dd369bc-aa82-4ff3-97de-514ae3000ee0",
-            "created_at": "2023-08-22T15:28:00.000Z",
+            "created_at": "2023-08-22 15:28:00+00",
             "status": "enabled",
             "endpoint": "https://second-webhook.example.com/receive",
             "events": ["email.received"]
@@ -151,13 +151,13 @@ RSpec.describe "Webhooks" do
       expect(webhooks[:data][0][:status]).to eql("disabled")
       expect(webhooks[:data][0][:endpoint]).to eql("https://first-webhook.example.com/handler")
       expect(webhooks[:data][0][:events]).to eql(["email.delivered", "email.bounced"])
-      expect(webhooks[:data][0][:created_at]).to eql("2023-09-10T10:15:30.000Z")
+      expect(webhooks[:data][0][:created_at]).to eql("2023-09-10 10:15:30+00")
 
       expect(webhooks[:data][1][:id]).to eql("4dd369bc-aa82-4ff3-97de-514ae3000ee0")
       expect(webhooks[:data][1][:status]).to eql("enabled")
       expect(webhooks[:data][1][:endpoint]).to eql("https://second-webhook.example.com/receive")
       expect(webhooks[:data][1][:events]).to eql(["email.received"])
-      expect(webhooks[:data][1][:created_at]).to eql("2023-08-22T15:28:00.000Z")
+      expect(webhooks[:data][1][:created_at]).to eql("2023-08-22 15:28:00+00")
     end
 
     it "should list webhooks with pagination" do
@@ -167,7 +167,7 @@ RSpec.describe "Webhooks" do
         "data": [
           {
             "id": "7ab123cd-ef45-6789-abcd-ef0123456789",
-            "created_at": "2023-09-10T10:15:30.000Z",
+            "created_at": "2023-09-10 10:15:30+00",
             "status": "enabled",
             "endpoint": "https://webhook.example.com/handler",
             "events": ["email.sent"]

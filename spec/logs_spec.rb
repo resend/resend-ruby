@@ -13,7 +13,7 @@ RSpec.describe "Logs" do
         resp = {
           "object": "log",
           "id": "3d4a472d-bc6d-4dd2-aa9d-d3d11b549e55",
-          "created_at": "2024-11-01T18:10:00.000Z",
+          "created_at": "2024-11-01 18:10:00+00",
           "endpoint": "/emails",
           "method": "POST",
           "response_status": 200,
@@ -34,7 +34,7 @@ RSpec.describe "Logs" do
         resp = {
           "object": "log",
           "id": "3d4a472d-bc6d-4dd2-aa9d-d3d11b549e55",
-          "created_at": "2024-11-01T18:10:00.000Z",
+          "created_at": "2024-11-01 18:10:00+00",
           "endpoint": "/emails",
           "method": "POST",
           "response_status": 200,
@@ -78,7 +78,7 @@ RSpec.describe "Logs" do
           "data": [
             {
               "id": "3d4a472d-bc6d-4dd2-aa9d-d3d11b549e55",
-              "created_at": "2024-11-01T18:10:00.000Z",
+              "created_at": "2024-11-01 18:10:00+00",
               "endpoint": "/emails",
               "method": "POST",
               "response_status": 200,
@@ -86,7 +86,7 @@ RSpec.describe "Logs" do
             },
             {
               "id": "4e5b583e-cd7e-5ee3-bbae-e4e22c650f66",
-              "created_at": "2024-11-01T17:00:00.000Z",
+              "created_at": "2024-11-01 17:00:00+00",
               "endpoint": "/emails",
               "method": "POST",
               "response_status": 422,
@@ -109,7 +109,7 @@ RSpec.describe "Logs" do
           "data": [
             {
               "id": "3d4a472d-bc6d-4dd2-aa9d-d3d11b549e55",
-              "created_at": "2024-11-01T18:10:00.000Z",
+              "created_at": "2024-11-01 18:10:00+00",
               "endpoint": "/emails",
               "method": "POST",
               "response_status": 200,
@@ -137,7 +137,7 @@ RSpec.describe "Logs" do
         resp = {
           "object": "log",
           "id": "3d4a472d-bc6d-4dd2-aa9d-d3d11b549e55",
-          "created_at": "2024-11-01T18:10:00.000Z",
+          "created_at": "2024-11-01 18:10:00+00",
           "endpoint": "/emails",
           "method": "POST",
           "response_status": 200,
@@ -159,7 +159,7 @@ RSpec.describe "Logs" do
           "data": [
             {
               "id": "3d4a472d-bc6d-4dd2-aa9d-d3d11b549e55",
-              "created_at": "2024-11-01T18:10:00.000Z",
+              "created_at": "2024-11-01 18:10:00+00",
               "endpoint": "/emails",
               "method": "POST",
               "response_status": 200,

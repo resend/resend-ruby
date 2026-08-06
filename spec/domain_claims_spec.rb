@@ -24,8 +24,8 @@ RSpec.describe "Domains::Claims" do
         },
         blocked_reason: nil,
         failure_reason: nil,
-        created_at: "2026-06-16T17:12:02.059593+00:00",
-        expires_at: "2026-06-23T17:12:02.059593+00:00"
+        created_at: "2026-06-16 17:12:02.059593+00",
+        expires_at: "2026-06-23 17:12:02.059593+00"
       }
 
       params = { name: "example.com" }
@@ -68,8 +68,8 @@ RSpec.describe "Domains::Claims" do
         region: "us-east-1",
         blocked_reason: "grace_period",
         failure_reason: nil,
-        created_at: "2026-06-16T17:12:02.059593+00:00",
-        expires_at: "2026-06-23T17:12:02.059593+00:00"
+        created_at: "2026-06-16 17:12:02.059593+00",
+        expires_at: "2026-06-23 17:12:02.059593+00"
       }
       allow(resp).to receive(:body).and_return(resp)
       allow(HTTParty).to receive(:send).and_return(resp)

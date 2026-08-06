@@ -57,7 +57,7 @@ RSpec.describe "ContactProperties" do
         key: "company_name",
         type: "string",
         fallback_value: "Acme Corp",
-        created_at: "2023-04-08T00:11:13.110779+00:00"
+        created_at: "2023-04-08 00:11:13.110779+00"
       }
 
       property_id = "b6d24b8e-af0b-4c3c-be0c-359bbd97381e"
@@ -85,7 +85,7 @@ RSpec.describe "ContactProperties" do
             key: "company_name",
             type: "string",
             fallback_value: "Acme Corp",
-            created_at: "2023-04-08T00:11:13.110779+00:00"
+            created_at: "2023-04-08 00:11:13.110779+00"
           }
         ]
       }
