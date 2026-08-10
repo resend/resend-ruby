@@ -147,6 +147,20 @@ RSpec.describe "Broadcasts" do
     end
   end
 
+  describe "cancel" do
+    it "should cancel broadcast" do
+      resp = {
+        "object": "broadcast",
+        "id": "559ac32e-9ef5-46fb-82a1-b76b840c0f7b"
+      }
+      allow(resp).to receive(:body).and_return(resp)
+      allow(HTTParty).to receive(:send).and_return(resp)
+
+      broadcast = Resend::Broadcasts.cancel(resp[:id])
+      expect(broadcast[:id]).to eql "559ac32e-9ef5-46fb-82a1-b76b840c0f7b"
+    end
+  end
+
   describe "remove" do
     it "should remove broadcast" do
       allow_any_instance_of(Resend::Request).to receive(:perform).and_return("")

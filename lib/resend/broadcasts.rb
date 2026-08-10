@@ -41,6 +41,11 @@ module Resend
         Resend::Request.new(path, {}, "get").perform
       end
 
+      def cancel(broadcast_id = "")
+        path = "broadcasts/#{broadcast_id}/cancel"
+        Resend::Request.new(path, {}, "post").perform
+      end
+
       # https://resend.com/docs/api-reference/broadcasts/delete-broadcast
       def remove(broadcast_id = "")
         path = "broadcasts/#{broadcast_id}"
