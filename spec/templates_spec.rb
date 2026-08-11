@@ -259,22 +259,22 @@ RSpec.describe "Templates" do
         "object": "list",
         "data": [
           {
-            "id": "e169aa45-1ecf-4183-9955-b1499d5701d3",
-            "name": "reset-password",
-            "status": "draft",
-            "published_at": nil,
-            "created_at": "2023-10-06 23:47:56.678+00",
-            "updated_at": "2023-10-06 23:47:56.678+00",
-            "alias": "reset-password"
+            "id" => "e169aa45-1ecf-4183-9955-b1499d5701d3",
+            "name" => "reset-password",
+            "status" => "draft",
+            "published_at" => nil,
+            "created_at" => "2023-10-06 23:47:56.678+00",
+            "updated_at" => "2023-10-06 23:47:56.678+00",
+            "alias" => "reset-password"
           },
           {
-            "id": "b7f9c2e1-1234-4abc-9def-567890abcdef",
-            "name": "welcome-message",
-            "status": "published",
-            "published_at": "2023-10-06 23:47:56.678+00",
-            "created_at": "2023-10-06 23:47:56.678+00",
-            "updated_at": "2023-10-06 23:47:56.678+00",
-            "alias": "welcome-message"
+            "id" => "b7f9c2e1-1234-4abc-9def-567890abcdef",
+            "name" => "welcome-message",
+            "status" => "published",
+            "published_at" => "2023-10-06 23:47:56.678+00",
+            "created_at" => "2023-10-06 23:47:56.678+00",
+            "updated_at" => "2023-10-06 23:47:56.678+00",
+            "alias" => "welcome-message"
           }
         ],
         "has_more": false
@@ -284,15 +284,15 @@ RSpec.describe "Templates" do
       templates = Resend::Templates.list[:data]
 
       expect(templates.length).to eql(2)
-      expect(templates[0][:id]).to eql("e169aa45-1ecf-4183-9955-b1499d5701d3")
-      expect(templates[0][:name]).to eql("reset-password")
-      expect(templates[0][:status]).to eql("draft")
-      expect(templates[0][:alias]).to eql("reset-password")
+      expect(templates[0]["id"]).to eql("e169aa45-1ecf-4183-9955-b1499d5701d3")
+      expect(templates[0]["name"]).to eql("reset-password")
+      expect(templates[0]["status"]).to eql("draft")
+      expect(templates[0]["alias"]).to eql("reset-password")
 
-      expect(templates[1][:id]).to eql("b7f9c2e1-1234-4abc-9def-567890abcdef")
-      expect(templates[1][:name]).to eql("welcome-message")
-      expect(templates[1][:status]).to eql("published")
-      expect(templates[1][:alias]).to eql("welcome-message")
+      expect(templates[1]["id"]).to eql("b7f9c2e1-1234-4abc-9def-567890abcdef")
+      expect(templates[1]["name"]).to eql("welcome-message")
+      expect(templates[1]["status"]).to eql("published")
+      expect(templates[1]["alias"]).to eql("welcome-message")
     end
 
     it "should list templates with pagination" do

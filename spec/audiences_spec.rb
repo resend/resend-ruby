@@ -53,9 +53,9 @@ RSpec.describe "Audiences" do
         "object": "list",
         "data": [
           {
-            "id": "78261eea-8f8b-4381-83c6-79fa7120f1cf",
-            "name": "Registered Users",
-            "created_at": "2023-10-06 22:59:55.977+00"
+            "id" => "78261eea-8f8b-4381-83c6-79fa7120f1cf",
+            "name" => "Registered Users",
+            "created_at" => "2023-10-06 22:59:55.977+00"
           }
         ]
       }
@@ -64,8 +64,8 @@ RSpec.describe "Audiences" do
       expect(audiences[:object]).to eql "list"
       expect(audiences[:data].empty?).to be false
       expect(audiences[:data].length).to eql(1)
-      expect(audiences[:data].first[:id]).to eql("78261eea-8f8b-4381-83c6-79fa7120f1cf")
-      expect(audiences[:data].first[:name]).to eql("Registered Users")
+      expect(audiences[:data].first["id"]).to eql("78261eea-8f8b-4381-83c6-79fa7120f1cf")
+      expect(audiences[:data].first["name"]).to eql("Registered Users")
     end
   end
 

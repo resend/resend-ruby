@@ -18,8 +18,8 @@ RSpec.describe "Logs" do
           "method": "POST",
           "response_status": 200,
           "user_agent": "resend-ruby:1.0.0",
-          "request_body": { "from": "user@example.com", "to": "recipient@example.com" },
-          "response_body": { "id": "email_123" }
+          "request_body": { "from" => "user@example.com", "to" => "recipient@example.com" },
+          "response_body": { "id" => "email_123" }
         }
         allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
         result = Resend::Logs.get("3d4a472d-bc6d-4dd2-aa9d-d3d11b549e55")
@@ -77,20 +77,20 @@ RSpec.describe "Logs" do
           "has_more": false,
           "data": [
             {
-              "id": "3d4a472d-bc6d-4dd2-aa9d-d3d11b549e55",
-              "created_at": "2024-11-01 18:10:00+00",
-              "endpoint": "/emails",
-              "method": "POST",
-              "response_status": 200,
-              "user_agent": "resend-ruby:1.0.0"
+              "id" => "3d4a472d-bc6d-4dd2-aa9d-d3d11b549e55",
+              "created_at" => "2024-11-01 18:10:00+00",
+              "endpoint" => "/emails",
+              "method" => "POST",
+              "response_status" => 200,
+              "user_agent" => "resend-ruby:1.0.0"
             },
             {
-              "id": "4e5b583e-cd7e-5ee3-bbae-e4e22c650f66",
-              "created_at": "2024-11-01 17:00:00+00",
-              "endpoint": "/emails",
-              "method": "POST",
-              "response_status": 422,
-              "user_agent": nil
+              "id" => "4e5b583e-cd7e-5ee3-bbae-e4e22c650f66",
+              "created_at" => "2024-11-01 17:00:00+00",
+              "endpoint" => "/emails",
+              "method" => "POST",
+              "response_status" => 422,
+              "user_agent" => nil
             }
           ]
         }
@@ -98,8 +98,8 @@ RSpec.describe "Logs" do
         result = Resend::Logs.list
         expect(result[:data].length).to eql(2)
         expect(result[:has_more]).to eql(false)
-        expect(result[:data].first[:id]).to eql("3d4a472d-bc6d-4dd2-aa9d-d3d11b549e55")
-        expect(result[:data].last[:user_agent]).to be_nil
+        expect(result[:data].first["id"]).to eql("3d4a472d-bc6d-4dd2-aa9d-d3d11b549e55")
+        expect(result[:data].last["user_agent"]).to be_nil
       end
 
       it "should list logs with pagination params" do
@@ -108,12 +108,12 @@ RSpec.describe "Logs" do
           "has_more": true,
           "data": [
             {
-              "id": "3d4a472d-bc6d-4dd2-aa9d-d3d11b549e55",
-              "created_at": "2024-11-01 18:10:00+00",
-              "endpoint": "/emails",
-              "method": "POST",
-              "response_status": 200,
-              "user_agent": "resend-ruby:1.0.0"
+              "id" => "3d4a472d-bc6d-4dd2-aa9d-d3d11b549e55",
+              "created_at" => "2024-11-01 18:10:00+00",
+              "endpoint" => "/emails",
+              "method" => "POST",
+              "response_status" => 200,
+              "user_agent" => "resend-ruby:1.0.0"
             }
           ]
         }
@@ -158,12 +158,12 @@ RSpec.describe "Logs" do
           "has_more": false,
           "data": [
             {
-              "id": "3d4a472d-bc6d-4dd2-aa9d-d3d11b549e55",
-              "created_at": "2024-11-01 18:10:00+00",
-              "endpoint": "/emails",
-              "method": "POST",
-              "response_status": 200,
-              "user_agent": "resend-ruby:1.0.0"
+              "id" => "3d4a472d-bc6d-4dd2-aa9d-d3d11b549e55",
+              "created_at" => "2024-11-01 18:10:00+00",
+              "endpoint" => "/emails",
+              "method" => "POST",
+              "response_status" => 200,
+              "user_agent" => "resend-ruby:1.0.0"
             }
           ]
         }

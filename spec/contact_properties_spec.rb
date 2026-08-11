@@ -81,11 +81,11 @@ RSpec.describe "ContactProperties" do
         has_more: false,
         data: [
           {
-            id: "b6d24b8e-af0b-4c3c-be0c-359bbd97381e",
-            key: "company_name",
-            type: "string",
-            fallback_value: "Acme Corp",
-            created_at: "2023-04-08 00:11:13.110779+00"
+            "id" => "b6d24b8e-af0b-4c3c-be0c-359bbd97381e",
+            "key" => "company_name",
+            "type" => "string",
+            "fallback_value" => "Acme Corp",
+            "created_at" => "2023-04-08 00:11:13.110779+00"
           }
         ]
       }
@@ -97,7 +97,7 @@ RSpec.describe "ContactProperties" do
       expect(properties[:object]).to eql("list")
       expect(properties[:has_more]).to eql(false)
       expect(properties[:data]).to be_an(Array)
-      expect(properties[:data].first[:id]).to eql("b6d24b8e-af0b-4c3c-be0c-359bbd97381e")
+      expect(properties[:data].first["id"]).to eql("b6d24b8e-af0b-4c3c-be0c-359bbd97381e")
     end
 
     it "should list contact properties with pagination" do

@@ -17,9 +17,9 @@ RSpec.describe "Contacts::Segments" do
         "object": "list",
         "data": [
           {
-            "id": segment_id,
-            "name": "Registered Users",
-            "created_at": "2023-10-06 22:59:55.977+00"
+            "id" => segment_id,
+            "name" => "Registered Users",
+            "created_at" => "2023-10-06 22:59:55.977+00"
           }
         ]
       }
@@ -28,8 +28,8 @@ RSpec.describe "Contacts::Segments" do
       segments = Resend::Contacts::Segments.list(contact_id: contact_id)
       expect(segments[:object]).to eql "list"
       expect(segments[:data].length).to eql 1
-      expect(segments[:data][0][:id]).to eql segment_id
-      expect(segments[:data][0][:name]).to eql "Registered Users"
+      expect(segments[:data][0]["id"]).to eql segment_id
+      expect(segments[:data][0]["name"]).to eql "Registered Users"
     end
 
     it "should list segments for a contact using email" do
@@ -55,9 +55,9 @@ RSpec.describe "Contacts::Segments" do
         "object": "list",
         "data": [
           {
-            "id": segment_id,
-            "name": "Registered Users",
-            "created_at": "2023-10-06 22:59:55.977+00"
+            "id" => segment_id,
+            "name" => "Registered Users",
+            "created_at" => "2023-10-06 22:59:55.977+00"
           }
         ],
         "has_more": true

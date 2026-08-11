@@ -9,16 +9,16 @@ RSpec.describe "OAuth Grants" do
           "has_more": false,
           "data": [
             {
-              "id": "b6d24b8e-af0b-4c3c-be0c-359bbd97381e",
-              "client_id": "client_123",
-              "scopes": ["emails:send"],
-              "resource": nil,
-              "created_at": "2023-04-21 01:31:02.671414+00",
-              "revoked_at": nil,
-              "revoked_reason": nil,
-              "client": {
-                "name": "My App",
-                "logo_uri": "https://example.com/logo.png"
+              "id" => "b6d24b8e-af0b-4c3c-be0c-359bbd97381e",
+              "client_id" => "client_123",
+              "scopes" => ["emails:send"],
+              "resource" => nil,
+              "created_at" => "2023-04-21 01:31:02.671414+00",
+              "revoked_at" => nil,
+              "revoked_reason" => nil,
+              "client" => {
+                "name" => "My App",
+                "logo_uri" => "https://example.com/logo.png"
               }
             }
           ]
@@ -26,7 +26,7 @@ RSpec.describe "OAuth Grants" do
         allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
         grants = Resend::OAuthGrants.list
         expect(grants[:data].length).to eql(1)
-        expect(grants[:data].first[:id]).to eql("b6d24b8e-af0b-4c3c-be0c-359bbd97381e")
+        expect(grants[:data].first["id"]).to eql("b6d24b8e-af0b-4c3c-be0c-359bbd97381e")
         expect(grants[:has_more]).to be(false)
       end
 

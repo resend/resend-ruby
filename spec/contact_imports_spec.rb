@@ -101,10 +101,10 @@ RSpec.describe "Contacts::Imports" do
         has_more: false,
         data: [
           {
-            object: "contact_import",
-            id: "479e3145-dd38-476b-932c-529ceb705947",
-            status: "completed",
-            created_at: "2023-10-06 23:47:56.678+00"
+            "object" => "contact_import",
+            "id" => "479e3145-dd38-476b-932c-529ceb705947",
+            "status" => "completed",
+            "created_at" => "2023-10-06 23:47:56.678+00"
           }
         ]
       }
@@ -113,7 +113,7 @@ RSpec.describe "Contacts::Imports" do
       result = Resend::Contacts::Imports.list
       expect(result[:object]).to eql("list")
       expect(result[:data].length).to eql(1)
-      expect(result[:data][0][:id]).to eql("479e3145-dd38-476b-932c-529ceb705947")
+      expect(result[:data][0]["id"]).to eql("479e3145-dd38-476b-932c-529ceb705947")
     end
 
     it "should list contact imports with status filter" do

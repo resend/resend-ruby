@@ -11,10 +11,10 @@ RSpec.describe "Batch" do
       resp = {
         "data": [
           {
-            "id": "ae2014de-c168-4c61-8267-70d2662a1ce1"
+            "id" => "ae2014de-c168-4c61-8267-70d2662a1ce1"
           },
           {
-            "id": "faccb7a5-8a28-4e9a-ac64-8da1cc3bc1cb"
+            "id" => "faccb7a5-8a28-4e9a-ac64-8da1cc3bc1cb"
           }
         ]
       }
@@ -142,8 +142,8 @@ RSpec.describe "Batch" do
     it "does not send the x-batch-validation header when :batch_validation is not provided" do
       resp = {
         "data": [
-          { "id": "ae2014de-c168-4c61-8267-70d2662a1ce1" },
-          { "id": "faccb7a5-8a28-4e9a-ac64-8da1cc3bc1cb" }
+          { "id" => "ae2014de-c168-4c61-8267-70d2662a1ce1" },
+          { "id" => "faccb7a5-8a28-4e9a-ac64-8da1cc3bc1cb" }
         ]
       }
 
@@ -170,10 +170,10 @@ RSpec.describe "Batch" do
     it "sends the x-batch-validation header when :batch_validation is set to permissive" do
       resp = {
         "data": [
-          { "id": "ae2014de-c168-4c61-8267-70d2662a1ce1" }
+          { "id" => "ae2014de-c168-4c61-8267-70d2662a1ce1" }
         ],
         "errors": [
-          { "index": 1, "message": "Invalid email address" }
+          { "index" => 1, "message" => "Invalid email address" }
         ]
       }
 
@@ -201,8 +201,8 @@ RSpec.describe "Batch" do
     it "sends the x-batch-validation header when :batch_validation is set to strict" do
       resp = {
         "data": [
-          { "id": "ae2014de-c168-4c61-8267-70d2662a1ce1" },
-          { "id": "faccb7a5-8a28-4e9a-ac64-8da1cc3bc1cb" }
+          { "id" => "ae2014de-c168-4c61-8267-70d2662a1ce1" },
+          { "id" => "faccb7a5-8a28-4e9a-ac64-8da1cc3bc1cb" }
         ]
       }
 
@@ -230,12 +230,12 @@ RSpec.describe "Batch" do
     it "handles response with errors array in permissive mode" do
       resp = {
         "data": [
-          { "id": "ae2014de-c168-4c61-8267-70d2662a1ce1" }
+          { "id" => "ae2014de-c168-4c61-8267-70d2662a1ce1" }
         ],
         "errors": [
           {
-            "index": 1,
-            "message": "The 'to' field must be a valid email address"
+            "index" => 1,
+            "message" => "The 'to' field must be a valid email address"
           }
         ]
       }
@@ -262,15 +262,15 @@ RSpec.describe "Batch" do
       expect(result[:data].length).to eq 1
       expect(result[:errors]).not_to be_nil
       expect(result[:errors].length).to eq 1
-      expect(result[:errors][0][:index]).to eq 1
-      expect(result[:errors][0][:message]).to include("valid email address")
+      expect(result[:errors][0]["index"]).to eq 1
+      expect(result[:errors][0]["message"]).to include("valid email address")
     end
 
     it "sends batch email with templates" do
       resp = {
         "data": [
-          { "id": "ae2014de-c168-4c61-8267-70d2662a1ce1" },
-          { "id": "faccb7a5-8a28-4e9a-ac64-8da1cc3bc1cb" }
+          { "id" => "ae2014de-c168-4c61-8267-70d2662a1ce1" },
+          { "id" => "faccb7a5-8a28-4e9a-ac64-8da1cc3bc1cb" }
         ]
       }
 

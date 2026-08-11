@@ -55,8 +55,11 @@ RSpec.describe "Automations" do
         status: "enabled",
         created_at: "2024-01-01 00:00:00+00",
         updated_at: "2024-01-01 00:00:00+00",
-        steps: steps,
-        connections: connections
+        steps: [
+          { "key" => "trigger", "type" => "trigger", "config" => { "event_name" => "user.created" } },
+          { "key" => "send_welcome", "type" => "send_email", "config" => { "template" => { "id" => "tpl_xxx" } } }
+        ],
+        connections: [{ "from" => "trigger", "to" => "send_welcome", "type" => "default" }]
       }
       allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
       result = Resend::Automations.get(automation_id)
@@ -155,7 +158,7 @@ RSpec.describe "Automations" do
         object: "list",
         has_more: false,
         data: [
-          { id: automation_id, name: "Welcome Automation", status: "enabled", created_at: "2024-01-01 00:00:00+00" }
+          { "id" => automation_id, "name" => "Welcome Automation", "status" => "enabled", "created_at" => "2024-01-01 00:00:00+00" }
         ]
       }
       allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
@@ -163,18 +166,18 @@ RSpec.describe "Automations" do
       expect(result[:object]).to eql("list")
       expect(result[:data].length).to eql(1)
       expect(result[:has_more]).to eql(false)
-      expect(result[:data].first[:id]).to eql(automation_id)
+      expect(result[:data].first["id"]).to eql(automation_id)
     end
 
     it "should list automations with status filter" do
-      resp = { object: "list", has_more: false, data: [{ id: automation_id, status: "enabled" }] }
+      resp = { object: "list", has_more: false, data: [{ "id" => automation_id, "status" => "enabled" }] }
       allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
       result = Resend::Automations.list({ status: "enabled" })
-      expect(result[:data].first[:status]).to eql("enabled")
+      expect(result[:data].first["status"]).to eql("enabled")
     end
 
     it "should list automations with pagination params" do
-      resp = { object: "list", has_more: true, data: [{ id: automation_id }] }
+      resp = { object: "list", has_more: true, data: [{ "id" => automation_id }] }
       allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
       result = Resend::Automations.list({ limit: 1 })
       expect(result[:has_more]).to eql(true)
@@ -203,11 +206,11 @@ RSpec.describe "Automations" do
           has_more: false,
           data: [
             {
-              id: run_id,
-              status: "completed",
-              started_at: "2024-01-01 00:00:00+00",
-              completed_at: "2024-01-01 00:01:00+00",
-              created_at: "2024-01-01 00:00:00+00"
+              "id" => run_id,
+              "status" => "completed",
+              "started_at" => "2024-01-01 00:00:00+00",
+              "completed_at" => "2024-01-01 00:01:00+00",
+              "created_at" => "2024-01-01 00:00:00+00"
             }
           ]
         }
@@ -215,7 +218,7 @@ RSpec.describe "Automations" do
         result = Resend::Automations::Runs.list(automation_id)
         expect(result[:object]).to eql("list")
         expect(result[:data].length).to eql(1)
-        expect(result[:data].first[:id]).to eql(run_id)
+        expect(result[:data].first["id"]).to eql(run_id)
         expect(result[:has_more]).to eql(false)
       end
 
@@ -230,7 +233,7 @@ RSpec.describe "Automations" do
       end
 
       it "should list runs with pagination params" do
-        resp = { object: "list", has_more: true, data: [{ id: run_id }] }
+        resp = { object: "list", has_more: true, data: [{ "id" => run_id }] }
         allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
         result = Resend::Automations::Runs.list(automation_id, { limit: 1 })
         expect(result[:has_more]).to eql(true)

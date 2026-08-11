@@ -68,18 +68,18 @@ RSpec.describe "Topics" do
         "has_more": false,
         "data": [
           {
-            "id": "b6d24b8e-af0b-4c3c-be0c-359bbd97381e",
-            "name": "Weekly Newsletter",
-            "description": "Weekly newsletter for our subscribers",
-            "default_subscription": "opt_in",
-            "created_at": "2023-04-08 00:11:13.110779+00"
+            "id" => "b6d24b8e-af0b-4c3c-be0c-359bbd97381e",
+            "name" => "Weekly Newsletter",
+            "description" => "Weekly newsletter for our subscribers",
+            "default_subscription" => "opt_in",
+            "created_at" => "2023-04-08 00:11:13.110779+00"
           },
           {
-            "id": "c7e35c9f-1fc2-5db5-cf1d-46af8e4c2f91",
-            "name": "Monthly Updates",
-            "description": "Monthly product updates",
-            "default_subscription": "opt_out",
-            "created_at": "2023-04-09 10:15:20.22089+00"
+            "id" => "c7e35c9f-1fc2-5db5-cf1d-46af8e4c2f91",
+            "name" => "Monthly Updates",
+            "description" => "Monthly product updates",
+            "default_subscription" => "opt_out",
+            "created_at" => "2023-04-09 10:15:20.22089+00"
           }
         ]
       }
@@ -89,17 +89,17 @@ RSpec.describe "Topics" do
 
       expect(topics.length).to eql(2)
 
-      expect(topics[0][:id]).to eql("b6d24b8e-af0b-4c3c-be0c-359bbd97381e")
-      expect(topics[0][:name]).to eql("Weekly Newsletter")
-      expect(topics[0][:description]).to eql("Weekly newsletter for our subscribers")
-      expect(topics[0][:default_subscription]).to eql("opt_in")
-      expect(topics[0][:created_at]).to eql("2023-04-08 00:11:13.110779+00")
+      expect(topics[0]["id"]).to eql("b6d24b8e-af0b-4c3c-be0c-359bbd97381e")
+      expect(topics[0]["name"]).to eql("Weekly Newsletter")
+      expect(topics[0]["description"]).to eql("Weekly newsletter for our subscribers")
+      expect(topics[0]["default_subscription"]).to eql("opt_in")
+      expect(topics[0]["created_at"]).to eql("2023-04-08 00:11:13.110779+00")
 
-      expect(topics[1][:id]).to eql("c7e35c9f-1fc2-5db5-cf1d-46af8e4c2f91")
-      expect(topics[1][:name]).to eql("Monthly Updates")
-      expect(topics[1][:description]).to eql("Monthly product updates")
-      expect(topics[1][:default_subscription]).to eql("opt_out")
-      expect(topics[1][:created_at]).to eql("2023-04-09 10:15:20.22089+00")
+      expect(topics[1]["id"]).to eql("c7e35c9f-1fc2-5db5-cf1d-46af8e4c2f91")
+      expect(topics[1]["name"]).to eql("Monthly Updates")
+      expect(topics[1]["description"]).to eql("Monthly product updates")
+      expect(topics[1]["default_subscription"]).to eql("opt_out")
+      expect(topics[1]["created_at"]).to eql("2023-04-09 10:15:20.22089+00")
     end
   end
 
