@@ -18,45 +18,45 @@ RSpec.describe "Domains" do
         "status": "not_started",
         "records": [
           {
-            "record": "SPF",
-            "name": "bounces",
-            "type": "MX",
-            "ttl": "Auto",
-            "status": "not_started",
-            "value": "feedback-smtp.us-east-1.amazonses.com",
-            "priority": 10
+            "record" => "SPF",
+            "name" => "bounces",
+            "type" => "MX",
+            "ttl" => "Auto",
+            "status" => "not_started",
+            "value" => "feedback-smtp.us-east-1.amazonses.com",
+            "priority" => 10
           },
           {
-            "record": "SPF",
-            "name": "bounces",
-            "value": "\"v=spf1 include:amazonses.com ~all\"",
-            "type": "TXT",
-            "ttl": "Auto",
-            "status": "not_started"
+            "record" => "SPF",
+            "name" => "bounces",
+            "value" => "\"v=spf1 include:amazonses.com ~all\"",
+            "type" => "TXT",
+            "ttl" => "Auto",
+            "status" => "not_started"
           },
           {
-            "record": "DKIM",
-            "name": "nhapbbryle57yxg3fbjytyodgbt2kyyg._domainkey",
-            "value": "nhapbbryle57yxg3fbjytyodgbt2kyyg.dkim.amazonses.com.",
-            "type": "CNAME",
-            "status": "not_started",
-            "ttl": "Auto"
+            "record" => "DKIM",
+            "name" => "nhapbbryle57yxg3fbjytyodgbt2kyyg._domainkey",
+            "value" => "nhapbbryle57yxg3fbjytyodgbt2kyyg.dkim.amazonses.com.",
+            "type" => "CNAME",
+            "status" => "not_started",
+            "ttl" => "Auto"
           },
           {
-            "record": "DKIM",
-            "name": "xbakwbe5fcscrhzshpap6kbxesf6pfgn._domainkey",
-            "value": "xbakwbe5fcscrhzshpap6kbxesf6pfgn.dkim.amazonses.com.",
-            "type": "CNAME",
-            "status": "not_started",
-            "ttl": "Auto"
+            "record" => "DKIM",
+            "name" => "xbakwbe5fcscrhzshpap6kbxesf6pfgn._domainkey",
+            "value" => "xbakwbe5fcscrhzshpap6kbxesf6pfgn.dkim.amazonses.com.",
+            "type" => "CNAME",
+            "status" => "not_started",
+            "ttl" => "Auto"
           },
           {
-            "record": "DKIM",
-            "name": "txrcreso3dqbvcve45tqyosxwaegvhgn._domainkey",
-            "value": "txrcreso3dqbvcve45tqyosxwaegvhgn.dkim.amazonses.com.",
-            "type": "CNAME",
-            "status": "not_started",
-            "ttl": "Auto"
+            "record" => "DKIM",
+            "name" => "txrcreso3dqbvcve45tqyosxwaegvhgn._domainkey",
+            "value" => "txrcreso3dqbvcve45tqyosxwaegvhgn.dkim.amazonses.com.",
+            "type" => "CNAME",
+            "status" => "not_started",
+            "ttl" => "Auto"
           }
         ],
         "region": "us-east-1",
@@ -82,37 +82,37 @@ RSpec.describe "Domains" do
         "tracking_subdomain": "links",
         "records": [
           {
-            "record": "SPF",
-            "name": "bounces",
-            "type": "MX",
-            "ttl": "Auto",
-            "status": "not_started",
-            "value": "feedback-smtp.us-east-1.amazonses.com",
-            "priority": 10
+            "record" => "SPF",
+            "name" => "bounces",
+            "type" => "MX",
+            "ttl" => "Auto",
+            "status" => "not_started",
+            "value" => "feedback-smtp.us-east-1.amazonses.com",
+            "priority" => 10
           },
           {
-            "record": "DKIM",
-            "name": "nhapbbryle57yxg3fbjytyodgbt2kyyg._domainkey",
-            "value": "nhapbbryle57yxg3fbjytyodgbt2kyyg.dkim.amazonses.com.",
-            "type": "CNAME",
-            "status": "not_started",
-            "ttl": "Auto"
+            "record" => "DKIM",
+            "name" => "nhapbbryle57yxg3fbjytyodgbt2kyyg._domainkey",
+            "value" => "nhapbbryle57yxg3fbjytyodgbt2kyyg.dkim.amazonses.com.",
+            "type" => "CNAME",
+            "status" => "not_started",
+            "ttl" => "Auto"
           },
           {
-            "record": "Tracking",
-            "name": "links.example.com",
-            "value": "links1.resend-dns.com",
-            "type": "CNAME",
-            "ttl": "Auto",
-            "status": "not_started"
+            "record" => "Tracking",
+            "name" => "links.example.com",
+            "value" => "links1.resend-dns.com",
+            "type" => "CNAME",
+            "ttl" => "Auto",
+            "status" => "not_started"
           },
           {
-            "record": "TrackingCAA",
-            "name": "",
-            "value": "0 issue \"amazon.com\"",
-            "type": "CAA",
-            "ttl": "Auto",
-            "status": "not_started"
+            "record" => "TrackingCAA",
+            "name" => "",
+            "value" => "0 issue \"amazon.com\"",
+            "type" => "CAA",
+            "ttl" => "Auto",
+            "status" => "not_started"
           }
         ],
         "region": "us-east-1",
@@ -129,17 +129,17 @@ RSpec.describe "Domains" do
       expect(domain[:open_tracking]).to be true
       expect(domain[:click_tracking]).to be true
       expect(domain[:tracking_subdomain]).to eql("links")
-      tracking_record = domain[:records].find { |r| r[:record] == "Tracking" }
+      tracking_record = domain[:records].find { |r| r["record"] == "Tracking" }
       expect(tracking_record).not_to be_nil
-      expect(tracking_record[:name]).to eql("links.example.com")
-      expect(tracking_record[:value]).to eql("links1.resend-dns.com")
-      expect(tracking_record[:type]).to eql("CNAME")
-      expect(tracking_record[:ttl]).to eql("Auto")
-      expect(tracking_record[:status]).to eql("not_started")
-      tracking_caa_record = domain[:records].find { |r| r[:record] == "TrackingCAA" }
+      expect(tracking_record["name"]).to eql("links.example.com")
+      expect(tracking_record["value"]).to eql("links1.resend-dns.com")
+      expect(tracking_record["type"]).to eql("CNAME")
+      expect(tracking_record["ttl"]).to eql("Auto")
+      expect(tracking_record["status"]).to eql("not_started")
+      tracking_caa_record = domain[:records].find { |r| r["record"] == "TrackingCAA" }
       expect(tracking_caa_record).not_to be_nil
-      expect(tracking_caa_record[:type]).to eql("CAA")
-      expect(tracking_caa_record[:value]).to eql("0 issue \"amazon.com\"")
+      expect(tracking_caa_record["type"]).to eql("CAA")
+      expect(tracking_caa_record["value"]).to eql("0 issue \"amazon.com\"")
     end
 
     it "should raise when domain is already registered" do
@@ -252,11 +252,11 @@ RSpec.describe "Domains" do
       resp = {
         "data": [
           {
-            "id": "d91cd9bd-1176-453e-8fc1-35364d380206",
-            "name": "example.com",
-            "status": "not_started",
-            "created_at": "2023-04-26 20:21:26.347412+00",
-            "region": "us-east-1"
+            "id" => "d91cd9bd-1176-453e-8fc1-35364d380206",
+            "name" => "example.com",
+            "status" => "not_started",
+            "created_at" => "2023-04-26 20:21:26.347412+00",
+            "region" => "us-east-1"
           }
         ]
       }

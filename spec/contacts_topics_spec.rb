@@ -17,9 +17,9 @@ RSpec.describe "Contacts::Topics" do
         "object": "list",
         "data": [
           {
-            "id": topic_id,
-            "name": "Product Updates",
-            "created_at": "2023-10-06 22:59:55.977+00"
+            "id" => topic_id,
+            "name" => "Product Updates",
+            "created_at" => "2023-10-06 22:59:55.977+00"
           }
         ]
       }
@@ -28,8 +28,8 @@ RSpec.describe "Contacts::Topics" do
       topics = Resend::Contacts::Topics.list(id: contact_id)
       expect(topics[:object]).to eql "list"
       expect(topics[:data].length).to eql 1
-      expect(topics[:data][0][:id]).to eql topic_id
-      expect(topics[:data][0][:name]).to eql "Product Updates"
+      expect(topics[:data][0]["id"]).to eql topic_id
+      expect(topics[:data][0]["name"]).to eql "Product Updates"
     end
 
     it "should list topics by contact email" do
@@ -55,9 +55,9 @@ RSpec.describe "Contacts::Topics" do
         "object": "list",
         "data": [
           {
-            "id": topic_id,
-            "name": "Product Updates",
-            "created_at": "2023-10-06 22:59:55.977+00"
+            "id" => topic_id,
+            "name" => "Product Updates",
+            "created_at" => "2023-10-06 22:59:55.977+00"
           }
         ],
         "has_more": true

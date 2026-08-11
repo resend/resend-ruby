@@ -222,11 +222,11 @@ RSpec.describe "Events" do
         has_more: false,
         data: [
           {
-            id: event_id,
-            name: event_name,
-            schema: nil,
-            created_at: "2024-01-01 00:00:00+00",
-            updated_at: "2024-01-01 00:00:00+00"
+            "id" => event_id,
+            "name" => event_name,
+            "schema" => nil,
+            "created_at" => "2024-01-01 00:00:00+00",
+            "updated_at" => "2024-01-01 00:00:00+00"
           }
         ]
       }
@@ -235,11 +235,11 @@ RSpec.describe "Events" do
       expect(result[:object]).to eql("list")
       expect(result[:data].length).to eql(1)
       expect(result[:has_more]).to eql(false)
-      expect(result[:data].first[:id]).to eql(event_id)
+      expect(result[:data].first["id"]).to eql(event_id)
     end
 
     it "should list events with pagination params" do
-      resp = { object: "list", has_more: true, data: [{ id: event_id }] }
+      resp = { object: "list", has_more: true, data: [{ "id" => event_id }] }
       allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
       result = Resend::Events.list({ limit: 1 })
       expect(result[:has_more]).to eql(true)

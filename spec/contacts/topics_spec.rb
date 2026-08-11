@@ -14,10 +14,10 @@ RSpec.describe "Contacts::Topics" do
         has_more: false,
         data: [
           {
-            id: "b6d24b8e-af0b-4c3c-be0c-359bbd97381e",
-            name: "Product Updates",
-            description: "New features, and latest announcements.",
-            subscription: "opt_in"
+            "id" => "b6d24b8e-af0b-4c3c-be0c-359bbd97381e",
+            "name" => "Product Updates",
+            "description" => "New features, and latest announcements.",
+            "subscription" => "opt_in"
           }
         ]
       }
@@ -30,8 +30,8 @@ RSpec.describe "Contacts::Topics" do
       expect(topics[:object]).to eql("list")
       expect(topics[:has_more]).to eql(false)
       expect(topics[:data]).to be_an(Array)
-      expect(topics[:data].first[:id]).to eql("b6d24b8e-af0b-4c3c-be0c-359bbd97381e")
-      expect(topics[:data].first[:subscription]).to eql("opt_in")
+      expect(topics[:data].first["id"]).to eql("b6d24b8e-af0b-4c3c-be0c-359bbd97381e")
+      expect(topics[:data].first["subscription"]).to eql("opt_in")
     end
 
     it "should list topics by contact email" do
@@ -40,10 +40,10 @@ RSpec.describe "Contacts::Topics" do
         has_more: false,
         data: [
           {
-            id: "b6d24b8e-af0b-4c3c-be0c-359bbd97381e",
-            name: "Product Updates",
-            description: "New features, and latest announcements.",
-            subscription: "opt_in"
+            "id" => "b6d24b8e-af0b-4c3c-be0c-359bbd97381e",
+            "name" => "Product Updates",
+            "description" => "New features, and latest announcements.",
+            "subscription" => "opt_in"
           }
         ]
       }

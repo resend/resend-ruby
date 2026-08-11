@@ -124,18 +124,18 @@ RSpec.describe "Webhooks" do
         "has_more": false,
         "data": [
           {
-            "id": "7ab123cd-ef45-6789-abcd-ef0123456789",
-            "created_at": "2023-09-10 10:15:30+00",
-            "status": "disabled",
-            "endpoint": "https://first-webhook.example.com/handler",
-            "events": ["email.delivered", "email.bounced"]
+            "id" => "7ab123cd-ef45-6789-abcd-ef0123456789",
+            "created_at" => "2023-09-10 10:15:30+00",
+            "status" => "disabled",
+            "endpoint" => "https://first-webhook.example.com/handler",
+            "events" => ["email.delivered", "email.bounced"]
           },
           {
-            "id": "4dd369bc-aa82-4ff3-97de-514ae3000ee0",
-            "created_at": "2023-08-22 15:28:00+00",
-            "status": "enabled",
-            "endpoint": "https://second-webhook.example.com/receive",
-            "events": ["email.received"]
+            "id" => "4dd369bc-aa82-4ff3-97de-514ae3000ee0",
+            "created_at" => "2023-08-22 15:28:00+00",
+            "status" => "enabled",
+            "endpoint" => "https://second-webhook.example.com/receive",
+            "events" => ["email.received"]
           }
         ]
       }
@@ -147,17 +147,17 @@ RSpec.describe "Webhooks" do
       expect(webhooks[:has_more]).to eql(false)
       expect(webhooks[:data].length).to eql(2)
 
-      expect(webhooks[:data][0][:id]).to eql("7ab123cd-ef45-6789-abcd-ef0123456789")
-      expect(webhooks[:data][0][:status]).to eql("disabled")
-      expect(webhooks[:data][0][:endpoint]).to eql("https://first-webhook.example.com/handler")
-      expect(webhooks[:data][0][:events]).to eql(["email.delivered", "email.bounced"])
-      expect(webhooks[:data][0][:created_at]).to eql("2023-09-10 10:15:30+00")
+      expect(webhooks[:data][0]["id"]).to eql("7ab123cd-ef45-6789-abcd-ef0123456789")
+      expect(webhooks[:data][0]["status"]).to eql("disabled")
+      expect(webhooks[:data][0]["endpoint"]).to eql("https://first-webhook.example.com/handler")
+      expect(webhooks[:data][0]["events"]).to eql(["email.delivered", "email.bounced"])
+      expect(webhooks[:data][0]["created_at"]).to eql("2023-09-10 10:15:30+00")
 
-      expect(webhooks[:data][1][:id]).to eql("4dd369bc-aa82-4ff3-97de-514ae3000ee0")
-      expect(webhooks[:data][1][:status]).to eql("enabled")
-      expect(webhooks[:data][1][:endpoint]).to eql("https://second-webhook.example.com/receive")
-      expect(webhooks[:data][1][:events]).to eql(["email.received"])
-      expect(webhooks[:data][1][:created_at]).to eql("2023-08-22 15:28:00+00")
+      expect(webhooks[:data][1]["id"]).to eql("4dd369bc-aa82-4ff3-97de-514ae3000ee0")
+      expect(webhooks[:data][1]["status"]).to eql("enabled")
+      expect(webhooks[:data][1]["endpoint"]).to eql("https://second-webhook.example.com/receive")
+      expect(webhooks[:data][1]["events"]).to eql(["email.received"])
+      expect(webhooks[:data][1]["created_at"]).to eql("2023-08-22 15:28:00+00")
     end
 
     it "should list webhooks with pagination" do
@@ -166,11 +166,11 @@ RSpec.describe "Webhooks" do
         "has_more": true,
         "data": [
           {
-            "id": "7ab123cd-ef45-6789-abcd-ef0123456789",
-            "created_at": "2023-09-10 10:15:30+00",
-            "status": "enabled",
-            "endpoint": "https://webhook.example.com/handler",
-            "events": ["email.sent"]
+            "id" => "7ab123cd-ef45-6789-abcd-ef0123456789",
+            "created_at" => "2023-09-10 10:15:30+00",
+            "status" => "enabled",
+            "endpoint" => "https://webhook.example.com/handler",
+            "events" => ["email.sent"]
           }
         ]
       }

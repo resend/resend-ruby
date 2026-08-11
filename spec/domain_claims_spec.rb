@@ -17,10 +17,10 @@ RSpec.describe "Domains::Claims" do
         domain_id: "d91cd9bd-1176-453e-8fc1-35364d380206",
         region: "us-east-1",
         record: {
-          type: "TXT",
-          name: "example.com",
-          value: "resend-domain-verification=3f8a1c2d4e5b6a7f8091a2b3c4d5e6f7",
-          ttl: "Auto"
+          "type" => "TXT",
+          "name" => "example.com",
+          "value" => "resend-domain-verification=3f8a1c2d4e5b6a7f8091a2b3c4d5e6f7",
+          "ttl" => "Auto"
         },
         blocked_reason: nil,
         failure_reason: nil,
@@ -35,8 +35,8 @@ RSpec.describe "Domains::Claims" do
       expect(claim[:object]).to eql("domain_claim")
       expect(claim[:status]).to eql("pending")
       expect(claim[:domain_id]).to eql("d91cd9bd-1176-453e-8fc1-35364d380206")
-      expect(claim[:record][:type]).to eql("TXT")
-      expect(claim[:record][:value]).to eql("resend-domain-verification=3f8a1c2d4e5b6a7f8091a2b3c4d5e6f7")
+      expect(claim[:record]["type"]).to eql("TXT")
+      expect(claim[:record]["value"]).to eql("resend-domain-verification=3f8a1c2d4e5b6a7f8091a2b3c4d5e6f7")
     end
 
     it "should pass all options in the request body" do

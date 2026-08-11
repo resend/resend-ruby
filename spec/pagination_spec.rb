@@ -70,9 +70,9 @@ RSpec.describe "Pagination" do
         "object": "list",
         "data": [
           {
-            "id": "6e3c3d83-05dc-4b51-acfc-fe8972738bd0",
-            "name": "test1",
-            "created_at": "2023-04-21 01:31:02.671414+00"
+            "id" => "6e3c3d83-05dc-4b51-acfc-fe8972738bd0",
+            "name" => "test1",
+            "created_at" => "2023-04-21 01:31:02.671414+00"
           }
         ],
         "has_more": true
@@ -100,8 +100,8 @@ RSpec.describe "Pagination" do
         "object": "list",
         "data": [
           {
-            "id": "78261eea-8f8b-4381-83c6-79fa7120f1cf",
-            "name": "Developers"
+            "id" => "78261eea-8f8b-4381-83c6-79fa7120f1cf",
+            "name" => "Developers"
           }
         ],
         "has_more": false
@@ -128,8 +128,8 @@ RSpec.describe "Pagination" do
         "object": "list",
         "data": [
           {
-            "id": "b6d24b8e-af0b-4c3c-be0c-359bf9d251d2",
-            "name": "Weekly Newsletter"
+            "id" => "b6d24b8e-af0b-4c3c-be0c-359bf9d251d2",
+            "name" => "Weekly Newsletter"
           }
         ],
         "has_more": true
@@ -155,8 +155,8 @@ RSpec.describe "Pagination" do
         "object": "list",
         "data": [
           {
-            "id": "e169aa45-1ecf-4183-9955-b1499d5701d3",
-            "email": "steve.wozniak@gmail.com"
+            "id" => "e169aa45-1ecf-4183-9955-b1499d5701d3",
+            "email" => "steve.wozniak@gmail.com"
           }
         ],
         "has_more": false
@@ -181,8 +181,8 @@ RSpec.describe "Pagination" do
         "object": "list",
         "data": [
           {
-            "id": "e169aa45-1ecf-4183-9955-b1499d5701d3",
-            "email": "steve.wozniak@gmail.com"
+            "id" => "e169aa45-1ecf-4183-9955-b1499d5701d3",
+            "email" => "steve.wozniak@gmail.com"
           }
         ],
         "has_more": false
@@ -208,8 +208,8 @@ RSpec.describe "Pagination" do
         "object": "list",
         "data": [
           {
-            "id": "d91cd9bd-1176-453e-8fc1-35364d380206",
-            "name": "example.com"
+            "id" => "d91cd9bd-1176-453e-8fc1-35364d380206",
+            "name" => "example.com"
           }
         ],
         "has_more": true
@@ -236,8 +236,8 @@ RSpec.describe "Pagination" do
         "object": "list",
         "data": [
           {
-            "id": "b6d24b8e-af0b-4c3c-be0c-359bbd97381e",
-            "name": "Weekly Newsletter"
+            "id" => "b6d24b8e-af0b-4c3c-be0c-359bbd97381e",
+            "name" => "Weekly Newsletter"
           }
         ],
         "has_more": false
