@@ -22,7 +22,7 @@ RSpec.describe "Automations" do
   end
 
   describe "create" do
-    it "creates an automation" do
+    it "should create an automation" do
       resp = {
         object: "automation",
         id: automation_id
@@ -34,7 +34,7 @@ RSpec.describe "Automations" do
       expect(result[:object]).to eql("automation")
     end
 
-    it "uses POST /automations" do
+    it "should use POST /automations" do
       params = { name: "Welcome Automation", steps: steps, connections: connections }
       req = double("req", perform: { id: automation_id })
       expect(Resend::Request).to receive(:new).once do |path, _body, verb|
@@ -47,7 +47,7 @@ RSpec.describe "Automations" do
   end
 
   describe "get" do
-    it "retrieves an automation" do
+    it "should retrieve an automation" do
       resp = {
         object: "automation",
         id: automation_id,
@@ -69,7 +69,7 @@ RSpec.describe "Automations" do
       expect(result[:status]).to eql("enabled")
     end
 
-    it "uses GET /automations/:id" do
+    it "should use GET /automations/:id" do
       req = double("req", perform: { id: automation_id })
       expect(Resend::Request).to receive(:new).once do |path, _body, verb|
         expect(path).to eql("automations/#{automation_id}")
@@ -81,7 +81,7 @@ RSpec.describe "Automations" do
   end
 
   describe "update" do
-    it "updates an automation" do
+    it "should update an automation" do
       resp = { object: "automation", id: automation_id }
       params = { automation_id: automation_id, status: "enabled" }
       allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
@@ -89,7 +89,7 @@ RSpec.describe "Automations" do
       expect(result[:id]).to eql(automation_id)
     end
 
-    it "uses PATCH /automations/:id" do
+    it "should use PATCH /automations/:id" do
       params = { automation_id: automation_id, status: "enabled" }
       req = double("req", perform: { id: automation_id })
       expect(Resend::Request).to receive(:new).once do |path, _body, verb|
@@ -100,7 +100,7 @@ RSpec.describe "Automations" do
       Resend::Automations.update(params)
     end
 
-    it "does NOT include automation_id in the request body" do
+    it "should NOT include automation_id in the request body" do
       params = { automation_id: automation_id, name: "Updated Name" }
       req = double("req", perform: { id: automation_id })
       expect(Resend::Request).to receive(:new).once do |_path, body, _verb|
@@ -113,7 +113,7 @@ RSpec.describe "Automations" do
   end
 
   describe "remove" do
-    it "deletes an automation" do
+    it "should delete an automation" do
       resp = { object: "automation", id: automation_id, deleted: true }
       allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
       result = Resend::Automations.remove(automation_id)
@@ -121,7 +121,7 @@ RSpec.describe "Automations" do
       expect(result[:deleted]).to eql(true)
     end
 
-    it "uses DELETE /automations/:id" do
+    it "should use DELETE /automations/:id" do
       req = double("req", perform: { id: automation_id, deleted: true })
       expect(Resend::Request).to receive(:new).once do |path, _body, verb|
         expect(path).to eql("automations/#{automation_id}")
@@ -133,7 +133,7 @@ RSpec.describe "Automations" do
   end
 
   describe "duplicate" do
-    it "duplicates an automation" do
+    it "should duplicate an automation" do
       resp = { object: "automation", id: "e169aa45-1ecf-4183-9955-b1499d5701d3" }
       allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
       result = Resend::Automations.duplicate(automation_id)
@@ -141,7 +141,7 @@ RSpec.describe "Automations" do
       expect(result[:id]).to eql("e169aa45-1ecf-4183-9955-b1499d5701d3")
     end
 
-    it "uses POST /automations/:id/duplicate" do
+    it "should use POST /automations/:id/duplicate" do
       req = double("req", perform: { id: automation_id })
       expect(Resend::Request).to receive(:new).once do |path, _body, verb|
         expect(path).to eql("automations/#{automation_id}/duplicate")
@@ -153,7 +153,7 @@ RSpec.describe "Automations" do
   end
 
   describe "stop" do
-    it "stops an automation" do
+    it "should stop an automation" do
       resp = { object: "automation", id: automation_id, status: "disabled" }
       allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
       result = Resend::Automations.stop(automation_id)
@@ -161,7 +161,7 @@ RSpec.describe "Automations" do
       expect(result[:status]).to eql("disabled")
     end
 
-    it "uses POST /automations/:id/stop" do
+    it "should use POST /automations/:id/stop" do
       req = double("req", perform: { id: automation_id })
       expect(Resend::Request).to receive(:new).once do |path, _body, verb|
         expect(path).to eql("automations/#{automation_id}/stop")
@@ -173,7 +173,7 @@ RSpec.describe "Automations" do
   end
 
   describe "list" do
-    it "lists automations" do
+    it "should list automations" do
       resp = {
         object: "list",
         has_more: false,
@@ -189,21 +189,21 @@ RSpec.describe "Automations" do
       expect(result[:data].first["id"]).to eql(automation_id)
     end
 
-    it "list automations with status filter" do
+    it "should list automations with status filter" do
       resp = { object: "list", has_more: false, data: [{ "id" => automation_id, "status" => "enabled" }] }
       allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
       result = Resend::Automations.list({ status: "enabled" })
       expect(result[:data].first["status"]).to eql("enabled")
     end
 
-    it "lists automations with pagination params" do
+    it "should list automations with pagination params" do
       resp = { object: "list", has_more: true, data: [{ "id" => automation_id }] }
       allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
       result = Resend::Automations.list({ limit: 1 })
       expect(result[:has_more]).to eql(true)
     end
 
-    it "uses GET /automations" do
+    it "should use GET /automations" do
       req = double("req", perform: { object: "list", data: [], has_more: false })
       expect(Resend::Request).to receive(:new).once do |path, _body, verb|
         expect(path).to eql("automations")
@@ -215,12 +215,12 @@ RSpec.describe "Automations" do
   end
 
   describe "Runs" do
-    it "is accessible as Resend::Automations::Runs" do
+    it "should be accessible as Resend::Automations::Runs" do
       expect(Resend::Automations::Runs).to be_a(Module)
     end
 
     describe "list" do
-      it "lists runs for an automation" do
+      it "should list runs for an automation" do
         resp = {
           object: "list",
           has_more: false,
@@ -242,7 +242,7 @@ RSpec.describe "Automations" do
         expect(result[:has_more]).to eql(false)
       end
 
-      it "uses GET /automations/:id/runs" do
+      it "should use GET /automations/:id/runs" do
         req = double("req", perform: { object: "list", data: [], has_more: false })
         expect(Resend::Request).to receive(:new).once do |path, _body, verb|
           expect(path).to eql("automations/#{automation_id}/runs")
@@ -252,7 +252,7 @@ RSpec.describe "Automations" do
         Resend::Automations::Runs.list(automation_id)
       end
 
-      it "lists runs with pagination params" do
+      it "should list runs with pagination params" do
         resp = { object: "list", has_more: true, data: [{ "id" => run_id }] }
         allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
         result = Resend::Automations::Runs.list(automation_id, { limit: 1 })
@@ -261,7 +261,7 @@ RSpec.describe "Automations" do
     end
 
     describe "get" do
-      it "retrieves a specific run" do
+      it "should retrieve a specific run" do
         resp = {
           object: "automation_run",
           id: run_id,
@@ -278,7 +278,7 @@ RSpec.describe "Automations" do
         expect(result[:status]).to eql("completed")
       end
 
-      it "uses GET /automations/:id/runs/:run_id" do
+      it "should use GET /automations/:id/runs/:run_id" do
         req = double("req", perform: { id: run_id })
         expect(Resend::Request).to receive(:new).once do |path, _body, verb|
           expect(path).to eql("automations/#{automation_id}/runs/#{run_id}")
