@@ -26,6 +26,11 @@ module Resend
         Resend::Request.new("automations/#{automation_id}", {}, "delete").perform
       end
 
+      # https://resend.com/docs/api-reference/automations/duplicate-automation
+      def duplicate(automation_id = "")
+        Resend::Request.new("automations/#{automation_id}/duplicate", {}, "post").perform
+      end
+
       # https://resend.com/docs/api-reference/automations/stop-automation
       def stop(automation_id = "")
         Resend::Request.new("automations/#{automation_id}/stop", {}, "post").perform

@@ -132,6 +132,26 @@ RSpec.describe "Automations" do
     end
   end
 
+  describe "duplicate" do
+    it "should duplicate an automation" do
+      resp = { object: "automation", id: "e169aa45-1ecf-4183-9955-b1499d5701d3" }
+      allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
+      result = Resend::Automations.duplicate(automation_id)
+      expect(result[:object]).to eql("automation")
+      expect(result[:id]).to eql("e169aa45-1ecf-4183-9955-b1499d5701d3")
+    end
+
+    it "should use POST /automations/:id/duplicate" do
+      req = double("req", perform: { id: automation_id })
+      expect(Resend::Request).to receive(:new).once do |path, _body, verb|
+        expect(path).to eql("automations/#{automation_id}/duplicate")
+        expect(verb).to eql("post")
+        req
+      end
+      Resend::Automations.duplicate(automation_id)
+    end
+  end
+
   describe "stop" do
     it "should stop an automation" do
       resp = { object: "automation", id: automation_id, status: "disabled" }
