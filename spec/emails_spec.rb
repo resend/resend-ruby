@@ -344,6 +344,254 @@ RSpec.describe "Emails" do
       expect(result[:has_more]).to eql(false)
     end
 
+    it "retrieves metrics without parameters" do
+      resp = {
+        "object" => "metrics",
+        "start_date" => "2026-07-01T00:00:00.000Z",
+        "end_date" => "2026-07-08T00:00:00.000Z",
+        "metrics" => ["delivered"],
+        "dimensions" => [],
+        "granularity" => "daily",
+        "totals" => { "delivered" => 100 }
+      }
+      allow(resp).to receive(:body).and_return(resp)
+      allow(HTTParty).to receive(:send).and_return(resp)
+
+      result = Resend::Emails.metrics
+
+      expect(HTTParty).to have_received(:send).with(:get, "#{Resend::Request::BASE_URL}emails/metrics", anything)
+      expect(result[:object]).to eql("metrics")
+      expect(result[:totals]).to eql({ "delivered" => 100 })
+    end
+
+    it "retrieves metrics with the period dimension" do
+      resp = {
+        "object" => "metrics",
+        "dimensions" => ["period"],
+        "totals" => { "delivered" => 100 },
+        "data" => [{ "period" => "2026-07-01", "delivered" => 10 }]
+      }
+      allow(resp).to receive(:body).and_return(resp)
+      allow(HTTParty).to receive(:send).and_return(resp)
+
+      result = Resend::Emails.metrics(dimensions: ["period"])
+
+      expect(HTTParty).to have_received(:send).with(
+        :get,
+        "#{Resend::Request::BASE_URL}emails/metrics",
+        hash_including(query: { dimensions: "period" })
+      )
+      expect(result[:data].first["period"]).to eql("2026-07-01")
+    end
+
+    it "retrieves metrics with the domain dimension" do
+      resp = {
+        "object" => "metrics",
+        "dimensions" => ["domain"],
+        "totals" => { "delivered" => 100 },
+        "data" => [{ "domain_id" => "d91cd9bd-f5ab-4bbe-89c8-c890a4caced4", "domain_name" => "example.com", "delivered" => 10 }]
+      }
+      allow(resp).to receive(:body).and_return(resp)
+      allow(HTTParty).to receive(:send).and_return(resp)
+
+      result = Resend::Emails.metrics(dimensions: ["domain"])
+
+      expect(HTTParty).to have_received(:send).with(
+        :get,
+        "#{Resend::Request::BASE_URL}emails/metrics",
+        hash_including(query: { dimensions: "domain" })
+      )
+      expect(result[:data].first["domain_name"]).to eql("example.com")
+    end
+
+    it "retrieves metrics with the email dimension" do
+      resp = {
+        "object" => "metrics",
+        "dimensions" => ["email"],
+        "totals" => { "delivered" => 100 },
+        "data" => [{ "email_id" => "4ef9a417-02e9-4d39-ad75-9611e0fcc33c", "delivered" => 1 }]
+      }
+      allow(resp).to receive(:body).and_return(resp)
+      allow(HTTParty).to receive(:send).and_return(resp)
+
+      result = Resend::Emails.metrics(dimensions: ["email"])
+
+      expect(HTTParty).to have_received(:send).with(
+        :get,
+        "#{Resend::Request::BASE_URL}emails/metrics",
+        hash_including(query: { dimensions: "email" })
+      )
+      expect(result[:data].first["email_id"]).to eql("4ef9a417-02e9-4d39-ad75-9611e0fcc33c")
+    end
+
+    it "retrieves metrics with the broadcast dimension" do
+      resp = {
+        "object" => "metrics",
+        "dimensions" => ["broadcast"],
+        "totals" => { "delivered" => 100 },
+        "data" => [{ "broadcast_id" => "b6d24b8e-af0b-4c3c-be0c-359bf9d251d2", "broadcast_name" => "July Newsletter", "delivered" => 10 }]
+      }
+      allow(resp).to receive(:body).and_return(resp)
+      allow(HTTParty).to receive(:send).and_return(resp)
+
+      result = Resend::Emails.metrics(dimensions: ["broadcast"])
+
+      expect(HTTParty).to have_received(:send).with(
+        :get,
+        "#{Resend::Request::BASE_URL}emails/metrics",
+        hash_including(query: { dimensions: "broadcast" })
+      )
+      expect(result[:data].first["broadcast_name"]).to eql("July Newsletter")
+    end
+
+    it "retrieves metrics with multiple dimensions combined" do
+      resp = {
+        "object" => "metrics",
+        "dimensions" => ["period", "broadcast"],
+        "totals" => { "delivered" => 100 }
+      }
+      allow(resp).to receive(:body).and_return(resp)
+      allow(HTTParty).to receive(:send).and_return(resp)
+
+      Resend::Emails.metrics(dimensions: ["period", "broadcast"])
+
+      expect(HTTParty).to have_received(:send).with(
+        :get,
+        "#{Resend::Request::BASE_URL}emails/metrics",
+        hash_including(query: { dimensions: "period,broadcast" })
+      )
+    end
+
+    it "retrieves metrics filtered by a single domain_id" do
+      resp = { "object" => "metrics", "totals" => {} }
+      allow(resp).to receive(:body).and_return(resp)
+      allow(HTTParty).to receive(:send).and_return(resp)
+
+      Resend::Emails.metrics(domain_id: ["d91cd9bd-f5ab-4bbe-89c8-c890a4caced4"])
+
+      expect(HTTParty).to have_received(:send).with(
+        :get,
+        "#{Resend::Request::BASE_URL}emails/metrics",
+        hash_including(query: { domain_id: "d91cd9bd-f5ab-4bbe-89c8-c890a4caced4" })
+      )
+    end
+
+    it "retrieves metrics filtered by multiple domain_ids" do
+      resp = { "object" => "metrics", "totals" => {} }
+      allow(resp).to receive(:body).and_return(resp)
+      allow(HTTParty).to receive(:send).and_return(resp)
+
+      Resend::Emails.metrics(domain_id: ["domain_1", "domain_2"])
+
+      expect(HTTParty).to have_received(:send).with(
+        :get,
+        "#{Resend::Request::BASE_URL}emails/metrics",
+        hash_including(query: { domain_id: "domain_1,domain_2" })
+      )
+    end
+
+    it "retrieves metrics filtered by a single email_id" do
+      resp = { "object" => "metrics", "totals" => {} }
+      allow(resp).to receive(:body).and_return(resp)
+      allow(HTTParty).to receive(:send).and_return(resp)
+
+      Resend::Emails.metrics(email_id: ["4ef9a417-02e9-4d39-ad75-9611e0fcc33c"])
+
+      expect(HTTParty).to have_received(:send).with(
+        :get,
+        "#{Resend::Request::BASE_URL}emails/metrics",
+        hash_including(query: { email_id: "4ef9a417-02e9-4d39-ad75-9611e0fcc33c" })
+      )
+    end
+
+    it "retrieves metrics filtered by multiple email_ids" do
+      resp = { "object" => "metrics", "totals" => {} }
+      allow(resp).to receive(:body).and_return(resp)
+      allow(HTTParty).to receive(:send).and_return(resp)
+
+      Resend::Emails.metrics(email_id: ["email_1", "email_2"])
+
+      expect(HTTParty).to have_received(:send).with(
+        :get,
+        "#{Resend::Request::BASE_URL}emails/metrics",
+        hash_including(query: { email_id: "email_1,email_2" })
+      )
+    end
+
+    it "retrieves metrics filtered by a single broadcast_id" do
+      resp = { "object" => "metrics", "totals" => {} }
+      allow(resp).to receive(:body).and_return(resp)
+      allow(HTTParty).to receive(:send).and_return(resp)
+
+      Resend::Emails.metrics(broadcast_id: ["b6d24b8e-af0b-4c3c-be0c-359bf9d251d2"])
+
+      expect(HTTParty).to have_received(:send).with(
+        :get,
+        "#{Resend::Request::BASE_URL}emails/metrics",
+        hash_including(query: { broadcast_id: "b6d24b8e-af0b-4c3c-be0c-359bf9d251d2" })
+      )
+    end
+
+    it "retrieves metrics filtered by multiple broadcast_ids" do
+      resp = { "object" => "metrics", "totals" => {} }
+      allow(resp).to receive(:body).and_return(resp)
+      allow(HTTParty).to receive(:send).and_return(resp)
+
+      Resend::Emails.metrics(broadcast_id: ["broadcast_1", "broadcast_2"])
+
+      expect(HTTParty).to have_received(:send).with(
+        :get,
+        "#{Resend::Request::BASE_URL}emails/metrics",
+        hash_including(query: { broadcast_id: "broadcast_1,broadcast_2" })
+      )
+    end
+
+    it "passes metrics, granularity and timezone through to the query" do
+      resp = { "object" => "metrics", "totals" => {} }
+      allow(resp).to receive(:body).and_return(resp)
+      allow(HTTParty).to receive(:send).and_return(resp)
+
+      Resend::Emails.metrics(
+        metrics: ["delivered", "opened"],
+        granularity: "hourly",
+        timezone: "America/New_York"
+      )
+
+      expect(HTTParty).to have_received(:send).with(
+        :get,
+        "#{Resend::Request::BASE_URL}emails/metrics",
+        hash_including(
+          query: {
+            metrics: "delivered,opened",
+            granularity: "hourly",
+            timezone: "America/New_York"
+          }
+        )
+      )
+    end
+
+    it "passes start_date and end_date through to the query" do
+      resp = { "object" => "metrics", "totals" => {} }
+      allow(resp).to receive(:body).and_return(resp)
+      allow(HTTParty).to receive(:send).and_return(resp)
+
+      Resend::Emails.metrics(
+        start_date: "2026-07-01",
+        end_date: "2026-07-08T00:00:00.000Z"
+      )
+
+      expect(HTTParty).to have_received(:send).with(
+        :get,
+        "#{Resend::Request::BASE_URL}emails/metrics",
+        hash_including(
+          query: {
+            start_date: "2026-07-01",
+            end_date: "2026-07-08T00:00:00.000Z"
+          }
+        )
+      )
+    end
+
     it "sends email with template without variables" do
       resp = {"id"=>"49a3999c-0ce1-4ea6-ab68-afcd6dc2e794"}
       params = {

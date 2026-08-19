@@ -61,6 +61,45 @@ module Resend
 
         Resend::Request.new(path, query_params, "get").perform
       end
+
+      # Retrieve email metrics. (beta)
+      # see more: https://resend.com/docs/api-reference/emails/metrics
+      #
+      # @param options [Hash] Optional parameters for filtering and shaping the metrics response
+      # @option options [String] :start_date ISO 8601 date/datetime. Defaults to 6 days before :end_date
+      # @option options [String] :end_date ISO 8601 date/datetime. Defaults to now
+      # @option options [String] :timezone IANA timezone, e.g. "America/New_York". Defaults to "UTC"
+      # @option options [String] :granularity Bucket size used when :period is in :dimensions.
+      #   One of "hourly", "daily", "weekly", "monthly". Defaults to "daily"
+      # @option options [Array<String>] :metrics Metrics to include. Defaults to all metrics.
+      # @option options [Array<String>] :dimensions Dimensions to break down by: "period", "domain",
+      #   "email", "broadcast". Defaults to none, which returns totals only.
+      # @option options [Array<String>] :domain_id Restrict to these sending domain IDs (max 100)
+      # @option options [Array<String>] :email_id Restrict to these email IDs (max 100)
+      # @option options [Array<String>] :broadcast_id Restrict to these broadcast IDs (max 100)
+      def metrics(options = {})
+        path = "emails/metrics"
+        Resend::Request.new(path, build_metrics_query(options), "get").perform
+      end
+
+      private
+
+      # Builds the metrics query hash, filtering out nil values and joining
+      # list-style params (metrics, dimensions, domain_id, email_id, broadcast_id)
+      # into comma-separated strings as expected by the API.
+      def build_metrics_query(options)
+        query_params = {}
+
+        %i[start_date end_date timezone granularity].each do |key|
+          query_params[key] = options[key] if options[key]
+        end
+
+        %i[metrics dimensions domain_id email_id broadcast_id].each do |key|
+          query_params[key] = Array(options[key]).join(",") if options[key]
+        end
+
+        query_params
+      end
     end
   end
 end
