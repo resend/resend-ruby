@@ -69,6 +69,73 @@ RSpec.describe "Emails" do
       expect(email[:id]).to eql "49a3999c-0ce1-4ea6-ab68-afcd6dc2e794"
     end
 
+    it "shares an email with the default expires_in" do
+      email_id = "49a3999c-0ce1-4ea6-ab68-afcd6dc2e794"
+      resp = {
+        "object": "email",
+        "id": email_id,
+        "url": "https://resend.com/share/#{email_id}"
+      }
+      allow(resp).to receive(:body).and_return(resp)
+      allow(HTTParty).to receive(:send).and_return(resp)
+
+      result = Resend::Emails.share(email_id)
+
+      expect(HTTParty).to have_received(:send).with(
+        :post,
+        "#{Resend::Request::BASE_URL}emails/#{email_id}/share",
+        hash_not_including(:body)
+      )
+      expect(result[:id]).to eql email_id
+      expect(result[:url]).to eql "https://resend.com/share/#{email_id}"
+    end
+
+    it "shares an email with a custom expires_in" do
+      email_id = "49a3999c-0ce1-4ea6-ab68-afcd6dc2e794"
+      resp = {
+        "object": "email",
+        "id": email_id,
+        "url": "https://resend.com/share/#{email_id}"
+      }
+      allow(resp).to receive(:body).and_return(resp)
+      allow(HTTParty).to receive(:send).and_return(resp)
+
+      result = Resend::Emails.share(email_id, expires_in: "10m")
+
+      expect(HTTParty).to have_received(:send).with(
+        :post,
+        "#{Resend::Request::BASE_URL}emails/#{email_id}/share",
+        hash_including(body: { expires_in: "10m" }.to_json)
+      )
+      expect(result[:url]).to eql "https://resend.com/share/#{email_id}"
+    end
+
+    it "raises when expires_in is malformed or exceeds 48 hours" do
+      resp = {
+        "statusCode" => 422,
+        "name" => "validation_error",
+        "message" => "expires_in must not exceed 48h"
+      }
+      allow(resp).to receive(:body).and_return(resp)
+      allow(HTTParty).to receive(:send).and_return(resp)
+
+      expect { Resend::Emails.share("49a3999c-0ce1-4ea6-ab68-afcd6dc2e794", expires_in: "72h") }
+        .to raise_error(Resend::Error::InvalidRequestError, /expires_in must not exceed 48h/)
+    end
+
+    it "raises not found when the email id does not exist" do
+      resp = {
+        "statusCode" => 404,
+        "name" => "not_found",
+        "message" => "Email not found"
+      }
+      allow(resp).to receive(:body).and_return(resp)
+      allow(HTTParty).to receive(:send).and_return(resp)
+
+      expect { Resend::Emails.share("does-not-exist") }
+        .to raise_error(Resend::Error::NotFoundError, /Email not found/)
+    end
+
     it "raises when to is missing" do
       resp = {
         "statusCode"=>422,

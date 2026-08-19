@@ -32,6 +32,17 @@ module Resend
         Resend::Request.new(path, {}, "post").perform
       end
 
+      # Create a shareable link for a sent or received email.
+      #
+      # @param email_id [String] The email id (sent or received).
+      # @param params [Hash] Optional parameters
+      # @option params [String] :expires_in Human-readable duration (e.g. "10m", "2 hours",
+      #   "1 day"). Defaults to "48h" and is capped at 48 hours.
+      def share(email_id, params = {})
+        path = "emails/#{email_id}/share"
+        Resend::Request.new(path, params, "post").perform
+      end
+
       # List emails with optional pagination.
       # see more: https://resend.com/docs/api-reference/emails/list-emails
       #
