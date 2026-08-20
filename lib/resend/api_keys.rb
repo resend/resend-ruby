@@ -21,6 +21,12 @@ module Resend
         path = "api-keys/#{api_key_id}"
         Resend::Request.new(path, {}, "delete").perform
       end
+
+      # https://resend.com/docs/api-reference/api-keys/update-api-key
+      def update(params)
+        path = "api-keys/#{params[:id]}"
+        Resend::Request.new(path, { name: params[:name] }, "patch").perform
+      end
     end
   end
 end

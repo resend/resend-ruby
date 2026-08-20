@@ -69,6 +69,60 @@ RSpec.describe "API Keys" do
         expect { Resend::ApiKeys.remove }.not_to raise_error
       end
     end
+
+    describe "update" do
+      it "should update api key" do
+        resp = {
+          "object": "api_key",
+          "id": "dacf4072-4119-4d88-932f-6202748ac7c8"
+        }
+        params = {
+          "id": "dacf4072-4119-4d88-932f-6202748ac7c8",
+          "name": "renamed key"
+        }
+        allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
+        result = Resend::ApiKeys.update(params)
+        expect(result[:id]).to eql("dacf4072-4119-4d88-932f-6202748ac7c8")
+        expect(result[:object]).to eql("api_key")
+      end
+
+      it "should raise when api key is not found" do
+        resp = {
+          "statusCode" => 404,
+          "name" => "not_found",
+          "message" => "Api key not found"
+        }
+        allow(resp).to receive(:body).and_return(resp)
+        params = {
+          "id": "invalid-id",
+          "name": "renamed key"
+        }
+        allow(HTTParty).to receive(:send).and_return(resp)
+        expect { Resend::ApiKeys.update params }.to raise_error(Resend::Error::NotFoundError, /Api key not found/)
+      end
+
+      it "should use PATCH /api-keys/:id" do
+        params = { id: "dacf4072-4119-4d88-932f-6202748ac7c8", name: "renamed key" }
+        req = double("req", perform: { id: params[:id] })
+        expect(Resend::Request).to receive(:new).once do |path, _body, verb|
+          expect(path).to eql("api-keys/#{params[:id]}")
+          expect(verb).to eql("patch")
+          req
+        end
+        Resend::ApiKeys.update(params)
+      end
+
+      it "should NOT include id in the request body" do
+        params = { id: "dacf4072-4119-4d88-932f-6202748ac7c8", name: "renamed key" }
+        req = double("req", perform: { id: params[:id] })
+        expect(Resend::Request).to receive(:new).once do |_path, body, _verb|
+          expect(body).not_to have_key(:id)
+          expect(body[:name]).to eql("renamed key")
+          req
+        end
+        Resend::ApiKeys.update(params)
+      end
+    end
   end
 
   context 'dynamic api_key' do
@@ -137,6 +191,60 @@ RSpec.describe "API Keys" do
       it "should remove api key" do
         allow_any_instance_of(Resend::Request).to receive(:perform).and_return("")
         expect { Resend::ApiKeys.remove }.not_to raise_error
+      end
+    end
+
+    describe "update" do
+      it "should update api key" do
+        resp = {
+          "object": "api_key",
+          "id": "dacf4072-4119-4d88-932f-6202748ac7c8"
+        }
+        params = {
+          "id": "dacf4072-4119-4d88-932f-6202748ac7c8",
+          "name": "renamed key"
+        }
+        allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
+        result = Resend::ApiKeys.update(params)
+        expect(result[:id]).to eql("dacf4072-4119-4d88-932f-6202748ac7c8")
+        expect(result[:object]).to eql("api_key")
+      end
+
+      it "should raise when api key is not found" do
+        resp = {
+          "statusCode" => 404,
+          "name" => "not_found",
+          "message" => "Api key not found"
+        }
+        allow(resp).to receive(:body).and_return(resp)
+        params = {
+          "id": "invalid-id",
+          "name": "renamed key"
+        }
+        allow(HTTParty).to receive(:send).and_return(resp)
+        expect { Resend::ApiKeys.update params }.to raise_error(Resend::Error::NotFoundError, /Api key not found/)
+      end
+
+      it "should use PATCH /api-keys/:id" do
+        params = { id: "dacf4072-4119-4d88-932f-6202748ac7c8", name: "renamed key" }
+        req = double("req", perform: { id: params[:id] })
+        expect(Resend::Request).to receive(:new).once do |path, _body, verb|
+          expect(path).to eql("api-keys/#{params[:id]}")
+          expect(verb).to eql("patch")
+          req
+        end
+        Resend::ApiKeys.update(params)
+      end
+
+      it "should NOT include id in the request body" do
+        params = { id: "dacf4072-4119-4d88-932f-6202748ac7c8", name: "renamed key" }
+        req = double("req", perform: { id: params[:id] })
+        expect(Resend::Request).to receive(:new).once do |_path, body, _verb|
+          expect(body).not_to have_key(:id)
+          expect(body[:name]).to eql("renamed key")
+          req
+        end
+        Resend::ApiKeys.update(params)
       end
     end
   end
