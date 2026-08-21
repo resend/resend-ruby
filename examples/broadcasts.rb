@@ -74,6 +74,9 @@ puts "retrieved #{retrieved[:id]}"
 puts "html: #{retrieved[:html]}"
 puts "text: #{retrieved[:text]}"
 
+recipients = Resend::Broadcasts.recipients(broadcast[:id], { type: "delivered" })
+puts "recipients: #{recipients[:data]}"
+
 if retrieved[:status] == 'draft'
   Resend::Broadcasts.remove(broadcast[:id])
   puts "removed #{broadcast[:id]}"

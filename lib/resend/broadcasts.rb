@@ -57,6 +57,25 @@ module Resend
         path = "broadcasts/#{broadcast_id}"
         Resend::Request.new(path, {}, "get").perform
       end
+
+      # https://resend.com/docs/api-reference/broadcasts/list-broadcast-recipients
+      # @param broadcast_id [String] the broadcast id
+      # @param params [Hash] the parameters
+      # @option params [String] :type the recipient event type to filter by (required):
+      #   sent, delivered, opened, clicked, bounced, complained, unsubscribed, suppressed
+      # @option params [String] :email filter recipients by email address (optional)
+      # @option params [String] :bounce_type filter bounced recipients by bounce type (optional,
+      #   only valid when type is bounced): permanent, transient, undetermined
+      # @option params [Integer] :limit the maximum number of results to return (optional)
+      # @option params [String] :after the cursor for pagination (optional)
+      # @option params [String] :before the cursor for pagination (optional)
+      def recipients(broadcast_id = "", params = {})
+        raise ArgumentError, "type is required" if params[:type].nil?
+
+        base_path = "broadcasts/#{broadcast_id}/recipients"
+        path = Resend::PaginationHelper.build_paginated_path(base_path, params)
+        Resend::Request.new(path, {}, "get").perform
+      end
     end
   end
 end
