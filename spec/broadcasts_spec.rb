@@ -147,6 +147,60 @@ RSpec.describe "Broadcasts" do
     end
   end
 
+  describe "clicked_links" do
+    it "should list a broadcast's clicked links" do
+      resp = {
+        "object": "list",
+        "has_more": false,
+        "data": [
+          {
+            "id" => "b2Zmc2V0OjA",
+            "url" => "https://resend.com/pricing",
+            "clicks" => 42,
+            "unique_clicks" => 30
+          },
+          {
+            "id" => "b2Zmc2V0OjE",
+            "url" => "https://resend.com/docs",
+            "clicks" => 17,
+            "unique_clicks" => 15
+          }
+        ]
+      }
+      allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
+
+      result = Resend::Broadcasts.clicked_links("559ac32e-9ef5-46fb-82a1-b76b840c0f7b")
+
+      expect(result[:object]).to eql("list")
+      expect(result[:has_more]).to eql(false)
+      expect(result[:data].length).to eql(2)
+      expect(result[:data][0]["url"]).to eql("https://resend.com/pricing")
+      expect(result[:data][0]["clicks"]).to eql(42)
+      expect(result[:data][0]["unique_clicks"]).to eql(30)
+    end
+
+    it "should accept pagination parameters" do
+      resp = {
+        "object": "list",
+        "has_more": false,
+        "data": []
+      }
+
+      request_instance = instance_double(Resend::Request)
+      allow(request_instance).to receive(:perform).and_return(resp)
+      allow(Resend::Request).to receive(:new) do |path, _body, _verb|
+        expect(path).to include("broadcasts/559ac32e-9ef5-46fb-82a1-b76b840c0f7b/clicked-links")
+        expect(path).to include("limit=10")
+        expect(path).to include("after=key_123")
+        request_instance
+      end
+
+      params = { limit: 10, after: "key_123" }
+      result = Resend::Broadcasts.clicked_links("559ac32e-9ef5-46fb-82a1-b76b840c0f7b", params)
+      expect(result[:object]).to eql("list")
+    end
+  end
+
   describe "cancel" do
     it "should cancel broadcast" do
       resp = {
