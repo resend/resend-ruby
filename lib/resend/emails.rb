@@ -79,10 +79,23 @@ module Resend
       # @option options [Array<String>] :broadcast_id Restrict to these broadcast IDs (max 100)
       def metrics(options = {})
         path = "emails/metrics"
+        validate_metrics_options(options)
         Resend::Request.new(path, build_metrics_query(options), "get").perform
       end
 
       private
+
+      # The `email` and `broadcast` dimensions/filters are mutually exclusive.
+      def validate_metrics_options(options)
+        dimensions = Array(options[:dimensions])
+        has_broadcast = dimensions.include?("broadcast") || !Array(options[:broadcast_id]).empty?
+        has_email = dimensions.include?("email") || !Array(options[:email_id]).empty?
+
+        return unless has_broadcast && has_email
+
+        raise ArgumentError,
+              "`broadcast`/`broadcast_id` cannot be combined with `email`/`email_id`"
+      end
 
       # Builds the metrics query hash, filtering out nil values and joining
       # list-style params (metrics, dimensions, domain_id, email_id, broadcast_id)

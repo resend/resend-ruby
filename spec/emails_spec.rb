@@ -462,6 +462,26 @@ RSpec.describe "Emails" do
       )
     end
 
+    it "raises when combining the email and broadcast dimensions" do
+      expect { Resend::Emails.metrics(dimensions: %w[email broadcast]) }
+        .to raise_error(ArgumentError, /broadcast.*email/)
+    end
+
+    it "raises when combining the broadcast dimension with email_id" do
+      expect { Resend::Emails.metrics(dimensions: ["broadcast"], email_id: ["e1"]) }
+        .to raise_error(ArgumentError, /broadcast.*email/)
+    end
+
+    it "raises when combining the email dimension with broadcast_id" do
+      expect { Resend::Emails.metrics(dimensions: ["email"], broadcast_id: ["b1"]) }
+        .to raise_error(ArgumentError, /broadcast.*email/)
+    end
+
+    it "raises when combining email_id and broadcast_id filters" do
+      expect { Resend::Emails.metrics(email_id: ["e1"], broadcast_id: ["b1"]) }
+        .to raise_error(ArgumentError, /broadcast.*email/)
+    end
+
     it "retrieves metrics filtered by a single domain_id" do
       resp = { "object" => "metrics", "totals" => {} }
       allow(resp).to receive(:body).and_return(resp)
