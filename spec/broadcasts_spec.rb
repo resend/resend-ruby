@@ -148,7 +148,7 @@ RSpec.describe "Broadcasts" do
   end
 
   describe "clicked_links" do
-    it "should list a broadcast's clicked links" do
+    it "lists a broadcast's clicked links" do
       resp = {
         "object": "list",
         "has_more": false,
@@ -179,7 +179,7 @@ RSpec.describe "Broadcasts" do
       expect(result[:data][0]["unique_clicks"]).to eql(30)
     end
 
-    it "should accept pagination parameters" do
+    it "accepts pagination parameters" do
       resp = {
         "object": "list",
         "has_more": false,
