@@ -364,6 +364,20 @@ RSpec.describe "Emails" do
       expect(result[:totals]).to eql({ "delivered" => 100 })
     end
 
+    it "omits empty dimensions and start_date instead of sending them blank" do
+      resp = {
+        "object" => "metrics",
+        "dimensions" => [],
+        "totals" => { "delivered" => 100 }
+      }
+      allow(resp).to receive(:body).and_return(resp)
+      allow(HTTParty).to receive(:send).and_return(resp)
+
+      Resend::Emails.metrics(dimensions: [], start_date: "")
+
+      expect(HTTParty).to have_received(:send).with(:get, "#{Resend::Request::BASE_URL}emails/metrics", anything)
+    end
+
     it "retrieves metrics with the period dimension" do
       resp = {
         "object" => "metrics",

@@ -62,7 +62,7 @@ module Resend
         Resend::Request.new(path, query_params, "get").perform
       end
 
-      # Retrieve email metrics. (beta)
+      # Retrieve email metrics.
       # see more: https://resend.com/docs/api-reference/emails/metrics
       #
       # @param options [Hash] Optional parameters for filtering and shaping the metrics response
@@ -104,14 +104,20 @@ module Resend
         query_params = {}
 
         %i[start_date end_date timezone granularity].each do |key|
-          query_params[key] = options[key] if options[key]
+          value = options[key]
+          query_params[key] = value unless blank?(value)
         end
 
         %i[metrics dimensions domain_id email_id broadcast_id].each do |key|
-          query_params[key] = Array(options[key]).join(",") if options[key]
+          values = Array(options[key])
+          query_params[key] = values.join(",") unless values.empty?
         end
 
         query_params
+      end
+
+      def blank?(value)
+        value.nil? || value.to_s.empty?
       end
     end
   end
