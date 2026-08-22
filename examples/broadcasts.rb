@@ -74,6 +74,8 @@ puts "retrieved #{retrieved[:id]}"
 puts "html: #{retrieved[:html]}"
 puts "text: #{retrieved[:text]}"
 
+# Note: the broadcast above was only scheduled ("in 1 min"), so this will be
+# empty until it actually sends. Query recipients after delivery in real usage.
 recipients = Resend::Broadcasts.recipients(broadcast[:id], { type: "delivered" })
 puts "recipients: #{recipients[:data]}"
 

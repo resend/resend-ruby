@@ -187,6 +187,11 @@ RSpec.describe "Broadcasts" do
           }
         ]
       }
+      expect(Resend::Request).to receive(:new).with(
+        "broadcasts/559ac32e-9ef5-46fb-82a1-b76b840c0f7b/recipients?type=sent",
+        {},
+        "get"
+      ).and_call_original
       allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
 
       recipients = Resend::Broadcasts.recipients(
@@ -267,6 +272,11 @@ RSpec.describe "Broadcasts" do
           }
         ]
       }
+      expect(Resend::Request).to receive(:new).with(
+        "broadcasts/559ac32e-9ef5-46fb-82a1-b76b840c0f7b/recipients?type=bounced&bounce_type=permanent",
+        {},
+        "get"
+      ).and_call_original
       allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
 
       recipients = Resend::Broadcasts.recipients(
