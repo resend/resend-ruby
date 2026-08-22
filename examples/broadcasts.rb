@@ -74,11 +74,6 @@ puts "retrieved #{retrieved[:id]}"
 puts "html: #{retrieved[:html]}"
 puts "text: #{retrieved[:text]}"
 
-# wait the time for the broadcast to be sent
-sleep 65
-recipients = Resend::Broadcasts.recipients(broadcast[:id], { type: "sent" })
-puts "recipients: #{recipients[:data]}"
-
 if retrieved[:status] == 'draft'
   Resend::Broadcasts.remove(broadcast[:id])
   puts "removed #{broadcast[:id]}"
