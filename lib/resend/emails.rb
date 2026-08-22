@@ -109,7 +109,7 @@ module Resend
         end
 
         %i[metrics dimensions domain_id email_id broadcast_id].each do |key|
-          values = Array(options[key])
+          values = Array(options[key]).reject { |value| blank?(value) }
           query_params[key] = values.join(",") unless values.empty?
         end
 

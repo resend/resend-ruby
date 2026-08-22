@@ -375,7 +375,28 @@ RSpec.describe "Emails" do
 
       Resend::Emails.metrics(dimensions: [], start_date: "")
 
-      expect(HTTParty).to have_received(:send).with(:get, "#{Resend::Request::BASE_URL}emails/metrics", anything)
+      expect(HTTParty).to have_received(:send).with(
+        :get,
+        "#{Resend::Request::BASE_URL}emails/metrics",
+        hash_excluding(:query)
+      )
+    end
+
+    it "omits a blank string passed for an array-style param instead of sending it empty" do
+      resp = {
+        "object" => "metrics",
+        "totals" => { "delivered" => 100 }
+      }
+      allow(resp).to receive(:body).and_return(resp)
+      allow(HTTParty).to receive(:send).and_return(resp)
+
+      Resend::Emails.metrics(domain_id: "")
+
+      expect(HTTParty).to have_received(:send).with(
+        :get,
+        "#{Resend::Request::BASE_URL}emails/metrics",
+        hash_excluding(:query)
+      )
     end
 
     it "retrieves metrics with the period dimension" do
