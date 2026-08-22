@@ -74,10 +74,7 @@ puts "retrieved #{retrieved[:id]}"
 puts "html: #{retrieved[:html]}"
 puts "text: #{retrieved[:text]}"
 
-# The broadcast above was scheduled ("in 1 min"), so wait for it to actually
-# send before querying recipients. "sent" is the earliest status guaranteed to
-# exist once it fires; "delivered" depends on the receiving server's own
-# timing and isn't guaranteed by any fixed wait.
+# wait the time for the broadcast to be sent
 sleep 65
 recipients = Resend::Broadcasts.recipients(broadcast[:id], { type: "sent" })
 puts "recipients: #{recipients[:data]}"
