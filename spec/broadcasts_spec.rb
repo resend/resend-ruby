@@ -192,10 +192,11 @@ RSpec.describe "Broadcasts" do
         expect(path).to include("broadcasts/559ac32e-9ef5-46fb-82a1-b76b840c0f7b/clicked-links")
         expect(path).to include("limit=10")
         expect(path).to include("after=key_123")
+        expect(path).to include("before=key_456")
         request_instance
       end
 
-      params = { limit: 10, after: "key_123" }
+      params = { limit: 10, after: "key_123", before: "key_456" }
       result = Resend::Broadcasts.clicked_links("559ac32e-9ef5-46fb-82a1-b76b840c0f7b", params)
       expect(result[:object]).to eql("list")
     end
