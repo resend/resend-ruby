@@ -41,6 +41,12 @@ module Resend
         Resend::Request.new(path, {}, "get").perform
       end
 
+      # https://resend.com/docs/api-reference/broadcasts/list-broadcast-clicked-links
+      def clicked_links(broadcast_id = "", params = {})
+        path = Resend::PaginationHelper.build_paginated_path("broadcasts/#{broadcast_id}/clicked-links", params)
+        Resend::Request.new(path, {}, "get").perform
+      end
+
       def cancel(broadcast_id = "")
         path = "broadcasts/#{broadcast_id}/cancel"
         Resend::Request.new(path, {}, "post").perform
