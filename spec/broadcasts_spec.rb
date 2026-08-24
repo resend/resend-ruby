@@ -223,6 +223,141 @@ RSpec.describe "Broadcasts" do
     end
   end
 
+  describe "recipients" do
+    it "should raise when type is missing" do
+      expect do
+        Resend::Broadcasts.recipients("559ac32e-9ef5-46fb-82a1-b76b840c0f7b", {})
+      end.to raise_error(ArgumentError, "type is required")
+    end
+
+    it "should list recipients for a basic event type" do
+      resp = {
+        "object": "list",
+        "has_more": false,
+        "data": [
+          {
+            "id" => "b2Zmc2V0OjA",
+            "contact_id" => "e169aa45-1ecf-4183-9955-b1499d5701d3",
+            "email" => "carter@example.com"
+          }
+        ]
+      }
+      expect(Resend::Request).to receive(:new).with(
+        "broadcasts/559ac32e-9ef5-46fb-82a1-b76b840c0f7b/recipients?type=sent",
+        {},
+        "get"
+      ).and_call_original
+      allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
+
+      recipients = Resend::Broadcasts.recipients(
+        "559ac32e-9ef5-46fb-82a1-b76b840c0f7b",
+        { type: "sent" }
+      )
+
+      expect(recipients[:object]).to eql("list")
+      expect(recipients[:has_more]).to eql(false)
+      expect(recipients[:data].length).to eql(1)
+      expect(recipients[:data][0]["id"]).to eql("b2Zmc2V0OjA")
+      expect(recipients[:data][0]["contact_id"]).to eql("e169aa45-1ecf-4183-9955-b1499d5701d3")
+      expect(recipients[:data][0]["email"]).to eql("carter@example.com")
+    end
+
+    it "should list recipients with count for opened type" do
+      resp = {
+        "object": "list",
+        "has_more": false,
+        "data": [
+          {
+            "id" => "b2Zmc2V0OjA",
+            "contact_id" => "e169aa45-1ecf-4183-9955-b1499d5701d3",
+            "email" => "carter@example.com",
+            "count" => 3
+          }
+        ]
+      }
+      allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
+
+      recipients = Resend::Broadcasts.recipients(
+        "559ac32e-9ef5-46fb-82a1-b76b840c0f7b",
+        { type: "opened" }
+      )
+
+      expect(recipients[:data][0]["count"]).to eql(3)
+    end
+
+    it "should list recipients with clicked_links for clicked type" do
+      resp = {
+        "object": "list",
+        "has_more": false,
+        "data": [
+          {
+            "id" => "b2Zmc2V0OjA",
+            "contact_id" => "e169aa45-1ecf-4183-9955-b1499d5701d3",
+            "email" => "carter@example.com",
+            "count" => 2,
+            "clicked_links" => [
+              { "url" => "https://resend.com/pricing", "clicks" => 2 }
+            ]
+          }
+        ]
+      }
+      allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
+
+      recipients = Resend::Broadcasts.recipients(
+        "559ac32e-9ef5-46fb-82a1-b76b840c0f7b",
+        { type: "clicked" }
+      )
+
+      expect(recipients[:data][0]["count"]).to eql(2)
+      expect(recipients[:data][0]["clicked_links"]).to eql(
+        [{ "url" => "https://resend.com/pricing", "clicks" => 2 }]
+      )
+    end
+
+    it "should list recipients with bounce_type for bounced type" do
+      resp = {
+        "object": "list",
+        "has_more": false,
+        "data": [
+          {
+            "id" => "b2Zmc2V0OjA",
+            "contact_id" => nil,
+            "email" => "carter@example.com",
+            "bounce_type" => "permanent"
+          }
+        ]
+      }
+      expect(Resend::Request).to receive(:new).with(
+        "broadcasts/559ac32e-9ef5-46fb-82a1-b76b840c0f7b/recipients?type=bounced&bounce_type=permanent",
+        {},
+        "get"
+      ).and_call_original
+      allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
+
+      recipients = Resend::Broadcasts.recipients(
+        "559ac32e-9ef5-46fb-82a1-b76b840c0f7b",
+        { type: "bounced", bounce_type: "permanent" }
+      )
+
+      expect(recipients[:data][0]["contact_id"]).to eql(nil)
+      expect(recipients[:data][0]["bounce_type"]).to eql("permanent")
+    end
+
+    it "should raise when broadcast is not found" do
+      resp = {
+        "statusCode" => 404,
+        "name" => "not_found",
+        "message" => "Broadcast not found"
+      }
+      allow(resp).to receive(:body).and_return(resp)
+      allow(HTTParty).to receive(:send).and_return(resp)
+
+      expect do
+        Resend::Broadcasts.recipients("missing-id", { type: "sent" })
+      end.to raise_error(Resend::Error::NotFoundError, /Broadcast not found/)
+    end
+  end
+
   describe "get broadcast" do
 
     it "should retrieve a broadcast" do
