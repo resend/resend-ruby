@@ -81,7 +81,7 @@ RSpec.describe "Webhooks" do
   end
 
   describe "list_events" do
-    it "should list webhook events with pagination" do
+    it "lists webhook events with pagination" do
       request = instance_double(Resend::Request)
       expect(Resend::Request).to receive(:new)
         .with("webhooks/webhook_123/events?limit=1&after=msg_1srOrx2ZWZBpBUvZwXKQmoEYga2", {}, "get")
@@ -95,7 +95,7 @@ RSpec.describe "Webhooks" do
   end
 
   describe "get_event" do
-    it "should retrieve a webhook event" do
+    it "retrieves a webhook event" do
       request = instance_double(Resend::Request)
       expect(Resend::Request).to receive(:new)
         .with("webhooks/webhook_123/events/msg_1srOrx2ZWZBpBUvZwXKQmoEYga2", {}, "get")
@@ -107,7 +107,7 @@ RSpec.describe "Webhooks" do
   end
 
   describe "list_event_attempts" do
-    it "should list webhook event attempts with pagination" do
+    it "lists webhook event attempts with pagination" do
       request = instance_double(Resend::Request)
       expect(Resend::Request).to receive(:new)
         .with(
