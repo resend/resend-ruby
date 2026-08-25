@@ -84,6 +84,22 @@ module Resend
         Resend::Request.new(path, {}, "get").perform
       end
 
+      def list_events(webhook_id, params = {})
+        path = Resend::PaginationHelper.build_paginated_path("webhooks/#{webhook_id}/events", params)
+        Resend::Request.new(path, {}, "get").perform
+      end
+
+      def get_event(webhook_id, event_id)
+        path = "webhooks/#{webhook_id}/events/#{event_id}"
+        Resend::Request.new(path, {}, "get").perform
+      end
+
+      def list_event_attempts(webhook_id, event_id, params = {})
+        base_path = "webhooks/#{webhook_id}/events/#{event_id}/attempts"
+        path = Resend::PaginationHelper.build_paginated_path(base_path, params)
+        Resend::Request.new(path, {}, "get").perform
+      end
+
       # Update an existing webhook configuration
       #
       # @param params [Hash] The webhook update parameters
