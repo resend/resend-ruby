@@ -80,6 +80,53 @@ RSpec.describe "Webhooks" do
     end
   end
 
+  describe "list_events" do
+    it "lists webhook events with pagination" do
+      request = instance_double(Resend::Request)
+      expect(Resend::Request).to receive(:new)
+        .with("webhooks/webhook_123/events?limit=1&after=msg_1srOrx2ZWZBpBUvZwXKQmoEYga2", {}, "get")
+        .and_return(request)
+      expect(request).to receive(:perform)
+
+      Resend::Webhooks.list_events(
+        "webhook_123", limit: 1, after: "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2"
+      )
+    end
+  end
+
+  describe "get_event" do
+    it "retrieves a webhook event" do
+      request = instance_double(Resend::Request)
+      expect(Resend::Request).to receive(:new)
+        .with("webhooks/webhook_123/events/msg_1srOrx2ZWZBpBUvZwXKQmoEYga2", {}, "get")
+        .and_return(request)
+      expect(request).to receive(:perform)
+
+      Resend::Webhooks.get_event("webhook_123", "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2")
+    end
+  end
+
+  describe "list_event_attempts" do
+    it "lists webhook event attempts with pagination" do
+      request = instance_double(Resend::Request)
+      expect(Resend::Request).to receive(:new)
+        .with(
+          "webhooks/webhook_123/events/msg_1srOrx2ZWZBpBUvZwXKQmoEYga2/attempts?limit=10&after=atmpt_2ZbUCwvGmIT4mLIN6d3Yz0Ainbd",
+          {},
+          "get"
+        )
+        .and_return(request)
+      expect(request).to receive(:perform)
+
+      Resend::Webhooks.list_event_attempts(
+        "webhook_123",
+        "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+        limit: 10,
+        after: "atmpt_2ZbUCwvGmIT4mLIN6d3Yz0Ainbd"
+      )
+    end
+  end
+
   describe "update" do
     it "should update webhook" do
       resp = {

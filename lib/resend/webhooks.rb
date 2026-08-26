@@ -84,6 +84,65 @@ module Resend
         Resend::Request.new(path, {}, "get").perform
       end
 
+      # Retrieve webhook events
+      #
+      # @param webhook_id [String] The webhook ID
+      # @param params [Hash] The pagination parameters
+      # @option params [Integer] :limit Number of webhook events to retrieve (max: 100, min: 1)
+      # @option params [String] :after The ID after which to retrieve more webhook events
+      #
+      # @return [Hash] A paginated list of webhook events
+      #
+      # @example
+      #   Resend::Webhooks.list_events("4dd369bc-aa82-4ff3-97de-514ae3000ee0")
+      #
+      # @example With pagination
+      #   Resend::Webhooks.list_events("4dd369bc-aa82-4ff3-97de-514ae3000ee0", limit: 20, after: "msg_123")
+      def list_events(webhook_id, params = {})
+        path = Resend::PaginationHelper.build_paginated_path("webhooks/#{webhook_id}/events", params)
+        Resend::Request.new(path, {}, "get").perform
+      end
+
+      # Retrieve a webhook event
+      #
+      # @param webhook_id [String] The webhook ID
+      # @param event_id [String] The webhook event ID
+      #
+      # @return [Hash] The webhook event with full details
+      #
+      # @example
+      #   Resend::Webhooks.get_event("4dd369bc-aa82-4ff3-97de-514ae3000ee0", "msg_123")
+      def get_event(webhook_id, event_id)
+        path = "webhooks/#{webhook_id}/events/#{event_id}"
+        Resend::Request.new(path, {}, "get").perform
+      end
+
+      # Retrieve delivery attempts for a webhook event
+      #
+      # @param webhook_id [String] The webhook ID
+      # @param event_id [String] The webhook event ID
+      # @param params [Hash] The pagination parameters
+      # @option params [Integer] :limit Number of delivery attempts to retrieve (max: 100, min: 1)
+      # @option params [String] :after The ID after which to retrieve more delivery attempts
+      #
+      # @return [Hash] A paginated list of webhook event delivery attempts
+      #
+      # @example
+      #   Resend::Webhooks.list_event_attempts("4dd369bc-aa82-4ff3-97de-514ae3000ee0", "msg_123")
+      #
+      # @example With pagination
+      #   Resend::Webhooks.list_event_attempts(
+      #     "4dd369bc-aa82-4ff3-97de-514ae3000ee0",
+      #     "msg_123",
+      #     limit: 20,
+      #     after: "atmpt_123"
+      #   )
+      def list_event_attempts(webhook_id, event_id, params = {})
+        base_path = "webhooks/#{webhook_id}/events/#{event_id}/attempts"
+        path = Resend::PaginationHelper.build_paginated_path(base_path, params)
+        Resend::Request.new(path, {}, "get").perform
+      end
+
       # Update an existing webhook configuration
       #
       # @param params [Hash] The webhook update parameters
