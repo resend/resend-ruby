@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.author        = "Derich Pacheco"
   spec.email         = "carlosderich@gmail.com"
 
-  spec.files         = Dir["*.{md,txt}", "{lib}/**/*"]
+  spec.files         = Dir["*.{md,txt}", "{app,lib}/**/*"]
   spec.require_path  = "lib"
   spec.required_ruby_version = ">= 3.2"
   spec.add_dependency "base64"

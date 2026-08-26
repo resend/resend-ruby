@@ -44,6 +44,7 @@ require "resend/suppressions/batch"
 
 # Rails
 require "resend/railtie" if defined?(Rails) && defined?(ActionMailer)
+require "resend/action_mailbox" if defined?(Rails) && defined?(ActionMailbox)
 
 # Main Resend module
 module Resend
