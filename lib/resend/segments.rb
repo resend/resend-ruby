@@ -19,7 +19,7 @@ module Resend
       # https://resend.com/docs/api-reference/segments/update-segment
       def update(params = {})
         path = "segments/#{params[:segment_id]}"
-        Resend::Request.new(path, params, "patch").perform
+        Resend::Request.new(path, { name: params[:name] }, "patch").perform
       end
 
       # https://resend.com/docs/api-reference/segments/list-segments

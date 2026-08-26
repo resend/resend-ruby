@@ -57,12 +57,14 @@ RSpec.describe "Segments" do
       expect(segment[:id]).to eql("78261eea-8f8b-4381-83c6-79fa7120f1cf")
       expect(segment[:name]).to eql("Registered Users - Updated")
     end
-    it "should use PATCH segments/:segment_id" do
+    it "should use PATCH segments/:segment_id and exclude segment_id from the body" do
       params = { segment_id: "78261eea-8f8b-4381-83c6-79fa7120f1cf", name: "Registered Users - Updated" }
       req = double("req", perform: { id: params[:segment_id] })
-      expect(Resend::Request).to receive(:new).once do |path, _body, verb|
+      expect(Resend::Request).to receive(:new).once do |path, body, verb|
         expect(path).to eql("segments/#{params[:segment_id]}")
         expect(verb).to eql("patch")
+        expect(body).not_to have_key(:segment_id)
+        expect(body[:name]).to eql("Registered Users - Updated")
         req
       end
       Resend::Segments.update(params)
