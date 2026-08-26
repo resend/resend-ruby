@@ -58,6 +58,25 @@ if webhooks[:data] && webhooks[:data].length > 0
   puts "Has more: #{paginated_webhooks[:has_more]}"
 end
 
+# List webhook events
+webhook_events = Resend::Webhooks.list_events(webhook[:id], limit: 10)
+puts "\nWebhook events: #{webhook_events[:data].length}"
+puts "Has more: #{webhook_events[:has_more]}"
+
+if webhook_events[:data].any?
+  event_id = webhook_events[:data].first["id"]
+
+  # Retrieve a webhook event
+  webhook_event = Resend::Webhooks.get_event(webhook[:id], event_id)
+  puts "\nWebhook event: #{webhook_event[:id]}"
+  puts "Status: #{webhook_event[:status]}"
+
+  # List delivery attempts for a webhook event
+  attempts = Resend::Webhooks.list_event_attempts(webhook[:id], event_id, limit: 10)
+  puts "\nDelivery attempts: #{attempts[:data].length}"
+  puts "Has more: #{attempts[:has_more]}"
+end
+
 # Remove the webhook
 removed_webhook = Resend::Webhooks.remove(webhook[:id])
 puts "\nRemoved webhook: #{removed_webhook[:id]}"
