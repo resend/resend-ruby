@@ -47,6 +47,25 @@ RSpec.describe "Segments" do
     end
   end
 
+  describe "update segment" do
+    it "should update segment" do
+      resp = {
+        "object": "segment",
+        "id": "78261eea-8f8b-4381-83c6-79fa7120f1cf",
+        "name": "Registered Users - Updated"
+      }
+      params = {
+        "segment_id": "78261eea-8f8b-4381-83c6-79fa7120f1cf",
+        "name": "Registered Users - Updated"
+      }
+      allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
+      segment = Resend::Segments.update(params)
+      expect(segment[:object]).to eql("segment")
+      expect(segment[:id]).to eql("78261eea-8f8b-4381-83c6-79fa7120f1cf")
+      expect(segment[:name]).to eql("Registered Users - Updated")
+    end
+  end
+
   describe "list segments" do
     it "should list segments" do
       resp = {

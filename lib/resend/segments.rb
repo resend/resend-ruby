@@ -16,6 +16,12 @@ module Resend
         Resend::Request.new(path, {}, "get").perform
       end
 
+      # https://resend.com/docs/api-reference/segments/update-segment
+      def update(params = {})
+        path = "segments/#{params[:segment_id]}"
+        Resend::Request.new(path, params, "patch").perform
+      end
+
       # https://resend.com/docs/api-reference/segments/list-segments
       def list(params = {})
         path = Resend::PaginationHelper.build_paginated_path("segments", params)
