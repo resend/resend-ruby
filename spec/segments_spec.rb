@@ -49,13 +49,12 @@ RSpec.describe "Segments" do
 
   describe "update segment" do
     it "should update segment" do
-      resp = { "object": "segment", "id": "78261eea-8f8b-4381-83c6-79fa7120f1cf", "name": "Registered Users - Updated" }
+      resp = { "object": "segment", "id": "78261eea-8f8b-4381-83c6-79fa7120f1cf" }
       params = { "segment_id": "78261eea-8f8b-4381-83c6-79fa7120f1cf", "name": "Registered Users - Updated" }
       allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
       segment = Resend::Segments.update(params)
       expect(segment[:object]).to eql("segment")
       expect(segment[:id]).to eql("78261eea-8f8b-4381-83c6-79fa7120f1cf")
-      expect(segment[:name]).to eql("Registered Users - Updated")
     end
     it "should use PATCH segments/:segment_id and exclude segment_id from the body" do
       params = { segment_id: "78261eea-8f8b-4381-83c6-79fa7120f1cf", name: "Registered Users - Updated" }
