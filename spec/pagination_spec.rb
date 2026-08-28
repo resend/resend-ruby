@@ -165,8 +165,7 @@ RSpec.describe "Pagination" do
       request_instance = instance_double(Resend::Request)
       allow(request_instance).to receive(:perform).and_return(resp)
       allow(Resend::Request).to receive(:new) do |path, body, verb|
-        expect(path).to include("audiences/audience_123/contacts")
-        expect(path).to include("limit=20")
+        expect(path).to eql("audiences/audience_123/contacts?limit=20")
         request_instance
       end
 

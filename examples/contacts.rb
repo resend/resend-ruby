@@ -8,10 +8,7 @@ Resend.api_key = ENV["RESEND_API_KEY"]
 
 def example
 
-  audience_id = "ca4e37c5-a82a-4199-a3b8-bf912a6472aa"
-
   params = {
-    audience_id: audience_id,
     email: "steve@example.com",
     first_name: "Steve",
     last_name: "Woz",
@@ -22,29 +19,28 @@ def example
   puts "Contact created: #{contact}"
 
   update_params = {
-    audience_id: audience_id,
     email: params[:email],
     # id: contact[:id],
     unsubscribed: false,
     first_name: "Updated",
   }
 
-  retrieved = Resend::Contacts.get(id: contact[:id], audience_id: audience_id)
+  retrieved = Resend::Contacts.get(id: contact[:id])
   puts "Retrived contact by ID"
   puts retrieved
 
-  retrieved_by_email = Resend::Contacts.get(email: params[:email], audience_id: audience_id)
+  retrieved_by_email = Resend::Contacts.get(email: params[:email])
   puts "Retrived contact by Email"
   puts retrieved_by_email
 
   updated = Resend::Contacts.update(update_params)
   puts "Updated contact: #{updated}"
 
-  contacts = Resend::Contacts.list(audience_id: audience_id)
+  contacts = Resend::Contacts.list
   puts contacts
 
   # Example with pagination
-  paginated_contacts = Resend::Contacts.list(audience_id: audience_id, limit: 10)
+  paginated_contacts = Resend::Contacts.list(limit: 10)
   puts "Paginated contacts (limit 10):"
   puts paginated_contacts
 
@@ -99,10 +95,10 @@ def example
   puts "Topic deleted"
 
   # delete by id
-  del = Resend::Contacts.remove(id: contact[:id], audience_id: audience_id)
+  del = Resend::Contacts.remove(id: contact[:id])
 
   # delete by email
-  # del = Resend::Contacts.remove(email: "steve@example.com", audience_id: audience_id)
+  # del = Resend::Contacts.remove(email: "steve@example.com")
 
   puts "Deleted #{del}"
 end

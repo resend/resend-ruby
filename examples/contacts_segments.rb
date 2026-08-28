@@ -55,7 +55,12 @@ def example
   )
   puts "Segments with pagination: #{segments_paginated}"
 
-  # Step 7: Remove contact from the segment
+  # Step 7: You can also list the contacts that are in a segment
+  puts "\nListing contacts in the segment (should include the contact)..."
+  contacts = Resend::Contacts.list(segment_id: segment_id)
+  puts "Contacts in the email: #{contacts}"
+
+  # Step 8: Remove contact from the segment
   puts "\nRemoving contact from segment..."
   removed = Resend::Contacts::Segments.remove(
     contact_id: contact_id,
@@ -63,7 +68,7 @@ def example
   )
   puts "Removed contact from segment: #{removed}"
 
-  # Step 8: Cleanup - remove contact and segment
+  # Step 9: Cleanup - remove contact and segment
   puts "\nCleaning up..."
   Resend::Contacts.remove(id: contact_id)
   puts "Deleted contact: #{contact_id}"
