@@ -58,7 +58,7 @@ def example
   # Step 7: You can also list the contacts that are in a segment
   puts "\nListing contacts in the segment (should include the contact)..."
   contacts = Resend::Contacts.list(segment_id: segment_id)
-  puts "Contacts in the email: #{contacts}"
+  puts "Contacts in the segment: #{contacts}"
 
   # Step 8: Remove contact from the segment
   puts "\nRemoving contact from segment..."
