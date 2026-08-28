@@ -66,6 +66,9 @@ module Resend
         audience_id = params[:audience_id]
         path = if audience_id
                  Resend::PaginationHelper.build_paginated_path("audiences/#{audience_id}/contacts", params)
+               elsif params[:segment_id]
+                 segment_id = params.delete(:segment_id)
+                 Resend::PaginationHelper.build_paginated_path("segments/#{segment_id}/contacts", params)
                else
                  Resend::PaginationHelper.build_paginated_path("contacts", params)
                end

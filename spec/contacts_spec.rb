@@ -89,9 +89,8 @@ RSpec.describe "Contacts" do
 
   describe "list contacts" do
 
-    it "should list contacts (new style with hash)" do
-
-      resp = {
+    let(:resp) {
+      {
         "object": "list",
         "data": [
           {
@@ -104,9 +103,13 @@ RSpec.describe "Contacts" do
           }
         ]
       }
+    }
 
+    it "should list contacts (new style with hash)" do
       allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
+
       contacts = Resend::Contacts.list(audience_id: audience_id)
+
       expect(contacts[:object]).to eql "list"
       expect(contacts[:data].length).to eql 1
       expect(contacts[:data][0]["id"]).to eql "e169aa45-1ecf-4183-9955-b1499d5701d3"
@@ -117,23 +120,28 @@ RSpec.describe "Contacts" do
     end
 
     it "should list contacts with pagination" do
-
-      resp = {
-        "object": "list",
-        "data": [
-          {
-            "id" => "e169aa45-1ecf-4183-9955-b1499d5701d3",
-            "email" => "steve.wozniak@gmail.com",
-            "first_name" => "Steve",
-            "last_name" => "Wozniak",
-            "created_at" => "2023-10-06 23:47:56.678+00",
-            "unsubscribed" => false
-          }
-        ]
-      }
-
       allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
+
       contacts = Resend::Contacts.list(audience_id: audience_id, limit: 10)
+
+      expect(contacts[:object]).to eql "list"
+      expect(contacts[:data].length).to eql 1
+      expect(contacts[:data][0]["id"]).to eql "e169aa45-1ecf-4183-9955-b1499d5701d3"
+      expect(contacts[:data][0]["first_name"]).to eql "Steve"
+      expect(contacts[:data][0]["last_name"]).to eql "Wozniak"
+      expect(contacts[:data][0]["email"]).to eql "steve.wozniak@gmail.com"
+      expect(contacts[:data][0]["unsubscribed"]).to be false
+    end
+
+    it "should list contacts by segment" do
+      segment_id = "78261eea-8f8b-4381-83c6-79fa7120f1cf"
+      mock_response = Resend::Response.new(resp, {})
+      mock_request = double("Resend::Request")
+      allow(mock_request).to receive(:perform).and_return(mock_response)
+      expect(Resend::Request).to receive(:new).with("segments/#{segment_id}/contacts", {}, "get").and_return(mock_request)
+
+      contacts = Resend::Contacts.list(segment_id: segment_id)
+      
       expect(contacts[:object]).to eql "list"
       expect(contacts[:data].length).to eql 1
       expect(contacts[:data][0]["id"]).to eql "e169aa45-1ecf-4183-9955-b1499d5701d3"
