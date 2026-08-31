@@ -58,14 +58,22 @@ module Resend
       # @example List contacts with pagination
       #   Resend::Contacts.list(limit: 10)
       #
+      # @example List contacts scoped to a segment
+      #   Resend::Contacts.list(segment_id: "seg_456", limit: 10)
+      #
       # @example List contacts scoped to an audience
       #   Resend::Contacts.list(audience_id: "aud_456", limit: 10)
       #
       # https://resend.com/docs/api-reference/contacts/list-contacts
       def list(params = {})
-        audience_id = params[:audience_id]
-        path = if audience_id
-                 Resend::PaginationHelper.build_paginated_path("audiences/#{audience_id}/contacts", params)
+        path = if params[:audience_id]
+                 audience_id = params[:audience_id]
+                 Resend::PaginationHelper.build_paginated_path("audiences/#{audience_id}/contacts",
+                                                               params.except(:audience_id))
+               elsif params[:segment_id]
+                 segment_id = params[:segment_id]
+                 Resend::PaginationHelper.build_paginated_path("segments/#{segment_id}/contacts",
+                                                               params.except(:segment_id))
                else
                  Resend::PaginationHelper.build_paginated_path("contacts", params)
                end

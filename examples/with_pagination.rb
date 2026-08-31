@@ -57,7 +57,7 @@ if audiences[:data] && !audiences[:data].empty?
   if audience_id && !audience_id.empty?
     puts "List first 5 contacts from audience '#{audience_id}':"
     begin
-      contacts = Resend::Contacts.list(audience_id, { limit: 5 })
+      contacts = Resend::Contacts.list(audience_id: audience_id, limit: 5 )
       puts contacts
       puts "Has more: #{contacts[:has_more]}" if contacts.key?(:has_more)
     rescue Resend::Error => e
@@ -80,4 +80,4 @@ puts
 puts "Example usage:"
 puts "Resend::ApiKeys.list({ limit: 25, after: 'key_123' })"
 puts "Resend::Domains.list({ limit: 10, before: 'domain_456' })"
-puts "Resend::Contacts.list('audience_id', { limit: 50 })"
+puts "Resend::Contacts.list(audience_id: 'audience_id', limit: 50 )"
