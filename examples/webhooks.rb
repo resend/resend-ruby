@@ -71,6 +71,10 @@ if webhook_events[:data].any?
   puts "\nWebhook event: #{webhook_event[:id]}"
   puts "Status: #{webhook_event[:status]}"
 
+  # Replay a webhook event
+  replayed_event = Resend::Webhooks.replay_event(webhook[:id], event_id)
+  puts "\nReplayed webhook event: #{replayed_event[:id]}"
+
   # List delivery attempts for a webhook event
   attempts = Resend::Webhooks.list_event_attempts(webhook[:id], event_id, limit: 10)
   puts "\nDelivery attempts: #{attempts[:data].length}"

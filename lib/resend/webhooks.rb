@@ -117,6 +117,22 @@ module Resend
         Resend::Request.new(path, {}, "get").perform
       end
 
+      # Replay a webhook event
+      #
+      # Queues one more delivery of the event to the webhook. Manual replays do not schedule automatic retries.
+      #
+      # @param webhook_id [String] The webhook ID
+      # @param event_id [String] The webhook event ID
+      #
+      # @return [Hash] The replayed webhook event id and object type
+      #
+      # @example
+      #   Resend::Webhooks.replay_event("4dd369bc-aa82-4ff3-97de-514ae3000ee0", "msg_123")
+      def replay_event(webhook_id, event_id)
+        path = "webhooks/#{webhook_id}/events/#{event_id}/replay"
+        Resend::Request.new(path, {}, "post").perform
+      end
+
       # Retrieve delivery attempts for a webhook event
       #
       # @param webhook_id [String] The webhook ID
