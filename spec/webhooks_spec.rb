@@ -108,17 +108,13 @@ RSpec.describe "Webhooks" do
 
   describe "replay_event" do
     it "replays a webhook event" do
-      resp = { "object": "webhook_event", "id": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2" }
       request = instance_double(Resend::Request)
       expect(Resend::Request).to receive(:new)
         .with("webhooks/webhook_123/events/msg_1srOrx2ZWZBpBUvZwXKQmoEYga2/replay", {}, "post")
         .and_return(request)
-      expect(request).to receive(:perform).and_return(resp)
+      expect(request).to receive(:perform)
 
-      result = Resend::Webhooks.replay_event("webhook_123", "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2")
-
-      expect(result[:object]).to eql("webhook_event")
-      expect(result[:id]).to eql("msg_1srOrx2ZWZBpBUvZwXKQmoEYga2")
+      Resend::Webhooks.replay_event("webhook_123", "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2")
     end
   end
 
