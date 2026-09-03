@@ -106,6 +106,18 @@ RSpec.describe "Webhooks" do
     end
   end
 
+  describe "replay_event" do
+    it "replays a webhook event" do
+      request = instance_double(Resend::Request)
+      expect(Resend::Request).to receive(:new)
+        .with("webhooks/webhook_123/events/msg_1srOrx2ZWZBpBUvZwXKQmoEYga2/replay", {}, "post")
+        .and_return(request)
+      expect(request).to receive(:perform)
+
+      Resend::Webhooks.replay_event("webhook_123", "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2")
+    end
+  end
+
   describe "list_event_attempts" do
     it "lists webhook event attempts with pagination" do
       request = instance_double(Resend::Request)
