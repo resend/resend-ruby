@@ -118,6 +118,27 @@ RSpec.describe "Webhooks" do
     end
   end
 
+  describe "rotate_signing_secret" do
+    it "rotates the webhook signing secret" do
+      resp = {
+        "object": "webhook",
+        "id": "4dd369bc-aa82-4ff3-97de-514ae3000ee0",
+        "signing_secret": "whsec_yyyyyyyyyy"
+      }
+      request = instance_double(Resend::Request)
+      expect(Resend::Request).to receive(:new)
+        .with("webhooks/4dd369bc-aa82-4ff3-97de-514ae3000ee0/signing-secret/rotate", {}, "post")
+        .and_return(request)
+      expect(request).to receive(:perform).and_return(resp)
+
+      result = Resend::Webhooks.rotate_signing_secret("4dd369bc-aa82-4ff3-97de-514ae3000ee0")
+
+      expect(result[:object]).to eql("webhook")
+      expect(result[:id]).to eql("4dd369bc-aa82-4ff3-97de-514ae3000ee0")
+      expect(result[:signing_secret]).to eql("whsec_yyyyyyyyyy")
+    end
+  end
+
   describe "list_event_attempts" do
     it "lists webhook event attempts with pagination" do
       request = instance_double(Resend::Request)

@@ -35,6 +35,11 @@ update_params = {
 updated_webhook = Resend::Webhooks.update(update_params)
 puts "\nUpdated webhook: #{updated_webhook[:id]}"
 
+# Rotate the webhook signing secret
+rotated_webhook = Resend::Webhooks.rotate_signing_secret(webhook[:id])
+puts "\nRotated signing secret for webhook: #{rotated_webhook[:id]}"
+puts "New signing secret: #{rotated_webhook[:signing_secret]}"
+
 # List all webhooks
 webhooks = Resend::Webhooks.list
 puts "\nTotal webhooks: #{webhooks[:data].length}"
