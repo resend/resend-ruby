@@ -184,7 +184,7 @@ module Resend
 
       # Rotate the signing secret of a webhook
       #
-      # Generates a new signing secret for the webhook. The previous secret stops validating immediately.
+      # Generates a new signing secret for the webhook. The previous secret keeps working for 24 hours.
       #
       # @param webhook_id [String] The webhook ID
       #
