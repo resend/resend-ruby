@@ -182,6 +182,21 @@ module Resend
         Resend::Request.new(path, params, "patch").perform
       end
 
+      # Rotate the signing secret of a webhook
+      #
+      # Generates a new signing secret for the webhook. The previous secret keeps working for 24 hours.
+      #
+      # @param webhook_id [String] The webhook ID
+      #
+      # @return [Hash] The webhook object containing id, object type, and the new signing_secret
+      #
+      # @example
+      #   Resend::Webhooks.rotate_signing_secret("4dd369bc-aa82-4ff3-97de-514ae3000ee0")
+      def rotate_signing_secret(webhook_id)
+        path = "webhooks/#{webhook_id}/signing-secret/rotate"
+        Resend::Request.new(path, {}, "post").perform
+      end
+
       # Remove an existing webhook
       #
       # @param webhook_id [String] The webhook ID
