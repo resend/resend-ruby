@@ -57,6 +57,12 @@ module Resend
 
     alias to_hash to_h
 
+    # Serialize response data without response headers
+    # @return [String] JSON representation of the response data
+    def to_json(*args)
+      @data.to_json(*args)
+    end
+
     # Get all keys from the data
     # @return [Array] Array of keys
     def keys

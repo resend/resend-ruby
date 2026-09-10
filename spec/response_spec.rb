@@ -107,6 +107,24 @@ RSpec.describe Resend::Response do
     end
   end
 
+  describe "#to_json" do
+    it "serializes the data without response headers" do
+      expect(response.to_json).to eq(data.to_json)
+    end
+
+    it "works with JSON.generate" do
+      expect(JSON.generate(response)).to eq(JSON.generate(data))
+    end
+
+    it "works when nested in another object" do
+      expect(JSON.generate(response: response)).to eq(JSON.generate(response: data))
+    end
+
+    it "preserves JSON formatting options" do
+      expect(JSON.pretty_generate(response)).to eq(JSON.pretty_generate(data))
+    end
+  end
+
   describe "enumeration" do
     describe "#each" do
       it "iterates over data" do
