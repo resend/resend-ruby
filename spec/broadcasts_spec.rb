@@ -216,6 +216,23 @@ RSpec.describe "Broadcasts" do
     end
   end
 
+  describe "duplicate" do
+    it "should duplicate broadcast" do
+      resp = {
+        "object": "broadcast",
+        "id": "e169aa45-1ecf-4183-9955-b1499d5701d3"
+      }
+      expect(Resend::Request).to receive(:new).once do |path, _body, verb|
+        expect(path).to eql("broadcasts/559ac32e-9ef5-46fb-82a1-b76b840c0f7b/duplicate")
+        expect(verb).to eql("post")
+        double("req", perform: resp)
+      end
+      result = Resend::Broadcasts.duplicate("559ac32e-9ef5-46fb-82a1-b76b840c0f7b")
+      expect(result[:id]).to eql("e169aa45-1ecf-4183-9955-b1499d5701d3")
+      expect(result[:object]).to eql("broadcast")
+    end
+  end
+
   describe "remove" do
     it "should remove broadcast" do
       allow_any_instance_of(Resend::Request).to receive(:perform).and_return("")
