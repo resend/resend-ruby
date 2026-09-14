@@ -52,6 +52,13 @@ module Resend
         Resend::Request.new(path, {}, "post").perform
       end
 
+      # https://resend.com/docs/api-reference/broadcasts/duplicate-broadcast
+      # @note Creates a new draft with the same content as the source, named after it with " (copy)" appended.
+      def duplicate(broadcast_id = "")
+        path = "broadcasts/#{broadcast_id}/duplicate"
+        Resend::Request.new(path, {}, "post").perform
+      end
+
       # https://resend.com/docs/api-reference/broadcasts/delete-broadcast
       def remove(broadcast_id = "")
         path = "broadcasts/#{broadcast_id}"
