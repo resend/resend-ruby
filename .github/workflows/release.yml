@@ -1,0 +1,101 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+permissions: {}
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    outputs:
+      stable: ${{ steps.meta.outputs.stable }}
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        with:
+          persist-credentials: false
+      - uses: ruby/setup-ruby@6aaa311d81eba98ae12eaffbcb63296ace0efcde # v1
+        with:
+          ruby-version: "3.4"
+          bundler-cache: true
+      - name: Resolve release metadata
+        id: meta
+        run: |
+          ruby - <<'EOF'
+          require "rubygems"
+          source = File.read("lib/resend/version.rb", encoding: "utf-8")
+          found = source.match(/^\s*VERSION = "([^"]+)"$/)
+          if found.nil?
+            puts "::error::lib/resend/version.rb has no VERSION line"
+            exit 1
+          end
+          version = found[1]
+          shape = /\A(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?<pre>\.(alpha|beta|rc|pre)(0|[1-9]\d*)?)?\z/.match(version)
+          if shape.nil?
+            puts "::error::lib/resend/version.rb version #{version} is not a release version (X.Y.Z with an optional .alphaN, .betaN, .rcN or .preN suffix)"
+            exit 1
+          end
+          tag = ENV.fetch("GITHUB_REF_NAME")
+          if ENV.fetch("GITHUB_EVENT_NAME") == "push" && tag != "v#{version}"
+            puts "::error::Tag #{tag} does not match lib/resend/version.rb version #{version}"
+            exit 1
+          end
+          stable = shape[:pre] ? "false" : "true"
+          File.open(ENV.fetch("GITHUB_OUTPUT"), "a", encoding: "utf-8") { |f| f.puts "stable=#{stable}" }
+          EOF
+      - run: bundle exec rubocop
+      - run: bundle exec rake spec
+      - name: Build
+        run: |
+          rm -rf pkg
+          bundle exec rake build
+      - name: Smoke test the gem
+        env:
+          GEM_HOME: /tmp/smoke
+          GEM_PATH: /tmp/smoke
+        run: |
+          gem install --no-document pkg/resend-*.gem
+          ruby -e 'require "resend"; puts Resend::VERSION'
+
+  publish-rubygems:
+    needs: ci
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: release
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        with:
+          persist-credentials: false
+      - uses: ruby/setup-ruby@6aaa311d81eba98ae12eaffbcb63296ace0efcde # v1
+        with:
+          ruby-version: "3.4"
+          bundler-cache: true
+      - uses: rubygems/release-gem@7f9650160c1a4e7989fdc9855807bdbd421d8b6b # v1.4.1
+
+  release:
+    needs: [ci, publish-rubygems]
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
+        with:
+          prerelease: ${{ needs.ci.outputs.stable != 'true' }}
+          make_latest: ${{ needs.ci.outputs.stable == 'true' }}
+          generate_release_notes: true
