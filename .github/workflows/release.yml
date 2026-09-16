@@ -32,7 +32,6 @@ jobs:
         id: meta
         run: |
           ruby - <<'EOF'
-          require "rubygems"
           source = File.read("lib/resend/version.rb", encoding: "utf-8")
           found = source.match(/^\s*VERSION = "([^"]+)"$/)
           if found.nil?
@@ -40,13 +39,13 @@ jobs:
             exit 1
           end
           version = found[1]
-          shape = /\A(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?<pre>\.(alpha|beta|rc|pre)(0|[1-9]\d*)?)?\z/.match(version)
+          shape = /\A(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?<pre>\.(alpha|beta|rc|pre)(\.?(0|[1-9]\d*))?)?\z/.match(version)
           if shape.nil?
-            puts "::error::lib/resend/version.rb version #{version} is not a release version (X.Y.Z with an optional .alphaN, .betaN, .rcN or .preN suffix)"
+            puts "::error::lib/resend/version.rb version #{version} is not a release version (X.Y.Z with an optional .alpha, .beta, .rc or .pre suffix, with or without a number)"
             exit 1
           end
           tag = ENV.fetch("GITHUB_REF_NAME")
-          if ENV.fetch("GITHUB_EVENT_NAME") == "push" && tag != "v#{version}"
+          if ENV.fetch("GITHUB_REF_TYPE") == "tag" && tag != "v#{version}"
             puts "::error::Tag #{tag} does not match lib/resend/version.rb version #{version}"
             exit 1
           end
@@ -65,11 +64,11 @@ jobs:
           GEM_PATH: /tmp/smoke
         run: |
           gem install --no-document pkg/resend-*.gem
-          ruby -e 'require "resend"; puts Resend::VERSION'
+          ruby -e 'require "resend"; puts Resend::VERSION; exit 0 unless ENV.fetch("GITHUB_REF_TYPE") == "tag"; abort "installed #{Resend::VERSION}, tag #{ENV["GITHUB_REF_NAME"]}" unless "v#{Resend::VERSION}" == ENV["GITHUB_REF_NAME"]'
 
   publish-rubygems:
     needs: ci
-    if: github.event_name == 'push'
+    if: github.ref_type == 'tag'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     environment: release
@@ -88,7 +87,7 @@ jobs:
 
   release:
     needs: [ci, publish-rubygems]
-    if: github.event_name == 'push'
+    if: github.ref_type == 'tag'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
