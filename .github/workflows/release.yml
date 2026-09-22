@@ -24,6 +24,7 @@ jobs:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
         with:
           persist-credentials: false
+          fetch-depth: 0
       - uses: ruby/setup-ruby@6aaa311d81eba98ae12eaffbcb63296ace0efcde # v1
         with:
           ruby-version: "3.4"
@@ -52,6 +53,15 @@ jobs:
           stable = shape[:pre] ? "false" : "true"
           File.open(ENV.fetch("GITHUB_OUTPUT"), "a", encoding: "utf-8") { |f| f.puts "stable=#{stable}" }
           EOF
+      - name: Verify the release commit is on ${{ github.event.repository.default_branch }}
+        if: github.ref_type == 'tag' && steps.meta.outputs.stable == 'true'
+        env:
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          if ! git merge-base --is-ancestor "$GITHUB_REF_NAME" "origin/$DEFAULT_BRANCH"; then
+            echo "::error::$GITHUB_REF_NAME is not on $DEFAULT_BRANCH. Tag a stable release on a commit that was merged into $DEFAULT_BRANCH."
+            exit 1
+          fi
       - run: bundle exec rubocop
       - run: bundle exec rake spec
       - name: Build
