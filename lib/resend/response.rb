@@ -57,6 +57,19 @@ module Resend
 
     alias to_hash to_h
 
+    # Serialize response data without response headers
+    # @return [String] JSON representation of the response data
+    def to_json(*args)
+      @data.to_json(*args)
+    end
+
+    # Serialize response data for encoders that call as_json, such as ActiveSupport
+    # @param args [Array] Options forwarded to Hash#as_json when it is defined
+    # @return [Hash] The response data in as_json form
+    def as_json(*args)
+      @data.respond_to?(:as_json) ? @data.as_json(*args) : @data
+    end
+
     # Get all keys from the data
     # @return [Array] Array of keys
     def keys
