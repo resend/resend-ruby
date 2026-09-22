@@ -123,6 +123,14 @@ RSpec.describe Resend::Response do
     it "preserves JSON formatting options" do
       expect(JSON.pretty_generate(response)).to eq(JSON.pretty_generate(data))
     end
+
+    it "works when nested in a hash serialized with Hash#to_json" do
+      expect({ response: response }.to_json).to eq({ response: data }.to_json)
+    end
+
+    it "works when nested in an array serialized with Array#to_json" do
+      expect([response].to_json).to eq([data].to_json)
+    end
   end
 
   describe "enumeration" do
