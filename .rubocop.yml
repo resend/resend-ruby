@@ -5,6 +5,7 @@ AllCops:
   Exclude:
     - "./spec/**/**"
     - "./examples/**"
+    - "vendor/**/*"
 
 Style/GuardClause:
   Enabled: false
