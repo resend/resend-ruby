@@ -1,5 +1,5 @@
 # frozen_string_literal: true
 
 module Resend
-  VERSION = "1.16.1"
+  VERSION = "1.17.0"
 end
