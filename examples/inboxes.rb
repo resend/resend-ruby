@@ -1,0 +1,63 @@
+# frozen_string_literal: true
+
+require_relative "../lib/resend"
+
+raise if ENV["RESEND_API_KEY"].nil?
+
+Resend.api_key = ENV["RESEND_API_KEY"]
+
+inbox = Resend::Inboxes.create({ email_address: "support@acme.com", name: "Customer Support" })
+inbox_id = inbox[:id]
+puts "created inbox: #{inbox_id}"
+
+puts "inbox: #{Resend::Inboxes.get("support@acme.com")[:email_address]}"
+puts "inboxes: #{Resend::Inboxes.list(limit: 10)[:data].length}"
+
+Resend::Inboxes.update({ inbox_id: inbox_id, from_name: "Ada from Support" })
+
+Resend::Inboxes::Agent.update({ inbox_id: inbox_id, tone: "friendly and concise", enabled_actions: ["draft_reply"] })
+puts "agent tone: #{Resend::Inboxes::Agent.get({ inbox_id: inbox_id })[:tone]}"
+
+label = Resend::Inboxes::Labels.create({ inbox_id: inbox_id, name: "Urgent", color: "#E93D82" })
+Resend::Inboxes::Labels.update({ inbox_id: inbox_id, label_id: label[:id], color: "#F76B15" })
+puts "labels: #{Resend::Inboxes::Labels.list({ inbox_id: inbox_id })[:data].length}"
+
+threads = Resend::Inboxes::Threads.list({ inbox_id: inbox_id, folders: %w[inbox sent], read: false })
+puts "unread threads: #{threads[:data].length}"
+
+found = Resend::Inboxes::Threads.search({ inbox_id: inbox_id, query: "refund", has_attachment: false })
+puts "search results: #{found[:data].length}"
+
+if (thread_id = threads[:data].first&.dig("id"))
+  Resend::Inboxes::Threads.update({ inbox_id: inbox_id, thread_id: thread_id, read: true, add_label_ids: [label[:id]] })
+
+  emails = Resend::Inboxes::Threads::Emails.list({ inbox_id: inbox_id, thread_id: thread_id })
+  email_id = emails[:data].last["id"]
+  ids = { inbox_id: inbox_id, thread_id: thread_id, email_id: email_id }
+
+  puts "subject: #{Resend::Inboxes::Threads::Emails.get(ids)[:subject]}"
+
+  reply = Resend::Inboxes::Threads::Emails.reply({ **ids, text: "Thanks, we are on it." })
+  puts "reply sent: #{reply[:id]}"
+
+  forward = Resend::Inboxes::Threads::Emails.forward({ **ids, to: ["billing@acme.com"], text: "Please check this one." })
+  puts "forward sent: #{forward[:id]}"
+
+  Resend::Inboxes::Threads.update({ inbox_id: inbox_id, thread_id: thread_id, folder: "archive" })
+  Resend::Inboxes::Threads.remove({ inbox_id: inbox_id, thread_id: thread_id })
+end
+
+draft = Resend::Inboxes::Drafts.create({ inbox_id: inbox_id, to: ["ada@example.org"], subject: "Hello" })
+Resend::Inboxes::Drafts.update({ inbox_id: inbox_id, draft_id: draft[:id], text: "Hello from the inbox." })
+puts "draft subject: #{Resend::Inboxes::Drafts.get({ inbox_id: inbox_id, draft_id: draft[:id] })[:subject]}"
+puts "drafts: #{Resend::Inboxes::Drafts.list({ inbox_id: inbox_id })[:data].length}"
+
+sent = Resend::Inboxes::Drafts.send({ inbox_id: inbox_id, draft_id: draft[:id] })
+puts "draft sent: #{sent[:id]}"
+
+discarded = Resend::Inboxes::Drafts.create({ inbox_id: inbox_id, subject: "Never sent" })
+Resend::Inboxes::Drafts.remove({ inbox_id: inbox_id, draft_id: discarded[:id] })
+
+Resend::Inboxes::Labels.remove({ inbox_id: inbox_id, label_id: label[:id] })
+Resend::Inboxes.remove(inbox_id)
+puts "removed inbox: #{inbox_id}"
