@@ -42,6 +42,9 @@ require "resend/events"
 require "resend/suppressions"
 require "resend/suppressions/batch"
 require "resend/usage"
+require "resend/inboxes"
+require "resend/inboxes/agent"
+require "resend/inboxes/labels"
 
 # Rails
 require "resend/railtie" if defined?(Rails) && defined?(ActionMailer)
