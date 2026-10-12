@@ -40,14 +40,14 @@ if (thread_id = threads[:data].first&.dig("id"))
   reply = Resend::Inboxes::Threads::Emails.reply({ **ids, text: "Thanks, we are on it." })
   puts "reply sent: #{reply[:id]}"
 
-  forward = Resend::Inboxes::Threads::Emails.forward({ **ids, to: ["billing@acme.com"], text: "Please check this one." })
+  forward = Resend::Inboxes::Threads::Emails.forward({ **ids, to: ["delivered@resend.dev"], text: "Please check this one." })
   puts "forward sent: #{forward[:id]}"
 
   Resend::Inboxes::Threads.update({ inbox_id: inbox_id, thread_id: thread_id, folder: "archive" })
   Resend::Inboxes::Threads.remove({ inbox_id: inbox_id, thread_id: thread_id })
 end
 
-draft = Resend::Inboxes::Drafts.create({ inbox_id: inbox_id, to: ["ada@example.org"], subject: "Hello" })
+draft = Resend::Inboxes::Drafts.create({ inbox_id: inbox_id, to: ["delivered@resend.dev"], subject: "Hello" })
 Resend::Inboxes::Drafts.update({ inbox_id: inbox_id, draft_id: draft[:id], text: "Hello from the inbox." })
 puts "draft subject: #{Resend::Inboxes::Drafts.get({ inbox_id: inbox_id, draft_id: draft[:id] })[:subject]}"
 puts "drafts: #{Resend::Inboxes::Drafts.list({ inbox_id: inbox_id })[:data].length}"
