@@ -33,7 +33,10 @@ module Resend
         # `to: []` to leave it empty. At least one of `to`, `cc`, `bcc`, `subject`, `text`, `html` or
         # `attachments` must be non-empty. The combined recipients of `to`, `cc` and `bcc` cannot exceed
         # 50. Only one unsent reply draft can target an email, so a reply draft request for an email
-        # that already has one returns the ID of the existing draft.
+        # that already has one returns the ID of the existing draft. That request ignores every other
+        # field, except `attachments`, which replaces the attachments of the existing draft when sent.
+        # A reply draft created without `subject` stores an empty subject and gets no `Re:` prefix,
+        # so set one before you send it.
         #
         # @param params [Hash] the parameters
         # @option params [String] :inbox_id the inbox ID. An email address is not accepted (required)
@@ -47,8 +50,8 @@ module Resend
         # @option params [String] :thread_id the thread ID to reply in. Must be sent with `reply_to_email_id`
         # @option params [String] :reply_to_email_id the email ID to reply to. Must be sent with `thread_id`
         # @option params [Array<Hash>] :attachments files to store on the draft. Each one needs `content`,
-        #   `filename` and `content_type`. A `path` or `content_id` returns a 422. A draft can carry up to
-        #   10 files and 25 MB in total
+        #   `filename` and `content_type`. A `path` or `content_id` returns a 422. The files on a draft can
+        #   total at most 25 MB. An empty file or a blocked file type returns a 422
         #
         # @return [Hash] the draft `object` and `id`
         #
@@ -119,8 +122,9 @@ module Resend
         # Send a draft
         #
         # Sends the draft from the inbox address. A reply draft is sent in its thread. A draft without
-        # a thread starts a new thread. The draft must have at least one `to` recipient, or the request
-        # returns a 422. A draft that was already sent returns a 409. The request takes no body.
+        # a thread starts a new thread. The draft must have at least one `to` recipient, a non-empty
+        # `subject`, and `html` or `text`, or the request returns a 422. A draft that was already sent
+        # returns a 409. The request takes no body.
         #
         # @param params [Hash] the parameters
         # @option params [String] :inbox_id the inbox ID. An email address is not accepted (required)

@@ -10,7 +10,7 @@ module Resend
           #
           # Pass the `id` of the last message as `after` to get the next, newer page. Pass the `id` of
           # the first message as `before` to get the previous, older page. You cannot combine `after`
-          # and `before`.
+          # and `before`. A cursor that is not a message of the thread returns a 404.
           #
           # @param params [Hash] the parameters
           # @option params [String] :inbox_id the inbox ID. An email address is not accepted (required)
@@ -63,7 +63,12 @@ module Resend
           #   copies only these addresses
           # @option params [String, Array<String>] :bcc BCC recipients. BCC recipients of the original
           #   message are never copied
-          # @option params [Boolean] :reply_all reply to everyone on the original message. Defaults to false
+          # @option params [Boolean] :reply_all reply to everyone on the original message. For a message the
+          #   inbox received, the reply goes to its `Reply-To` addresses, or to its sender when it has none,
+          #   and copies the other addresses of its `To` header and its `cc` recipients in `cc`. For a message
+          #   the inbox sent, the reply goes to its `Reply-To` addresses when they are not the inbox address,
+          #   otherwise to its `to` recipients, and copies its `cc` recipients. The inbox address is always
+          #   excluded, and duplicates are removed. Defaults to false
           # @option params [Array<Hash>] :attachments files to attach, as on {Resend::Emails.send}. Each one
           #   needs `content` or `path`. Up to 10 files and at most 25 MB of `content` in total
           #
@@ -82,7 +87,8 @@ module Resend
           # message is quoted under a forwarded-message banner, below the optional `html` or `text`
           # note. The attachments of the original message are sent with the forward, together with any
           # `attachments` you add. The request fails when they exceed 10 files or 25 MB of `content`
-          # in total.
+          # in total. An original attachment that was sent from a URL (`path`) cannot be forwarded, and the
+          # request returns a 422.
           #
           # @param params [Hash] the parameters
           # @option params [String] :inbox_id the inbox ID. An email address is not accepted (required)

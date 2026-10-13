@@ -18,7 +18,7 @@ module Resend
       # enabled, with DKIM and SPF verified and the inbound MX record verified or pending. With
       # `forwarding` set to `true`, the domain only needs DKIM and SPF verified for sending, and
       # Resend generates a `receiving_address` on the team inbound domain. A team that has reached
-      # the inbox limit of its plan gets a 403 validation_error.
+      # the inbox limit of its plan gets a 403 validation_error. A blocked account gets a 451.
       #
       # @param params [Hash] the inbox parameters
       # @option params [String] :email_address the inbox email address on one of your domains (required)
@@ -39,6 +39,7 @@ module Resend
       # Retrieve a list of inboxes, newest first
       #
       # The list items carry fewer fields than a single inbox. Retrieve an inbox to get all its fields.
+      # The `after` and `before` cursors take an inbox ID.
       #
       # @param params [Hash] the pagination parameters
       # @option params [Integer] :limit the maximum number of results to return

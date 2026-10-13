@@ -32,7 +32,7 @@ module Resend
         # @option params [String, nil] :tone the tone the agent writes in, such as
         #   `friendly and concise`, max 64 characters. Send nil to clear the tone
         # @option params [Array<String>] :enabled_actions the actions the agent can take. Replaces the
-        #   whole set. Send an empty array to disable all actions. One or more of `draft_reply`,
+        #   whole set. Duplicates are removed. Send an empty array to disable all actions. One or more of `draft_reply`,
         #   `forward_thread`, `add_labels`, `assign_thread`, `mark_as_spam`, `archive_thread`,
         #   `delete_thread`
         #

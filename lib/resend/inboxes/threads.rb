@@ -10,7 +10,8 @@ module Resend
         # Retrieve a list of inbox threads, most recently active first
         #
         # The `after` and `before` cursors take a thread ID, and only one of them can be passed.
-        # To find threads by text, sender, recipient, attachment, or date, use {search}.
+        # A cursor thread that is not in the selected folders returns a 404. To find threads by text,
+        # sender, recipient, attachment, or date, use {search}.
         #
         # @param params [Hash] the parameters
         # @option params [String] :inbox_id the inbox ID. An email address is not accepted (required)
@@ -40,8 +41,9 @@ module Resend
         # up to about a minute behind new emails. Different parameters combine, so a thread must match
         # all of them. `folders`, `labels`, and `read` apply to the thread. `query`, `from`, `to`, `cc`,
         # `bcc`, `has_attachment`, `start_date`, and `end_date` must all match the same email in the
-        # thread. When more than 10,000 threads match, search covers the 10,000 with the newest
-        # matching email.
+        # thread. When any of these email filters is set, the matching email must itself be in one of
+        # `folders`. For `sent`, that means an email the inbox sent. When more than 10,000 threads match,
+        # search covers the 10,000 with the newest matching email.
         #
         # @param params [Hash] the parameters
         # @option params [String] :inbox_id the inbox ID. An email address is not accepted (required)
@@ -97,7 +99,9 @@ module Resend
         # Marks a thread read or unread, moves it to a folder, or adds and removes labels. At least one
         # of `read`, `folder`, `add_label_ids`, or `remove_label_ids` is required. A label ID cannot be
         # both added and removed in the same request. Removing a label from a thread keeps the label
-        # itself. Moving a thread out of `trash` restores it and clears its deletion deadline.
+        # itself. Moving a thread out of `trash` restores it and clears its deletion deadline. The changes
+        # apply in this order: `read`, `folder`, added labels, removed labels. They are not atomic, so a
+        # 404 for a label leaves the earlier changes applied.
         #
         # @param params [Hash] the parameters
         # @option params [String] :inbox_id the inbox ID. An email address is not accepted (required)
