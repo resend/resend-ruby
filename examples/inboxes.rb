@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative "../lib/resend"
+require "base64"
 
 raise if ENV["RESEND_API_KEY"].nil?
 
@@ -43,13 +44,20 @@ if (thread_id = threads[:data].first&.dig("id"))
   forward = Resend::Inboxes::Threads::Emails.forward({ **ids, to: ["delivered@resend.dev"], text: "Please check this one." })
   puts "forward sent: #{forward[:id]}"
 
+  Resend::Inboxes::Threads.update({ inbox_id: inbox_id, thread_id: thread_id, remove_label_ids: [label[:id]] })
   Resend::Inboxes::Threads.update({ inbox_id: inbox_id, thread_id: thread_id, folder: "archive" })
   Resend::Inboxes::Threads.remove({ inbox_id: inbox_id, thread_id: thread_id })
 end
 
-draft = Resend::Inboxes::Drafts.create({ inbox_id: inbox_id, to: ["delivered@resend.dev"], subject: "Hello" })
+draft = Resend::Inboxes::Drafts.create({
+  inbox_id: inbox_id,
+  to: ["delivered@resend.dev"],
+  subject: "Hello",
+  attachments: [{ filename: "notes.txt", content: Base64.strict_encode64("Hello"), content_type: "text/plain" }]
+})
 Resend::Inboxes::Drafts.update({ inbox_id: inbox_id, draft_id: draft[:id], text: "Hello from the inbox." })
-puts "draft subject: #{Resend::Inboxes::Drafts.get({ inbox_id: inbox_id, draft_id: draft[:id] })[:subject]}"
+stored = Resend::Inboxes::Drafts.get({ inbox_id: inbox_id, draft_id: draft[:id] })
+puts "draft subject: #{stored[:subject]}, attachments: #{stored[:attachments].length}"
 puts "drafts: #{Resend::Inboxes::Drafts.list({ inbox_id: inbox_id })[:data].length}"
 
 sent = Resend::Inboxes::Drafts.send({ inbox_id: inbox_id, draft_id: draft[:id] })
