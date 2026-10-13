@@ -54,9 +54,10 @@ module Resend
         #   total at most 25 MB. An empty file or a blocked file type returns a 422
         # @param options [Hash] additional options for the request
         # @option options [String] :idempotency_key a unique key for the request, so the draft is created
-        #   only once. 1 to 256 characters. A retry with the same key within 24 hours returns the first
-        #   response, with the `idempotent-replayed: true` header. Reusing the key with a different body,
-        #   or while the first request is still running, returns a 409
+        #   only once. 1 to 256 characters. A retry with the same key within 24 hours replays the first
+        #   successful (2xx) response, with the `idempotent-replayed: true` header. A failed request is
+        #   not stored, so you can retry it with the same key. Reusing the key with a different body, or
+        #   while the first request is still running, returns a 409
         #
         # @return [Hash] the draft `object` and `id`
         #
@@ -99,7 +100,7 @@ module Resend
         # @option params [String, nil] :html the HTML body. Pass nil to clear
         # @option params [String, nil] :text the plain text body. Pass nil to clear
         # @option params [Array<Hash>] :attachments files to store on the draft, as in {create}. Sending
-        #   the field replaces every attachment on the draft. Send [] to remove them all
+        #   the field replaces every attachment on the draft. Send [] or nil to remove them all
         #
         # https://resend.com/docs/api-reference/inboxes/update-draft
         def update(params = {})
@@ -136,12 +137,14 @@ module Resend
         # @option params [String] :draft_id the draft ID (required)
         # @option params [Hash{String => String}] :headers custom headers to add to the email. The
         #   `In-Reply-To`, `References` and `Reply-To` headers are set by Resend and cannot be set here.
-        #   Sending one of them, in any letter case, returns a 422
+        #   Sending one of them, in any letter case, returns a 422. Header names cannot be empty, and
+        #   names and values cannot contain line breaks or null characters, or the request returns a 422
         # @param options [Hash] additional options for the request
         # @option options [String] :idempotency_key a unique key for the request, so the draft is sent
-        #   only once. 1 to 256 characters. A retry with the same key within 24 hours returns the first
-        #   response, with the `idempotent-replayed: true` header. Reusing the key with a different body,
-        #   or while the first request is still running, returns a 409
+        #   only once. 1 to 256 characters. A retry with the same key within 24 hours replays the first
+        #   successful (2xx) response, with the `idempotent-replayed: true` header. A failed request is
+        #   not stored, so you can retry it with the same key. Reusing the key with a different body, or
+        #   while the first request is still running, returns a 409
         #
         # @return [Hash] the `id` of the sent email
         #

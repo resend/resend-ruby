@@ -70,15 +70,19 @@ module Resend
           #   otherwise to its `to` recipients, and copies its `cc` recipients. The inbox address is always
           #   excluded, and duplicates are removed. Defaults to false
           # @option params [Array<Hash>] :attachments files to attach, as on {Resend::Emails.send}. Each one
-          #   needs `content` or `path`. Up to 10 files and at most 25 MB of `content` in total
+          #   needs `content` or `path`. Up to 10 files and at most 25 MB of `content` in total. An empty file, a
+          #   blocked file type, or a `path` that is not an `http` or `https` URL, or that points to
+          #   `localhost`, returns a 422
           # @option params [Hash{String => String}] :headers custom headers to add to the email. The
           #   `In-Reply-To`, `References` and `Reply-To` headers are set by Resend and cannot be set here.
-          #   Sending one of them, in any letter case, returns a 422
+          #   Sending one of them, in any letter case, returns a 422. Header names cannot be empty, and
+          #   names and values cannot contain line breaks or null characters, or the request returns a 422
           # @param options [Hash] additional options for the request
           # @option options [String] :idempotency_key a unique key for the request, so the reply is sent
-          #   only once. 1 to 256 characters. A retry with the same key within 24 hours returns the first
-          #   response, with the `idempotent-replayed: true` header. Reusing the key with a different body,
-          #   or while the first request is still running, returns a 409
+          #   only once. 1 to 256 characters. A retry with the same key within 24 hours replays the first
+          #   successful (2xx) response, with the `idempotent-replayed: true` header. A failed request is
+          #   not stored, so you can retry it with the same key. Reusing the key with a different body, or
+          #   while the first request is still running, returns a 409
           #
           # @return [Hash] the `id` of the sent email
           #
@@ -111,15 +115,18 @@ module Resend
           # @option params [String] :subject the subject of the forward. When omitted, the thread subject
           #   is used, prefixed with `Fwd:` if it does not already start with it
           # @option params [Array<Hash>] :attachments files to attach, as on {Resend::Emails.send}. Each one
-          #   needs `content` or `path`
+          #   needs `content` or `path`. An empty file, a blocked file type, or a `path` that is not an
+          #   `http` or `https` URL, or that points to `localhost`, returns a 422
           # @option params [Hash{String => String}] :headers custom headers to add to the email. The
           #   `In-Reply-To`, `References` and `Reply-To` headers are set by Resend and cannot be set here.
-          #   Sending one of them, in any letter case, returns a 422
+          #   Sending one of them, in any letter case, returns a 422. Header names cannot be empty, and
+          #   names and values cannot contain line breaks or null characters, or the request returns a 422
           # @param options [Hash] additional options for the request
           # @option options [String] :idempotency_key a unique key for the request, so the forward is sent
-          #   only once. 1 to 256 characters. A retry with the same key within 24 hours returns the first
-          #   response, with the `idempotent-replayed: true` header. Reusing the key with a different body,
-          #   or while the first request is still running, returns a 409
+          #   only once. 1 to 256 characters. A retry with the same key within 24 hours replays the first
+          #   successful (2xx) response, with the `idempotent-replayed: true` header. A failed request is
+          #   not stored, so you can retry it with the same key. Reusing the key with a different body, or
+          #   while the first request is still running, returns a 409
           #
           # @return [Hash] the `id` of the sent email
           #
