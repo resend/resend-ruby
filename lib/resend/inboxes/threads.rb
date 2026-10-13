@@ -95,9 +95,9 @@ module Resend
         # Update an existing inbox thread
         #
         # Marks a thread read or unread, moves it to a folder, or adds and removes labels. At least one
-        # of `read`, `folder`, `label_id`, `add_label_ids`, or `remove_label_ids` is required. A label ID
-        # cannot be both added and removed in the same request. Moving a thread out of `trash` restores
-        # it and clears its deletion deadline.
+        # of `read`, `folder`, `add_label_ids`, or `remove_label_ids` is required. A label ID cannot be
+        # both added and removed in the same request. Removing a label from a thread keeps the label
+        # itself. Moving a thread out of `trash` restores it and clears its deletion deadline.
         #
         # @param params [Hash] the parameters
         # @option params [String] :inbox_id the inbox ID. An email address is not accepted (required)
@@ -108,9 +108,7 @@ module Resend
         # @option params [Array<String>] :add_label_ids label IDs to apply to the thread.
         #   Between 1 and 10 IDs
         # @option params [Array<String>] :remove_label_ids label IDs to remove from the thread.
-        #   Between 1 and 10 IDs
-        # @option params [String] :label_id deprecated. Use `add_label_ids` instead. Applies this label
-        #   to the thread, the same as one entry in `add_label_ids`
+        #   Between 1 and 10 IDs. The labels themselves are kept
         #
         # https://resend.com/docs/api-reference/inboxes/update-thread
         def update(params = {})

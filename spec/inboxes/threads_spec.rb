@@ -95,11 +95,10 @@ RSpec.describe "Inboxes::Threads" do
       expect(thread[:labels].first["id"]).to eql(label_id)
     end
 
-    it "should still send the deprecated label_id" do
-      expect_request("inboxes/#{inbox_id}/threads/#{thread_id}", { label_id: label_id }, "patch",
-                     { object: "inbox_thread", id: thread_id })
-
-      Resend::Inboxes::Threads.update(inbox_id: inbox_id, thread_id: thread_id, label_id: label_id)
+    it "should raise when thread_id is missing" do
+      expect do
+        Resend::Inboxes::Threads.update(inbox_id: inbox_id, read: true)
+      end.to raise_error(ArgumentError, "thread_id is required")
     end
   end
 
