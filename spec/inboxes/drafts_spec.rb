@@ -18,6 +18,11 @@ RSpec.describe "Inboxes::Drafts" do
     expect(Resend::Request).to receive(:new).with(path, body, verb).and_return(double("req", perform: resp))
   end
 
+  def expect_post(path, body, resp, options = {})
+    expect(Resend::Request).to receive(:new).with(path, body, "post", options: options)
+                                            .and_return(double("req", perform: resp))
+  end
+
   describe "list" do
     it "should list drafts with pagination" do
       resp = { object: "list", has_more: false, data: [{ "id" => draft_id, "type" => "standalone", "snippet" => "Hi" }] }
@@ -36,22 +41,29 @@ RSpec.describe "Inboxes::Drafts" do
     it "should create a draft with attachments" do
       attachments = [{ filename: "notes.txt", content: "aGVsbG8=", content_type: "text/plain" }]
       body = { to: ["delivered@resend.dev"], attachments: attachments }
-      expect_request("inboxes/#{inbox_id}/drafts", body, "post", { object: "inbox_draft", id: draft_id })
+      expect_post("inboxes/#{inbox_id}/drafts", body, { object: "inbox_draft", id: draft_id })
 
-      draft = Resend::Inboxes::Drafts.create(inbox_id: inbox_id, **body)
+      draft = Resend::Inboxes::Drafts.create({ inbox_id: inbox_id, **body })
       expect(draft[:id]).to eql(draft_id)
+    end
+
+    it "should pass the idempotency key" do
+      expect_post("inboxes/#{inbox_id}/drafts", { subject: "Hi" }, { object: "inbox_draft", id: draft_id },
+                  { idempotency_key: "draft-1" })
+
+      Resend::Inboxes::Drafts.create({ inbox_id: inbox_id, subject: "Hi" }, options: { idempotency_key: "draft-1" })
     end
 
     it "should create a reply draft" do
       body = { text: "Refund issued.", thread_id: thread_id, reply_to_email_id: email_id }
-      expect_request("inboxes/#{inbox_id}/drafts", body, "post", { object: "inbox_draft", id: draft_id })
+      expect_post("inboxes/#{inbox_id}/drafts", body, { object: "inbox_draft", id: draft_id })
 
-      draft = Resend::Inboxes::Drafts.create(inbox_id: inbox_id, **body)
+      draft = Resend::Inboxes::Drafts.create({ inbox_id: inbox_id, **body })
       expect(draft[:id]).to eql(draft_id)
     end
 
     it "should raise when inbox_id is missing" do
-      expect { Resend::Inboxes::Drafts.create(text: "Hi") }.to raise_error(ArgumentError, "inbox_id is required")
+      expect { Resend::Inboxes::Drafts.create({ text: "Hi" }) }.to raise_error(ArgumentError, "inbox_id is required")
     end
   end
 
@@ -104,14 +116,36 @@ RSpec.describe "Inboxes::Drafts" do
 
   describe "send" do
     it "should send a draft with no body" do
-      expect_request("#{draft_path}/send", {}, "post", { id: sent_id })
+      expect_post("#{draft_path}/send", {}, { id: sent_id })
 
-      sent = Resend::Inboxes::Drafts.send(inbox_id: inbox_id, draft_id: draft_id)
+      sent = Resend::Inboxes::Drafts.send({ inbox_id: inbox_id, draft_id: draft_id })
       expect(sent[:id]).to eql(sent_id)
     end
 
+    it "should send the Idempotency-Key header" do
+      resp = { "id" => sent_id }
+      allow(resp).to receive(:body).and_return(resp)
+      allow(HTTParty).to receive(:send).and_return(resp)
+
+      Resend::Inboxes::Drafts.send({ inbox_id: inbox_id, draft_id: draft_id }, options: { idempotency_key: "send-1" })
+
+      expect(HTTParty).to have_received(:send).with(
+        :post,
+        "#{Resend::Request::BASE_URL}#{draft_path}/send",
+        {
+          headers: {
+            "Content-Type" => "application/json",
+            "Accept" => "application/json",
+            "Authorization" => "Bearer re_123",
+            "User-Agent" => "resend-ruby:#{Resend::VERSION}",
+            "Idempotency-Key" => "send-1"
+          }
+        }
+      )
+    end
+
     it "should raise when draft_id is missing" do
-      expect { Resend::Inboxes::Drafts.send(inbox_id: inbox_id) }.to raise_error(ArgumentError, "draft_id is required")
+      expect { Resend::Inboxes::Drafts.send({ inbox_id: inbox_id }) }.to raise_error(ArgumentError, "draft_id is required")
     end
   end
 end

@@ -71,14 +71,19 @@ module Resend
           #   excluded, and duplicates are removed. Defaults to false
           # @option params [Array<Hash>] :attachments files to attach, as on {Resend::Emails.send}. Each one
           #   needs `content` or `path`. Up to 10 files and at most 25 MB of `content` in total
+          # @param options [Hash] additional options for the request
+          # @option options [String] :idempotency_key a unique key for the request, so the reply is sent
+          #   only once. 1 to 256 characters. A retry with the same key within 24 hours returns the first
+          #   response, with the `idempotent-replayed: true` header. Reusing the key with a different body,
+          #   or while the first request is still running, returns a 409
           #
           # @return [Hash] the `id` of the sent email
           #
           # https://resend.com/docs/api-reference/inboxes/reply-thread-email
-          def reply(params = {})
+          def reply(params = {}, options: {})
             validate_email!(params)
 
-            Resend::Request.new("#{email_path(params)}/reply", body(params), "post").perform
+            Resend::Request.new("#{email_path(params)}/reply", body(params), "post", options: options).perform
           end
 
           # Forward a thread email
@@ -104,14 +109,19 @@ module Resend
           #   is used, prefixed with `Fwd:` if it does not already start with it
           # @option params [Array<Hash>] :attachments files to attach, as on {Resend::Emails.send}. Each one
           #   needs `content` or `path`
+          # @param options [Hash] additional options for the request
+          # @option options [String] :idempotency_key a unique key for the request, so the forward is sent
+          #   only once. 1 to 256 characters. A retry with the same key within 24 hours returns the first
+          #   response, with the `idempotent-replayed: true` header. Reusing the key with a different body,
+          #   or while the first request is still running, returns a 409
           #
           # @return [Hash] the `id` of the sent email
           #
           # https://resend.com/docs/api-reference/inboxes/forward-thread-email
-          def forward(params = {})
+          def forward(params = {}, options: {})
             validate_email!(params)
 
-            Resend::Request.new("#{email_path(params)}/forward", body(params), "post").perform
+            Resend::Request.new("#{email_path(params)}/forward", body(params), "post", options: options).perform
           end
 
           private

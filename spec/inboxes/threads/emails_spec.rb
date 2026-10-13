@@ -18,6 +18,11 @@ RSpec.describe "Inboxes::Threads::Emails" do
     expect(Resend::Request).to receive(:new).with(path, body, verb).and_return(double("req", perform: resp))
   end
 
+  def expect_post(path, body, resp, options = {})
+    expect(Resend::Request).to receive(:new).with(path, body, "post", options: options)
+                                            .and_return(double("req", perform: resp))
+  end
+
   describe "list" do
     it "should list thread emails with pagination" do
       resp = { object: "list", has_more: true, data: [{ "id" => email_id, "direction" => "inbound" }] }
@@ -59,31 +64,45 @@ RSpec.describe "Inboxes::Threads::Emails" do
         cc: ["billing@acme.com"],
         attachments: [{ filename: "receipt.txt", content: "aGVsbG8=" }]
       }
-      expect_request("#{email_path}/reply", body, "post", { id: sent_id })
+      expect_post("#{email_path}/reply", body, { id: sent_id })
 
-      reply = Resend::Inboxes::Threads::Emails.reply(**ids, **body)
+      reply = Resend::Inboxes::Threads::Emails.reply({ **ids, **body })
       expect(reply[:id]).to eql(sent_id)
     end
 
     it "should raise when email_id is missing" do
       expect do
-        Resend::Inboxes::Threads::Emails.reply(inbox_id: inbox_id, thread_id: thread_id, text: "Hi")
+        Resend::Inboxes::Threads::Emails.reply({ inbox_id: inbox_id, thread_id: thread_id, text: "Hi" })
       end.to raise_error(ArgumentError, "email_id is required")
+    end
+  end
+
+  describe "idempotency key" do
+    it "should pass the idempotency key on reply" do
+      expect_post("#{email_path}/reply", { text: "Hi" }, { id: sent_id }, { idempotency_key: "reply-1" })
+
+      Resend::Inboxes::Threads::Emails.reply({ **ids, text: "Hi" }, options: { idempotency_key: "reply-1" })
+    end
+
+    it "should pass the idempotency key on forward" do
+      expect_post("#{email_path}/forward", { to: "a@example.org" }, { id: sent_id }, { idempotency_key: "fwd-1" })
+
+      Resend::Inboxes::Threads::Emails.forward({ **ids, to: "a@example.org" }, options: { idempotency_key: "fwd-1" })
     end
   end
 
   describe "forward" do
     it "should forward an email" do
       body = { to: ["colleague@example.org"], text: "Flagging this refund request for you.", subject: "Fwd: Refund" }
-      expect_request("#{email_path}/forward", body, "post", { id: sent_id })
+      expect_post("#{email_path}/forward", body, { id: sent_id })
 
-      forward = Resend::Inboxes::Threads::Emails.forward(**ids, **body)
+      forward = Resend::Inboxes::Threads::Emails.forward({ **ids, **body })
       expect(forward[:id]).to eql(sent_id)
     end
 
     it "should raise when inbox_id is missing" do
       expect do
-        Resend::Inboxes::Threads::Emails.forward(thread_id: thread_id, email_id: email_id, to: "a@example.org")
+        Resend::Inboxes::Threads::Emails.forward({ thread_id: thread_id, email_id: email_id, to: "a@example.org" })
       end.to raise_error(ArgumentError, "inbox_id is required")
     end
   end

@@ -52,14 +52,19 @@ module Resend
         # @option params [Array<Hash>] :attachments files to store on the draft. Each one needs `content`,
         #   `filename` and `content_type`. A `path` or `content_id` returns a 422. The files on a draft can
         #   total at most 25 MB. An empty file or a blocked file type returns a 422
+        # @param options [Hash] additional options for the request
+        # @option options [String] :idempotency_key a unique key for the request, so the draft is created
+        #   only once. 1 to 256 characters. A retry with the same key within 24 hours returns the first
+        #   response, with the `idempotent-replayed: true` header. Reusing the key with a different body,
+        #   or while the first request is still running, returns a 409
         #
         # @return [Hash] the draft `object` and `id`
         #
         # https://resend.com/docs/api-reference/inboxes/create-draft
-        def create(params = {})
+        def create(params = {}, options: {})
           raise ArgumentError, "inbox_id is required" if params[:inbox_id].nil?
 
-          Resend::Request.new(drafts_path(params), params.except(:inbox_id), "post").perform
+          Resend::Request.new(drafts_path(params), params.except(:inbox_id), "post", options: options).perform
         end
 
         # Retrieve a single draft
@@ -129,14 +134,19 @@ module Resend
         # @param params [Hash] the parameters
         # @option params [String] :inbox_id the inbox ID. An email address is not accepted (required)
         # @option params [String] :draft_id the draft ID (required)
+        # @param options [Hash] additional options for the request
+        # @option options [String] :idempotency_key a unique key for the request, so the draft is sent
+        #   only once. 1 to 256 characters. A retry with the same key within 24 hours returns the first
+        #   response, with the `idempotent-replayed: true` header. Reusing the key with a different body,
+        #   or while the first request is still running, returns a 409
         #
         # @return [Hash] the `id` of the sent email
         #
         # https://resend.com/docs/api-reference/inboxes/send-draft
-        def send(params = {})
+        def send(params = {}, options: {})
           validate_draft!(params)
 
-          Resend::Request.new("#{draft_path(params)}/send", {}, "post").perform
+          Resend::Request.new("#{draft_path(params)}/send", {}, "post", options: options).perform
         end
 
         private
