@@ -33,6 +33,15 @@ RSpec.describe "Inboxes::Drafts" do
   end
 
   describe "create" do
+    it "should create a draft with attachments" do
+      attachments = [{ filename: "notes.txt", content: "aGVsbG8=", content_type: "text/plain" }]
+      body = { to: ["delivered@resend.dev"], attachments: attachments }
+      expect_request("inboxes/#{inbox_id}/drafts", body, "post", { object: "inbox_draft", id: draft_id })
+
+      draft = Resend::Inboxes::Drafts.create(inbox_id: inbox_id, **body)
+      expect(draft[:id]).to eql(draft_id)
+    end
+
     it "should create a reply draft" do
       body = { text: "Refund issued.", thread_id: thread_id, reply_to_email_id: email_id }
       expect_request("inboxes/#{inbox_id}/drafts", body, "post", { object: "inbox_draft", id: draft_id })
@@ -48,11 +57,15 @@ RSpec.describe "Inboxes::Drafts" do
 
   describe "get" do
     it "should retrieve a draft" do
-      resp = { object: "inbox_draft", id: draft_id, type: "standalone", to: ["ada@example.org"], email_id: nil }
+      attachment = { "id" => "0b7d4e1a-5c2f-4d8e-9a3b-6f1e2d4c8a90", "filename" => "notes.txt",
+                     "content_type" => "text/plain", "size" => 5 }
+      resp = { object: "inbox_draft", id: draft_id, type: "standalone", to: ["ada@example.org"], email_id: nil,
+               attachments: [attachment] }
       expect_request(draft_path, {}, "get", resp)
 
       draft = Resend::Inboxes::Drafts.get(inbox_id: inbox_id, draft_id: draft_id)
       expect(draft[:to]).to eql(["ada@example.org"])
+      expect(draft[:attachments].first["size"]).to eql(5)
     end
 
     it "should raise when draft_id is missing" do
@@ -68,6 +81,15 @@ RSpec.describe "Inboxes::Drafts" do
 
       draft = Resend::Inboxes::Drafts.update(inbox_id: inbox_id, draft_id: draft_id, **body)
       expect(draft[:subject]).to eql("Refund issued for order 1041")
+    end
+  end
+
+  describe "update attachments" do
+    it "should send an empty attachments array to remove them all" do
+      expect_request(draft_path, { attachments: [] }, "patch", { object: "inbox_draft", id: draft_id, attachments: [] })
+
+      draft = Resend::Inboxes::Drafts.update(inbox_id: inbox_id, draft_id: draft_id, attachments: [])
+      expect(draft[:attachments]).to eql([])
     end
   end
 

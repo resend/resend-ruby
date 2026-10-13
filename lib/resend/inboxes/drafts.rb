@@ -30,10 +30,10 @@ module Resend
         # that starts a new thread. Pass both together for a reply draft in an existing thread. A reply
         # draft without `to` is addressed to the sender of the email it replies to, or to its Reply-To
         # when set. For an email the inbox sent, it defaults to that email's `to` recipients. Send
-        # `to: []` to leave it empty. At least one of `to`, `cc`, `bcc`, `subject`, `text` or `html`
-        # must be non-empty. The combined recipients of `to`, `cc` and `bcc` cannot exceed 50. Only one
-        # unsent reply draft can target an email, so a reply draft request for an email that already
-        # has one returns the ID of the existing draft.
+        # `to: []` to leave it empty. At least one of `to`, `cc`, `bcc`, `subject`, `text`, `html` or
+        # `attachments` must be non-empty. The combined recipients of `to`, `cc` and `bcc` cannot exceed
+        # 50. Only one unsent reply draft can target an email, so a reply draft request for an email
+        # that already has one returns the ID of the existing draft.
         #
         # @param params [Hash] the parameters
         # @option params [String] :inbox_id the inbox ID. An email address is not accepted (required)
@@ -46,6 +46,9 @@ module Resend
         # @option params [String] :text the plain text body
         # @option params [String] :thread_id the thread ID to reply in. Must be sent with `reply_to_email_id`
         # @option params [String] :reply_to_email_id the email ID to reply to. Must be sent with `thread_id`
+        # @option params [Array<Hash>] :attachments files to store on the draft. Each one needs `content`,
+        #   `filename` and `content_type`. A `path` or `content_id` returns a 422. A draft can carry up to
+        #   10 files and 25 MB in total
         #
         # @return [Hash] the draft `object` and `id`
         #
@@ -72,10 +75,11 @@ module Resend
         # Update an existing draft
         #
         # Updates the content of an unsent draft. Omitted fields are left unchanged. Send at least one
-        # of `to`, `cc`, `bcc`, `subject`, `text` or `html`. A request that sets `text` or `html`
-        # replaces the whole body. The body part you omit from that request becomes nil. The merged
-        # draft must still contain at least one non-empty field, and its combined recipients cannot
-        # exceed 50. A draft that was already sent, or that changed during the request, returns a 409.
+        # of `to`, `cc`, `bcc`, `subject`, `text`, `html` or `attachments`. Sending `attachments` replaces
+        # every attachment on the draft. A request that sets `text` or `html` replaces the whole body.
+        # The body part you omit from that request becomes nil. The merged draft must still contain at
+        # least one non-empty field, and its combined recipients cannot exceed 50. A draft that was
+        # already sent, or that changed during the request, returns a 409.
         #
         # @param params [Hash] the parameters
         # @option params [String] :inbox_id the inbox ID. An email address is not accepted (required)
@@ -86,6 +90,8 @@ module Resend
         # @option params [String, nil] :subject the subject, max 2000 characters. Pass nil to clear
         # @option params [String, nil] :html the HTML body. Pass nil to clear
         # @option params [String, nil] :text the plain text body. Pass nil to clear
+        # @option params [Array<Hash>] :attachments files to store on the draft, as in {create}. Sending
+        #   the field replaces every attachment on the draft. Send [] to remove them all
         #
         # https://resend.com/docs/api-reference/inboxes/update-draft
         def update(params = {})
