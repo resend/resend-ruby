@@ -70,6 +70,13 @@ RSpec.describe "Inboxes::Threads::Emails" do
       expect(reply[:id]).to eql(sent_id)
     end
 
+    it "should reply with custom headers" do
+      body = { text: "Hi", headers: { "X-Ticket-Id" => "4821" } }
+      expect_post("#{email_path}/reply", body, { id: sent_id })
+
+      Resend::Inboxes::Threads::Emails.reply({ **ids, **body })
+    end
+
     it "should raise when email_id is missing" do
       expect do
         Resend::Inboxes::Threads::Emails.reply({ inbox_id: inbox_id, thread_id: thread_id, text: "Hi" })

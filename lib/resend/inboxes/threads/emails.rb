@@ -71,6 +71,9 @@ module Resend
           #   excluded, and duplicates are removed. Defaults to false
           # @option params [Array<Hash>] :attachments files to attach, as on {Resend::Emails.send}. Each one
           #   needs `content` or `path`. Up to 10 files and at most 25 MB of `content` in total
+          # @option params [Hash{String => String}] :headers custom headers to add to the email. The
+          #   `In-Reply-To`, `References` and `Reply-To` headers are set by Resend and cannot be set here.
+          #   Sending one of them, in any letter case, returns a 422
           # @param options [Hash] additional options for the request
           # @option options [String] :idempotency_key a unique key for the request, so the reply is sent
           #   only once. 1 to 256 characters. A retry with the same key within 24 hours returns the first
@@ -109,6 +112,9 @@ module Resend
           #   is used, prefixed with `Fwd:` if it does not already start with it
           # @option params [Array<Hash>] :attachments files to attach, as on {Resend::Emails.send}. Each one
           #   needs `content` or `path`
+          # @option params [Hash{String => String}] :headers custom headers to add to the email. The
+          #   `In-Reply-To`, `References` and `Reply-To` headers are set by Resend and cannot be set here.
+          #   Sending one of them, in any letter case, returns a 422
           # @param options [Hash] additional options for the request
           # @option options [String] :idempotency_key a unique key for the request, so the forward is sent
           #   only once. 1 to 256 characters. A retry with the same key within 24 hours returns the first

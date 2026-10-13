@@ -122,6 +122,13 @@ RSpec.describe "Inboxes::Drafts" do
       expect(sent[:id]).to eql(sent_id)
     end
 
+    it "should send custom headers in the body" do
+      headers = { "X-Ticket-Id" => "4821" }
+      expect_post("#{draft_path}/send", { headers: headers }, { id: sent_id })
+
+      Resend::Inboxes::Drafts.send({ inbox_id: inbox_id, draft_id: draft_id, headers: headers })
+    end
+
     it "should send the Idempotency-Key header" do
       resp = { "id" => sent_id }
       allow(resp).to receive(:body).and_return(resp)
