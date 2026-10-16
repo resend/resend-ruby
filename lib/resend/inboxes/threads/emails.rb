@@ -13,7 +13,7 @@ module Resend
           # and `before`. A cursor that is not a message of the thread returns a 404.
           #
           # @param params [Hash] the parameters
-          # @option params [String] :inbox_id the inbox ID. An email address is not accepted (required)
+          # @option params [String] :inbox_id the inbox ID or the inbox email address (required)
           # @option params [String] :thread_id the thread ID (required)
           # @option params [Integer] :limit the maximum number of results to return
           # @option params [String] :after the cursor for pagination
@@ -23,7 +23,7 @@ module Resend
           def list(params = {})
             validate_thread!(params)
 
-            base_path = "inboxes/#{params[:inbox_id]}/threads/#{params[:thread_id]}/emails"
+            base_path = "#{Resend::Inboxes.path(params[:inbox_id])}/threads/#{params[:thread_id]}/emails"
             path = Resend::PaginationHelper.build_paginated_path(base_path, params.except(:inbox_id, :thread_id))
             Resend::Request.new(path, {}, "get").perform
           end
@@ -31,7 +31,7 @@ module Resend
           # Retrieve a single thread email
           #
           # @param params [Hash] the parameters
-          # @option params [String] :inbox_id the inbox ID. An email address is not accepted (required)
+          # @option params [String] :inbox_id the inbox ID or the inbox email address (required)
           # @option params [String] :thread_id the thread ID (required)
           # @option params [String] :email_id the email ID, as returned in `data[].id` by {list} (required)
           #
@@ -52,7 +52,7 @@ module Resend
           # whitespace.
           #
           # @param params [Hash] the parameters
-          # @option params [String] :inbox_id the inbox ID. An email address is not accepted (required)
+          # @option params [String] :inbox_id the inbox ID or the inbox email address (required)
           # @option params [String] :thread_id the thread ID (required)
           # @option params [String] :email_id the email ID of the message to reply to (required)
           # @option params [String] :html the HTML body of the reply
@@ -70,7 +70,7 @@ module Resend
           #   otherwise to its `to` recipients, and copies its `cc` recipients. The inbox address is always
           #   excluded, and duplicates are removed. Defaults to false
           # @option params [Array<Hash>] :attachments files to attach, as on {Resend::Emails.send}. Each one
-          #   needs `content` or `path`. Up to 10 files and at most 25 MB of `content` in total. An empty file, a
+          #   needs `content` or `path`. At most 25 MB of `content` in total. An empty file, a
           #   blocked file type, or a `path` that is not an `http` or `https` URL, or that points to
           #   `localhost`, returns a 422
           # @option params [Hash{String => String}] :headers custom headers to add to the email. The
@@ -98,12 +98,12 @@ module Resend
           # Forwards a message from the inbox address right away, with no stored draft. The original
           # message is quoted under a forwarded-message banner, below the optional `html` or `text`
           # note. The attachments of the original message are sent with the forward, together with any
-          # `attachments` you add. The request fails when they exceed 10 files or 25 MB of `content`
-          # in total. An original attachment that was sent from a URL (`path`) cannot be forwarded, and the
-          # request returns a 422.
+          # `attachments` you add. The request fails when they exceed 25 MB of `content` in total. An
+          # original attachment that was sent from a URL (`path`) cannot be forwarded, and the request
+          # returns a 422.
           #
           # @param params [Hash] the parameters
-          # @option params [String] :inbox_id the inbox ID. An email address is not accepted (required)
+          # @option params [String] :inbox_id the inbox ID or the inbox email address (required)
           # @option params [String] :thread_id the thread ID (required)
           # @option params [String] :email_id the email ID of the message to forward (required)
           # @option params [String, Array<String>] :to the recipients (required). `to`, `cc` and `bcc`
@@ -150,7 +150,7 @@ module Resend
           end
 
           def email_path(params)
-            "inboxes/#{params[:inbox_id]}/threads/#{params[:thread_id]}/emails/#{params[:email_id]}"
+            "#{Resend::Inboxes.path(params[:inbox_id])}/threads/#{params[:thread_id]}/emails/#{params[:email_id]}"
           end
 
           def body(params)

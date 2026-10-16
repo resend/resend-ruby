@@ -4,7 +4,6 @@ RSpec.describe "Inboxes::Threads" do
   let(:inbox_id) { "b3e2b2b6-3f0e-4c8e-9ad3-2f43a1e2c7f1" }
   let(:thread_id) { "4d8e2a1c-9b3f-4c6d-8a21-3e5f7c9c0d12" }
   let(:label_id) { "7f9c1d2e-4a6b-4c3d-8e15-9b0a7c6d5e34" }
-  let(:other_label_id) { "2b6d0f4e-8a1c-4e3b-9d57-1c0e8a6f4b21" }
 
   before do
     Resend.configure do |config|
@@ -85,8 +84,8 @@ RSpec.describe "Inboxes::Threads" do
   end
 
   describe "update" do
-    it "should update a thread with label changes" do
-      body = { read: true, folder: "archive", add_label_ids: [label_id], remove_label_ids: [other_label_id] }
+    it "should update a thread" do
+      body = { read: true, folder: "archive" }
       resp = { object: "inbox_thread", id: thread_id, folder: "archive", read: true,
                labels: [{ "id" => label_id, "name" => "Urgent", "color" => "#E93D82" }] }
       expect_request("inboxes/#{inbox_id}/threads/#{thread_id}", body, "patch", resp)

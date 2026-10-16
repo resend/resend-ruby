@@ -11,7 +11,7 @@ module Resend
         # the current page. A cursor that is not an unsent draft on this inbox returns a 404.
         #
         # @param params [Hash] the parameters
-        # @option params [String] :inbox_id the inbox ID. An email address is not accepted (required)
+        # @option params [String] :inbox_id the inbox ID or the inbox email address (required)
         # @option params [Integer] :limit the maximum number of results to return
         # @option params [String] :after the cursor for pagination
         # @option params [String] :before the cursor for pagination
@@ -39,7 +39,7 @@ module Resend
         # so set one before you send it.
         #
         # @param params [Hash] the parameters
-        # @option params [String] :inbox_id the inbox ID. An email address is not accepted (required)
+        # @option params [String] :inbox_id the inbox ID or the inbox email address (required)
         # @option params [String, Array<String>] :to the recipients. Each value can include a friendly
         #   name, for example `Ada Lovelace <ada@example.org>`
         # @option params [String, Array<String>] :cc the CC recipients
@@ -71,7 +71,7 @@ module Resend
         # Retrieve a single draft
         #
         # @param params [Hash] the parameters
-        # @option params [String] :inbox_id the inbox ID. An email address is not accepted (required)
+        # @option params [String] :inbox_id the inbox ID or the inbox email address (required)
         # @option params [String] :draft_id the draft ID (required)
         #
         # https://resend.com/docs/api-reference/inboxes/get-draft
@@ -91,7 +91,7 @@ module Resend
         # already sent, or that changed during the request, returns a 409.
         #
         # @param params [Hash] the parameters
-        # @option params [String] :inbox_id the inbox ID. An email address is not accepted (required)
+        # @option params [String] :inbox_id the inbox ID or the inbox email address (required)
         # @option params [String] :draft_id the draft ID (required)
         # @option params [String, Array<String>, nil] :to the recipients. Pass nil to clear
         # @option params [String, Array<String>, nil] :cc the CC recipients. Pass nil or [] to clear
@@ -115,7 +115,7 @@ module Resend
         # returns a 409.
         #
         # @param params [Hash] the parameters
-        # @option params [String] :inbox_id the inbox ID. An email address is not accepted (required)
+        # @option params [String] :inbox_id the inbox ID or the inbox email address (required)
         # @option params [String] :draft_id the draft ID (required)
         #
         # https://resend.com/docs/api-reference/inboxes/delete-draft
@@ -133,7 +133,7 @@ module Resend
         # returns a 409. The request body is optional and takes only `headers`.
         #
         # @param params [Hash] the parameters
-        # @option params [String] :inbox_id the inbox ID. An email address is not accepted (required)
+        # @option params [String] :inbox_id the inbox ID or the inbox email address (required)
         # @option params [String] :draft_id the draft ID (required)
         # @option params [Hash{String => String}] :headers custom headers to add to the email. The
         #   `In-Reply-To`, `References` and `Reply-To` headers are set by Resend and cannot be set here.
@@ -164,7 +164,7 @@ module Resend
         end
 
         def drafts_path(params)
-          "inboxes/#{params[:inbox_id]}/drafts"
+          "#{Resend::Inboxes.path(params[:inbox_id])}/drafts"
         end
 
         def draft_path(params)

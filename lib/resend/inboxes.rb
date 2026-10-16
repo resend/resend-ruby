@@ -59,7 +59,7 @@ module Resend
       #
       # https://resend.com/docs/api-reference/inboxes/get-inbox
       def get(inbox_id = "")
-        Resend::Request.new("inboxes/#{ERB::Util.url_encode(inbox_id)}", {}, "get").perform
+        Resend::Request.new(path(inbox_id), {}, "get").perform
       end
 
       # Update an existing inbox
@@ -67,7 +67,7 @@ module Resend
       # At least one of `name` or `from_name` is required.
       #
       # @param params [Hash] the update parameters
-      # @option params [String] :inbox_id the inbox ID. An email address is not accepted (required)
+      # @option params [String] :inbox_id the inbox ID or the inbox email address (required)
       # @option params [String] :name new internal name for the inbox, between 1 and 64 characters
       # @option params [String] :from_name the name recipients see when mail is sent from this inbox,
       #   max 78 characters. An empty string removes it
@@ -79,16 +79,24 @@ module Resend
         raise ArgumentError, "inbox_id is required" if params[:inbox_id].nil?
 
         payload = params.except(:inbox_id)
-        Resend::Request.new("inboxes/#{params[:inbox_id]}", payload, "patch").perform
+        Resend::Request.new(path(params[:inbox_id]), payload, "patch").perform
       end
 
       # Remove an existing inbox
       #
-      # @param inbox_id [String] the inbox ID. An email address is not accepted
+      # @param inbox_id [String] the inbox ID or the inbox email address
       #
       # https://resend.com/docs/api-reference/inboxes/delete-inbox
       def remove(inbox_id = "")
-        Resend::Request.new("inboxes/#{inbox_id}", {}, "delete").perform
+        Resend::Request.new(path(inbox_id), {}, "delete").perform
+      end
+
+      # The path of an inbox. The API takes the inbox ID or the inbox email address, and an address
+      # must be percent-encoded to fit in the path.
+      #
+      # @api private
+      def path(inbox_id)
+        "inboxes/#{ERB::Util.url_encode(inbox_id)}"
       end
     end
   end

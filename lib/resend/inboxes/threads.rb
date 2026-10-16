@@ -14,7 +14,7 @@ module Resend
         # sender, recipient, attachment, or date, use {search}.
         #
         # @param params [Hash] the parameters
-        # @option params [String] :inbox_id the inbox ID. An email address is not accepted (required)
+        # @option params [String] :inbox_id the inbox ID or the inbox email address (required)
         # @option params [Array<String>] :folders the folders to list: `inbox`, `archive`, `spam`, `sent`,
         #   `trash`. A thread is returned when any of its emails is in one of the folders. Defaults to
         #   `inbox`, or to `inbox`, `archive` and `sent` when `labels` is set. `spam` and `trash` are only
@@ -31,7 +31,7 @@ module Resend
         def list(params = {})
           raise ArgumentError, "inbox_id is required" if params[:inbox_id].nil?
 
-          path = build_query_path("inboxes/#{params[:inbox_id]}/threads", params.except(:inbox_id))
+          path = build_query_path("#{Resend::Inboxes.path(params[:inbox_id])}/threads", params.except(:inbox_id))
           Resend::Request.new(path, {}, "get").perform
         end
 
@@ -46,7 +46,7 @@ module Resend
         # search covers the 10,000 with the newest matching email.
         #
         # @param params [Hash] the parameters
-        # @option params [String] :inbox_id the inbox ID. An email address is not accepted (required)
+        # @option params [String] :inbox_id the inbox ID or the inbox email address (required)
         # @option params [String] :query free text to search for in the subject, body, sender,
         #   recipients, and attachment names. Every word must match. Wrap words in double quotes to
         #   match an exact phrase. Start a word or quoted phrase with `-` to exclude it.
@@ -74,7 +74,7 @@ module Resend
         def search(params = {})
           raise ArgumentError, "inbox_id is required" if params[:inbox_id].nil?
 
-          path = build_query_path("inboxes/#{params[:inbox_id]}/threads/search", params.except(:inbox_id))
+          path = build_query_path("#{Resend::Inboxes.path(params[:inbox_id])}/threads/search", params.except(:inbox_id))
           Resend::Request.new(path, {}, "get").perform
         end
 
@@ -83,7 +83,7 @@ module Resend
         # Returns the thread summary. List the emails in the thread with {Emails.list}.
         #
         # @param params [Hash] the parameters
-        # @option params [String] :inbox_id the inbox ID. An email address is not accepted (required)
+        # @option params [String] :inbox_id the inbox ID or the inbox email address (required)
         # @option params [String] :thread_id the thread ID (required)
         #
         # https://resend.com/docs/api-reference/inboxes/get-thread
@@ -91,35 +91,30 @@ module Resend
           raise ArgumentError, "inbox_id is required" if params[:inbox_id].nil?
           raise ArgumentError, "thread_id is required" if params[:thread_id].nil?
 
-          Resend::Request.new("inboxes/#{params[:inbox_id]}/threads/#{params[:thread_id]}", {}, "get").perform
+          path = "#{Resend::Inboxes.path(params[:inbox_id])}/threads/#{params[:thread_id]}"
+          Resend::Request.new(path, {}, "get").perform
         end
 
         # Update an existing inbox thread
         #
-        # Marks a thread read or unread, moves it to a folder, or adds and removes labels. At least one
-        # of `read`, `folder`, `add_label_ids`, or `remove_label_ids` is required. A label ID cannot be
-        # both added and removed in the same request. Removing a label from a thread keeps the label
-        # itself. Moving a thread out of `trash` restores it and clears its deletion deadline. The changes
-        # apply in this order: `read`, `folder`, added labels, removed labels. They are not atomic, so a
-        # 404 for a label leaves the earlier changes applied.
+        # Marks a thread read or unread, or moves it to a folder. At least one of `read` or `folder` is
+        # required. To change the labels of a thread, use {Labels}. Moving a thread out of `trash` restores
+        # it and clears its deletion deadline. The changes apply in this order: `read`, then `folder`.
+        # They are not atomic.
         #
         # @param params [Hash] the parameters
-        # @option params [String] :inbox_id the inbox ID. An email address is not accepted (required)
+        # @option params [String] :inbox_id the inbox ID or the inbox email address (required)
         # @option params [String] :thread_id the thread ID (required)
         # @option params [Boolean] :read marks every email in the thread read or unread
         # @option params [String] :folder moves the thread to this folder: `inbox`, `archive`, `spam`,
         #   or `trash`. `sent` is assigned automatically and cannot be set
-        # @option params [Array<String>] :add_label_ids label IDs to apply to the thread.
-        #   Between 1 and 10 IDs
-        # @option params [Array<String>] :remove_label_ids label IDs to remove from the thread.
-        #   Between 1 and 10 IDs. The labels themselves are kept
         #
         # https://resend.com/docs/api-reference/inboxes/update-thread
         def update(params = {})
           raise ArgumentError, "inbox_id is required" if params[:inbox_id].nil?
           raise ArgumentError, "thread_id is required" if params[:thread_id].nil?
 
-          path = "inboxes/#{params[:inbox_id]}/threads/#{params[:thread_id]}"
+          path = "#{Resend::Inboxes.path(params[:inbox_id])}/threads/#{params[:thread_id]}"
           Resend::Request.new(path, params.except(:inbox_id, :thread_id), "patch").perform
         end
 
@@ -130,7 +125,7 @@ module Resend
         # the deletion deadline.
         #
         # @param params [Hash] the parameters
-        # @option params [String] :inbox_id the inbox ID. An email address is not accepted (required)
+        # @option params [String] :inbox_id the inbox ID or the inbox email address (required)
         # @option params [String] :thread_id the thread ID (required)
         #
         # https://resend.com/docs/api-reference/inboxes/delete-thread
@@ -138,7 +133,8 @@ module Resend
           raise ArgumentError, "inbox_id is required" if params[:inbox_id].nil?
           raise ArgumentError, "thread_id is required" if params[:thread_id].nil?
 
-          Resend::Request.new("inboxes/#{params[:inbox_id]}/threads/#{params[:thread_id]}", {}, "delete").perform
+          path = "#{Resend::Inboxes.path(params[:inbox_id])}/threads/#{params[:thread_id]}"
+          Resend::Request.new(path, {}, "delete").perform
         end
 
         private

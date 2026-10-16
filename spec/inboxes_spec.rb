@@ -79,6 +79,12 @@ RSpec.describe "Inboxes" do
       expect(inbox[:id]).to eql(inbox_id)
     end
 
+    it "should accept the inbox email address" do
+      expect_request("inboxes/support%40acme.com", { name: "Support" }, "patch", { object: "inbox", id: inbox_id })
+
+      Resend::Inboxes.update(inbox_id: "support@acme.com", name: "Support")
+    end
+
     it "should raise when inbox_id is missing" do
       expect { Resend::Inboxes.update(name: "Support") }.to raise_error(ArgumentError, "inbox_id is required")
     end
@@ -90,6 +96,12 @@ RSpec.describe "Inboxes" do
 
       inbox = Resend::Inboxes.remove(inbox_id)
       expect(inbox[:deleted]).to be true
+    end
+
+    it "should accept the inbox email address" do
+      expect_request("inboxes/support%40acme.com", {}, "delete", { object: "inbox", id: inbox_id, deleted: true })
+
+      Resend::Inboxes.remove("support@acme.com")
     end
   end
 end

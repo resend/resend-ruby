@@ -15,12 +15,18 @@ RSpec.describe "Inboxes::Agent" do
 
   describe "get" do
     it "should retrieve the agent settings" do
-      resp = { object: "inbox_agent", instructions: nil, tone: nil, enabled_actions: [] }
+      resp = { object: "inbox_agent", instructions: nil, tone: nil, actions: [] }
       expect_request("inboxes/#{inbox_id}/agent", {}, "get", resp)
 
       agent = Resend::Inboxes::Agent.get(inbox_id: inbox_id)
       expect(agent[:instructions]).to be_nil
-      expect(agent[:enabled_actions]).to eql([])
+      expect(agent[:actions]).to eql([])
+    end
+
+    it "should accept the inbox email address" do
+      expect_request("inboxes/support%40acme.com/agent", {}, "get", { object: "inbox_agent" })
+
+      Resend::Inboxes::Agent.get(inbox_id: "support@acme.com")
     end
 
     it "should raise when inbox_id is missing" do
@@ -30,13 +36,12 @@ RSpec.describe "Inboxes::Agent" do
 
   describe "update" do
     it "should update the agent settings and keep explicit nils" do
-      body = { instructions: nil, tone: "friendly and concise", enabled_actions: %w[draft_reply add_labels] }
-      resp = { object: "inbox_agent", instructions: nil, tone: "friendly and concise",
-               enabled_actions: %w[draft_reply add_labels] }
+      body = { instructions: nil, tone: "concise_casual", actions: %w[draft_reply archive move_to_trash] }
+      resp = { object: "inbox_agent", id: "a1f84a4e-6f2b-4f0a-9c1d-8a2e5b3c7d90" }
       expect_request("inboxes/#{inbox_id}/agent", body, "patch", resp)
 
       agent = Resend::Inboxes::Agent.update(inbox_id: inbox_id, **body)
-      expect(agent[:tone]).to eql("friendly and concise")
+      expect(agent[:object]).to eql("inbox_agent")
     end
 
     it "should raise when inbox_id is missing" do

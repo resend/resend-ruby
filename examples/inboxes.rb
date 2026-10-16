@@ -16,7 +16,7 @@ puts "inboxes: #{Resend::Inboxes.list(limit: 10)[:data].length}"
 
 Resend::Inboxes.update({ inbox_id: inbox_id, from_name: "Ada from Support" })
 
-Resend::Inboxes::Agent.update({ inbox_id: inbox_id, tone: "friendly and concise", enabled_actions: ["draft_reply"] })
+Resend::Inboxes::Agent.update({ inbox_id: inbox_id, tone: "concise_casual", actions: ["draft_reply"] })
 puts "agent tone: #{Resend::Inboxes::Agent.get({ inbox_id: inbox_id })[:tone]}"
 
 label = Resend::Inboxes::Labels.create({ inbox_id: inbox_id, name: "Urgent", color: "#E93D82" })
@@ -30,7 +30,9 @@ found = Resend::Inboxes::Threads.search({ inbox_id: inbox_id, query: "refund", h
 puts "search results: #{found[:data].length}"
 
 if (thread_id = threads[:data].first&.dig("id"))
-  Resend::Inboxes::Threads.update({ inbox_id: inbox_id, thread_id: thread_id, read: true, add_label_ids: [label[:id]] })
+  Resend::Inboxes::Threads.update({ inbox_id: inbox_id, thread_id: thread_id, read: true })
+  thread_labels = Resend::Inboxes::Threads::Labels.add({ inbox_id: inbox_id, thread_id: thread_id, labels: [label[:id]] })
+  puts "thread labels: #{thread_labels[:data].length}"
 
   emails = Resend::Inboxes::Threads::Emails.list({ inbox_id: inbox_id, thread_id: thread_id })
   email_id = emails[:data].last["id"]

@@ -47,6 +47,7 @@ require "resend/inboxes/agent"
 require "resend/inboxes/labels"
 require "resend/inboxes/threads"
 require "resend/inboxes/threads/emails"
+require "resend/inboxes/threads/labels"
 require "resend/inboxes/drafts"
 
 # Rails
