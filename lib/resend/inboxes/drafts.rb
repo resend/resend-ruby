@@ -49,9 +49,11 @@ module Resend
         # @option params [String] :text the plain text body
         # @option params [String] :thread_id the thread ID to reply in. Must be sent with `reply_to_email_id`
         # @option params [String] :reply_to_email_id the email ID to reply to. Must be sent with `thread_id`
-        # @option params [Array<Hash>] :attachments files to store on the draft. Each one needs `content`,
-        #   `filename` and `content_type`. A `path` or `content_id` returns a 422. The files on a draft can
-        #   total at most 25 MB. An empty file or a blocked file type returns a 422
+        # @option params [Array<Hash>] :attachments files to store on the draft. Each one needs a `filename`
+        #   and either `content` with a `content_type`, or a `path` URL that is downloaded when the request
+        #   is made. With `path`, `content_type` defaults to the type of the downloaded file. A `content_id`
+        #   returns a 422. The files on a draft, downloaded ones included, can total at most 25 MB. An empty
+        #   file, a blocked file type, or a `path` that cannot be downloaded returns a 422
         # @param options [Hash] additional options for the request
         # @option options [String] :idempotency_key a unique key for the request, so the draft is created
         #   only once. 1 to 256 characters. A retry with the same key within 24 hours replays the first
