@@ -47,7 +47,7 @@ RSpec.describe "Inboxes::Drafts" do
       expect(draft[:id]).to eql(draft_id)
     end
 
-    it "should create a draft with a path attachment" do
+    it "creates a draft with a path attachment" do
       attachments = [{ filename: "invoice.pdf", path: "https://example.com/invoice.pdf" }]
       body = { to: ["delivered@resend.dev"], attachments: attachments }
       expect_post("inboxes/#{inbox_id}/drafts", body, { object: "inbox_draft", id: draft_id })
@@ -106,7 +106,7 @@ RSpec.describe "Inboxes::Drafts" do
   end
 
   describe "update attachments" do
-    it "should send a path attachment" do
+    it "sends a path attachment" do
       attachments = [{ filename: "invoice.pdf", path: "https://example.com/invoice.pdf",
                        content_type: "application/pdf" }]
       expect_request(draft_path, { attachments: attachments }, "patch", { object: "inbox_draft", id: draft_id })
