@@ -47,6 +47,15 @@ RSpec.describe "Inboxes::Drafts" do
       expect(draft[:id]).to eql(draft_id)
     end
 
+    it "creates a draft with a path attachment" do
+      attachments = [{ filename: "invoice.pdf", path: "https://example.com/invoice.pdf" }]
+      body = { to: ["delivered@resend.dev"], attachments: attachments }
+      expect_post("inboxes/#{inbox_id}/drafts", body, { object: "inbox_draft", id: draft_id })
+
+      draft = Resend::Inboxes::Drafts.create({ inbox_id: inbox_id, **body })
+      expect(draft[:id]).to eql(draft_id)
+    end
+
     it "should pass the idempotency key" do
       expect_post("inboxes/#{inbox_id}/drafts", { subject: "Hi" }, { object: "inbox_draft", id: draft_id },
                   { idempotency_key: "draft-1" })
@@ -97,6 +106,15 @@ RSpec.describe "Inboxes::Drafts" do
   end
 
   describe "update attachments" do
+    it "sends a path attachment" do
+      attachments = [{ filename: "invoice.pdf", path: "https://example.com/invoice.pdf",
+                       content_type: "application/pdf" }]
+      expect_request(draft_path, { attachments: attachments }, "patch", { object: "inbox_draft", id: draft_id })
+
+      draft = Resend::Inboxes::Drafts.update(inbox_id: inbox_id, draft_id: draft_id, attachments: attachments)
+      expect(draft[:id]).to eql(draft_id)
+    end
+
     it "should send an empty attachments array to remove them all" do
       expect_request(draft_path, { attachments: [] }, "patch", { object: "inbox_draft", id: draft_id, attachments: [] })
 
