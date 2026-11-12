@@ -199,6 +199,27 @@ RSpec.describe "Domains" do
       domain = Resend::Domains.update(update_params)
       expect(domain[:id]).to eql("479e3145-dd38-476b-932c-529ceb705947")
     end
+
+    it "updates the forge return path" do
+      resp = {
+        "object": "domain",
+        "id": "479e3145-dd38-476b-932c-529ceb705947"
+      }
+
+      update_params = {
+        id: "479e3145-dd38-476b-932c-529ceb705947",
+        forge_return_path: "outbound"
+      }
+
+      expect(Resend::Request).to receive(:new)
+        .with("domains/479e3145-dd38-476b-932c-529ceb705947", update_params, "patch")
+        .and_call_original
+      allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
+
+      domain = Resend::Domains.update(update_params)
+      expect(domain[:id]).to eql("479e3145-dd38-476b-932c-529ceb705947")
+      expect(domain[:object]).to eql("domain")
+    end
   end
 
   describe "get domain" do
@@ -277,6 +298,22 @@ RSpec.describe "Domains" do
     it "should verify domain by domain id" do
       allow_any_instance_of(Resend::Request).to receive(:perform).and_return("")
       expect { Resend::Domains.verify }.not_to raise_error
+    end
+
+    it "verifies only the Forge record when scoped" do
+      resp = {
+        "object": "domain",
+        "id": "d91cd9bd-1176-453e-8fc1-35364d380206"
+      }
+
+      expect(Resend::Request).to receive(:new)
+        .with("domains/d91cd9bd-1176-453e-8fc1-35364d380206/verify", { scope: ["forge"] }, "post")
+        .and_call_original
+      allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
+
+      verified = Resend::Domains.verify("d91cd9bd-1176-453e-8fc1-35364d380206", scope: ["forge"])
+      expect(verified[:object]).to eql("domain")
+      expect(verified[:id]).to eql("d91cd9bd-1176-453e-8fc1-35364d380206")
     end
   end
 end
