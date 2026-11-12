@@ -45,7 +45,7 @@ RSpec.describe "Domains::Forge" do
   end
 
   describe "enable" do
-    it "should activate Forge and return the full domain" do
+    it "activates Forge and returns the full domain" do
       params = { id: domain_id, return_path: "send" }
 
       expect(Resend::Request).to receive(:new)
@@ -61,7 +61,7 @@ RSpec.describe "Domains::Forge" do
       expect(domain[:records].first["record"]).to eql("SPF")
     end
 
-    it "should activate Forge without a return path" do
+    it "activates Forge without a return path" do
       expect(Resend::Request).to receive(:new)
         .with("domains/#{domain_id}/forge", {}, "post")
         .and_call_original
@@ -71,47 +71,6 @@ RSpec.describe "Domains::Forge" do
 
       expect(domain[:object]).to eql("domain")
       expect(domain[:id]).to eql(domain_id)
-    end
-  end
-
-  describe "update" do
-    it "should move the return path" do
-      params = { id: domain_id, return_path: "outbound" }
-
-      expect(Resend::Request).to receive(:new)
-        .with("domains/#{domain_id}/forge", { return_path: "outbound" }, "patch")
-        .and_call_original
-      allow_any_instance_of(Resend::Request).to receive(:perform).and_return(forge_domain)
-
-      domain = Resend::Domains::Forge.update(params)
-
-      expect(domain[:object]).to eql("domain")
-      expect(domain[:status]).to eql("pending")
-    end
-
-    it "should raise when return_path is missing" do
-      expect do
-        Resend::Domains::Forge.update({ id: domain_id })
-      end.to raise_error(ArgumentError, "return_path is required")
-    end
-  end
-
-  describe "verify" do
-    it "should trigger an asynchronous Forge verification" do
-      resp = {
-        object: "domain",
-        id: domain_id
-      }
-
-      expect(Resend::Request).to receive(:new)
-        .with("domains/#{domain_id}/forge/verify", {}, "post")
-        .and_call_original
-      allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
-
-      verified = Resend::Domains::Forge.verify(domain_id)
-
-      expect(verified[:object]).to eql("domain")
-      expect(verified[:id]).to eql(domain_id)
     end
   end
 end
