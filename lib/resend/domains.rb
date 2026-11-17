@@ -10,9 +10,6 @@ module Resend
         Resend::Request.new(path, params, "post").perform
       end
 
-      # Updates a domain. :forge_return_path moves the Forge return path
-      # without starting verification, and composes with the other fields.
-      #
       # https://resend.com/docs/api-reference/domains/update-domain
       def update(params)
         path = "domains/#{params[:id]}"

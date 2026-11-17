@@ -199,27 +199,6 @@ RSpec.describe "Domains" do
       domain = Resend::Domains.update(update_params)
       expect(domain[:id]).to eql("479e3145-dd38-476b-932c-529ceb705947")
     end
-
-    it "updates the forge return path" do
-      resp = {
-        "object": "domain",
-        "id": "479e3145-dd38-476b-932c-529ceb705947"
-      }
-
-      update_params = {
-        id: "479e3145-dd38-476b-932c-529ceb705947",
-        forge_return_path: "outbound"
-      }
-
-      expect(Resend::Request).to receive(:new)
-        .with("domains/479e3145-dd38-476b-932c-529ceb705947", update_params, "patch")
-        .and_call_original
-      allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
-
-      domain = Resend::Domains.update(update_params)
-      expect(domain[:id]).to eql("479e3145-dd38-476b-932c-529ceb705947")
-      expect(domain[:object]).to eql("domain")
-    end
   end
 
   describe "get domain" do
@@ -295,6 +274,12 @@ RSpec.describe "Domains" do
   end
 
   describe "verify domain" do
+    before do
+      Resend.configure do |config|
+        config.api_key = "re_123"
+      end
+    end
+
     it "should verify domain by domain id" do
       allow_any_instance_of(Resend::Request).to receive(:perform).and_return("")
       expect { Resend::Domains.verify }.not_to raise_error

@@ -46,10 +46,10 @@ RSpec.describe "Domains::Forge" do
 
   describe "enable" do
     it "activates Forge and returns the full domain" do
-      params = { id: domain_id, return_path: "send" }
+      params = { id: domain_id, custom_return_path: "send" }
 
       expect(Resend::Request).to receive(:new)
-        .with("domains/#{domain_id}/forge", { return_path: "send" }, "post")
+        .with("domains/#{domain_id}/forge", { custom_return_path: "send" }, "post")
         .and_call_original
       allow_any_instance_of(Resend::Request).to receive(:perform).and_return(forge_domain)
 
@@ -61,7 +61,7 @@ RSpec.describe "Domains::Forge" do
       expect(domain[:records].first["record"]).to eql("SPF")
     end
 
-    it "activates Forge without a return path" do
+    it "activates Forge without a custom return path" do
       expect(Resend::Request).to receive(:new)
         .with("domains/#{domain_id}/forge", {}, "post")
         .and_call_original

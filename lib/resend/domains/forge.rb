@@ -12,13 +12,14 @@ module Resend
         #
         # @param params [Hash] the parameters
         # @option params [String] :id the ID of the domain (required)
-        # @option params [String] :return_path subdomain for the Return-Path address.
-        #   When omitted, the server picks a free DNS label.
+        # @option params [String] :custom_return_path subdomain for the Return-Path address,
+        #   validated like :custom_return_path on Resend::Domains.create. When omitted, the
+        #   server picks a free DNS label. Set once: it cannot be changed afterwards.
         #
         # https://resend.com/docs/api-reference/domains/enable-forge
         def enable(params)
           path = "domains/#{params[:id]}/forge"
-          Resend::Request.new(path, params.slice(:return_path), "post").perform
+          Resend::Request.new(path, params.slice(:custom_return_path), "post").perform
         end
       end
     end
