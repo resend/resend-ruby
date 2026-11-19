@@ -34,10 +34,13 @@ module Resend
         Resend::Request.new(path, {}, "delete").perform
       end
 
+      # Triggers domain verification. Pass `scope: ["forge"]` to re-check only
+      # the Forge record; without a scope the whole domain is verified.
+      #
       # https://resend.com/docs/api-reference/domains/verify-domain
-      def verify(domain_id = "")
+      def verify(domain_id = "", params = {})
         path = "domains/#{domain_id}/verify"
-        Resend::Request.new(path, {}, "post").perform
+        Resend::Request.new(path, params.slice(:scope), "post").perform
       end
     end
   end

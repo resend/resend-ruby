@@ -274,9 +274,40 @@ RSpec.describe "Domains" do
   end
 
   describe "verify domain" do
+    before do
+      Resend.configure do |config|
+        config.api_key = "re_123"
+      end
+    end
+
     it "should verify domain by domain id" do
       allow_any_instance_of(Resend::Request).to receive(:perform).and_return("")
       expect { Resend::Domains.verify }.not_to raise_error
+    end
+
+    it "sends an empty body when no scope is given" do
+      expect(Resend::Request).to receive(:new)
+        .with("domains/d91cd9bd-1176-453e-8fc1-35364d380206/verify", {}, "post")
+        .and_call_original
+      allow_any_instance_of(Resend::Request).to receive(:perform).and_return("")
+
+      Resend::Domains.verify("d91cd9bd-1176-453e-8fc1-35364d380206")
+    end
+
+    it "verifies only the Forge record when scoped" do
+      resp = {
+        "object": "domain",
+        "id": "d91cd9bd-1176-453e-8fc1-35364d380206"
+      }
+
+      expect(Resend::Request).to receive(:new)
+        .with("domains/d91cd9bd-1176-453e-8fc1-35364d380206/verify", { scope: ["forge"] }, "post")
+        .and_call_original
+      allow_any_instance_of(Resend::Request).to receive(:perform).and_return(resp)
+
+      verified = Resend::Domains.verify("d91cd9bd-1176-453e-8fc1-35364d380206", scope: ["forge"])
+      expect(verified[:object]).to eql("domain")
+      expect(verified[:id]).to eql("d91cd9bd-1176-453e-8fc1-35364d380206")
     end
   end
 end
