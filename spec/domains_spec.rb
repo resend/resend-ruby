@@ -285,6 +285,15 @@ RSpec.describe "Domains" do
       expect { Resend::Domains.verify }.not_to raise_error
     end
 
+    it "sends an empty body when no scope is given" do
+      expect(Resend::Request).to receive(:new)
+        .with("domains/d91cd9bd-1176-453e-8fc1-35364d380206/verify", {}, "post")
+        .and_call_original
+      allow_any_instance_of(Resend::Request).to receive(:perform).and_return("")
+
+      Resend::Domains.verify("d91cd9bd-1176-453e-8fc1-35364d380206")
+    end
+
     it "verifies only the Forge record when scoped" do
       resp = {
         "object": "domain",
