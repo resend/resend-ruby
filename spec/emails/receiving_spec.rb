@@ -196,5 +196,49 @@ RSpec.describe "Emails::Receiving" do
 
       Resend::Emails::Receiving.list
     end
+
+    it "should send to, start_date and end_date with pagination" do
+      request_instance = instance_double(Resend::Request)
+      allow(request_instance).to receive(:perform).and_return({ object: "list", has_more: false, data: [] })
+      allow(Resend::Request).to receive(:new) do |path, body, verb|
+        expect(path).to eq(
+          "emails/receiving?to=support%40acme.com%2Cbilling%40acme.com&start_date=2026-11-01" \
+          "&end_date=2026-11-15T12%3A00%3A00%2B02%3A00&limit=25&after=cursor_123"
+        )
+        expect(body).to eq({})
+        expect(verb).to eq("get")
+        request_instance
+      end
+
+      Resend::Emails::Receiving.list(
+        to: ["support@acme.com", "billing@acme.com"],
+        start_date: "2026-11-01",
+        end_date: "2026-11-15T12:00:00+02:00",
+        limit: 25,
+        after: "cursor_123"
+      )
+    end
+
+    it "should omit filters that are not set" do
+      request_instance = instance_double(Resend::Request)
+      allow(request_instance).to receive(:perform).and_return({ object: "list", has_more: false, data: [] })
+      allow(Resend::Request).to receive(:new) do |path, _body, _verb|
+        expect(path).to eq("emails/receiving?to=support%40acme.com&before=cursor_456")
+        request_instance
+      end
+
+      Resend::Emails::Receiving.list(to: ["support@acme.com"], start_date: nil, before: "cursor_456")
+    end
+
+    it "should list without a query when params is nil" do
+      request_instance = instance_double(Resend::Request)
+      allow(request_instance).to receive(:perform).and_return({ object: "list", has_more: false, data: [] })
+      allow(Resend::Request).to receive(:new) do |path, _body, _verb|
+        expect(path).to eq("emails/receiving")
+        request_instance
+      end
+
+      Resend::Emails::Receiving.list(nil)
+    end
   end
 end
