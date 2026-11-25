@@ -42,12 +42,9 @@ module Resend
 
     def handle_error!(data, resp = nil)
       code = data[:statusCode]
-      body = data[:message]
       headers = resp.respond_to?(:headers) ? resp.headers : (data[:headers] || {})
 
-      # get error from the known list of errors
-      error_class = Resend::Error::ERRORS[code] || Resend::Error
-      raise error_class.new(body, code, headers)
+      raise Resend::Error.for_status(code).new(data[:message], code, headers, name: data[:name])
     end
 
     private

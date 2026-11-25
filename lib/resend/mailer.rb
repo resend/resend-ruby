@@ -22,7 +22,7 @@ module Resend
 
     def initialize(config)
       @config = config
-      raise Resend::Error.new("Make sure your API Key is set", @config) unless Resend.api_key
+      raise Resend::Error, "Make sure your API Key is set" unless Resend.api_key
 
       # avoids NilError exception
       @settings = { return_response: true }

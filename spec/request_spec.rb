@@ -117,5 +117,87 @@ RSpec.describe Resend::Request do
       }
       expect { req.handle_error!(resp) }.to raise_error(Resend::Error, "999")
     end
+
+    it "exposes the status code and the Resend error name" do
+      req = described_class.new
+      resp = {
+        :statusCode => 422,
+        :name => "validation_error",
+        :message => "Invalid `to` field."
+      }
+
+      expect { req.handle_error!(resp) }.to raise_error(Resend::Error::InvalidRequestError) do |error|
+        expect(error.code).to eq(422)
+        expect(error.name).to eq("validation_error")
+        expect(error.message).to eq("Invalid `to` field.")
+      end
+    end
+
+    it "keeps the Resend error name on a rate limit error" do
+      req = described_class.new
+      resp = {
+        :statusCode => 429,
+        :name => "rate_limit_exceeded",
+        :message => "Too many requests",
+        :headers => { "retry-after" => "1" }
+      }
+
+      expect { req.handle_error!(resp) }.to raise_error(Resend::Error::RateLimitExceededError) do |error|
+        expect(error.code).to eq(429)
+        expect(error.name).to eq("rate_limit_exceeded")
+        expect(error.retry_after).to eq(1)
+      end
+    end
+
+    it "raises a ClientError for an unmapped 4xx such as 409" do
+      req = described_class.new
+      resp = {
+        :statusCode => 409,
+        :name => "concurrent_idempotent_requests",
+        :message => "Same idempotency key used while original request is still in progress."
+      }
+
+      expect { req.handle_error!(resp) }.to raise_error(Resend::Error::ClientError) do |error|
+        expect(error.code).to eq(409)
+        expect(error.name).to eq("concurrent_idempotent_requests")
+      end
+    end
+
+    [502, 503, 504].each do |status|
+      it "raises a ServerError for an unmapped #{status}" do
+        req = described_class.new
+        resp = { :statusCode => status, :message => "upstream failure" }
+
+        expect { req.handle_error!(resp) }.to raise_error(Resend::Error::ServerError) do |error|
+          expect(error.code).to eq(status)
+        end
+      end
+    end
+
+    it "is still rescuable as Resend::Error for unmapped statuses" do
+      req = described_class.new
+      resp = { :statusCode => 409, :message => "conflict" }
+
+      expect { req.handle_error!(resp) }.to raise_error(Resend::Error)
+    end
+  end
+
+  context "Resend::Error.new" do
+    it "keeps accepting the existing positional arguments" do
+      error = Resend::Error.new("msg", 400, { "x" => "y" })
+
+      expect(error.message).to eq("msg")
+      expect(error.code).to eq(400)
+      expect(error.headers).to eq({ "x" => "y" })
+      expect(error.name).to be_nil
+    end
+
+    it "defaults code and headers when given only a message" do
+      error = Resend::Error.new("msg")
+
+      expect(error.code).to be_nil
+      expect(error.headers).to eq({})
+      expect(error.name).to be_nil
+    end
   end
 end
