@@ -1,0 +1,169 @@
+# frozen_string_literal: true
+
+module RuboCop
+  module Cop
+    module Style
+      # (by default) checks for uses of the lambda literal syntax for
+      # single line lambdas, and the method call syntax for multiline lambdas.
+      # It is configurable to enforce one of the styles for both single line
+      # and multiline lambdas as well.
+      #
+      # @example EnforcedStyle: line_count_dependent (default)
+      #   # bad
+      #   f = lambda { |x| x }
+      #   f = ->(x) do
+      #         x
+      #       end
+      #
+      #   # good
+      #   f = ->(x) { x }
+      #   f = lambda do |x|
+      #         x
+      #       end
+      #
+      # @example EnforcedStyle: lambda
+      #   # bad
+      #   f = ->(x) { x }
+      #   f = ->(x) do
+      #         x
+      #       end
+      #
+      #   # good
+      #   f = lambda { |x| x }
+      #   f = lambda do |x|
+      #         x
+      #       end
+      #
+      # @example EnforcedStyle: literal
+      #   # bad
+      #   f = lambda { |x| x }
+      #   f = lambda do |x|
+      #         x
+      #       end
+      #
+      #   # good
+      #   f = ->(x) { x }
+      #   f = ->(x) do
+      #         x
+      #       end
+      class Lambda < Base
+        include ConfigurableEnforcedStyle
+        include PatternMatchingHelp
+        include RescueNode
+        extend AutoCorrector
+
+        LITERAL_MESSAGE = 'Use the `-> { ... }` lambda literal syntax for %<modifier>s lambdas.'
+        METHOD_MESSAGE = 'Use the `lambda` method for %<modifier>s lambdas.'
+
+        OFFENDING_SELECTORS = {
+          style: {
+            lambda: { single_line: '->', multiline: '->' },
+            literal: { single_line: 'lambda', multiline: 'lambda' },
+            line_count_dependent: { single_line: 'lambda', multiline: '->' }
+          }
+        }.freeze
+
+        def self.autocorrect_incompatible_with
+          [Style::SymbolProc]
+        end
+
+        def on_block(node)
+          return unless node.lambda?
+
+          selector = node.send_node.source
+
+          return unless offending_selector?(node, selector)
+          return if uncorrectable_lambda_literal?(node)
+
+          add_offense(node.send_node, message: message(node, selector)) do |corrector|
+            if node.send_node.lambda_literal?
+              LambdaLiteralToMethodCorrector.new(node).call(corrector)
+            else
+              autocorrect_method_to_literal(corrector, node)
+            end
+          end
+        end
+        alias on_numblock on_block
+        alias on_itblock on_block
+
+        private
+
+        def offending_selector?(node, selector)
+          lines = node.multiline? ? :multiline : :single_line
+
+          selector == OFFENDING_SELECTORS[:style][style][lines]
+        end
+
+        def uncorrectable_lambda_literal?(node)
+          return false unless node.send_node.lambda_literal?
+          return true if in_pattern?(node)
+          return false unless rescue_or_ensure_clause?(node.body)
+
+          LambdaLiteralToMethodCorrector.new(node).replace_delimiters?
+        end
+
+        def rescue_or_ensure_clause?(body)
+          return false unless body
+          return true if body.ensure_type?
+
+          body.rescue_type? && !rescue_modifier?(body.resbody_branches.first)
+        end
+
+        def message(node, selector)
+          message = selector == '->' ? METHOD_MESSAGE : LITERAL_MESSAGE
+
+          format(message, modifier: message_line_modifier(node))
+        end
+
+        def message_line_modifier(node)
+          case style
+          when :line_count_dependent
+            node.multiline? ? 'multiline' : 'single line'
+          else
+            'all'
+          end
+        end
+
+        def autocorrect_method_to_literal(corrector, node)
+          corrector.replace(node.send_node, '->')
+
+          return unless node.arguments?
+
+          arg_str = lambda_arg_string(node.arguments)
+          arg_str = " #{arg_str} " if space_inside_parens?
+          arg_str = "(#{arg_str})"
+          arg_str = " #{arg_str}" if space_in_lambda_literal_required?
+
+          corrector.insert_after(node.send_node, arg_str)
+          corrector.remove(arguments_with_whitespace(node))
+        end
+
+        def space_inside_parens?
+          return false unless config.cop_enabled?('Layout/SpaceInsideParens')
+
+          %w[space compact].include?(config.for_cop('Layout/SpaceInsideParens')['EnforcedStyle'])
+        end
+
+        def space_in_lambda_literal_required?
+          return false unless config.cop_enabled?('Layout/SpaceInLambdaLiteral')
+
+          config.for_cop('Layout/SpaceInLambdaLiteral')['EnforcedStyle'] == 'require_space'
+        end
+
+        def arguments_with_whitespace(node)
+          node.loc.begin.end.join(node.arguments.loc.end)
+        end
+
+        def lambda_arg_string(args)
+          # Block-local (shadow) arguments are separated from regular arguments by a
+          # `;`; joining everything with `,` would turn them into extra parameters
+          # and change the lambda's arity.
+          regular, shadow = args.children.partition { |arg| !arg.shadowarg_type? }
+          arg_string = regular.map(&:source).join(', ')
+          arg_string += "; #{shadow.map(&:source).join(', ')}" unless shadow.empty?
+          arg_string
+        end
+      end
+    end
+  end
+end

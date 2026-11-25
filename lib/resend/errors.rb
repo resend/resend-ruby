@@ -20,8 +20,8 @@ module Resend
     class RateLimitExceededError < ServerError
       attr_reader :rate_limit_limit, :rate_limit_remaining, :rate_limit_reset, :retry_after
 
-      def initialize(msg, code = nil, headers = {})
-        super(msg, code, headers)
+      def initialize(msg, code = nil, headers = {}, name: nil)
+        super
         @rate_limit_limit = headers["ratelimit-limit"]&.to_i
         @rate_limit_remaining = headers["ratelimit-remaining"]&.to_i
         @rate_limit_reset = headers["ratelimit-reset"]&.to_i
@@ -41,12 +41,23 @@ module Resend
       500 => Resend::Error::InternalServerError
     }.freeze
 
-    attr_reader :headers
+    attr_reader :code, :name, :headers
 
-    def initialize(msg, code = nil, headers = {})
+    def initialize(msg, code = nil, headers = {}, name: nil)
       super(msg)
       @code = code
       @headers = headers
+      @name = name
+    end
+
+    def self.for_status(code)
+      ERRORS.fetch(code) do
+        case code
+        when 400..499 then ClientError
+        when 500..599 then ServerError
+        else self
+        end
+      end
     end
   end
 end

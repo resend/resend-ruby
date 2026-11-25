@@ -1,0 +1,22 @@
+current directory: /Users/diel/localhost/resend-ruby/vendor/bundle/ruby/4.0.0/gems/byebug-13.0.0/ext/byebug
+/opt/homebrew/opt/ruby/bin/ruby extconf.rb
+creating Makefile
+
+current directory: /Users/diel/localhost/resend-ruby/vendor/bundle/ruby/4.0.0/gems/byebug-13.0.0/ext/byebug
+make -j16 DESTDIR\= sitearchdir\=./.gem.20261125-16074-um8xgm sitelibdir\=./.gem.20261125-16074-um8xgm clean
+
+current directory: /Users/diel/localhost/resend-ruby/vendor/bundle/ruby/4.0.0/gems/byebug-13.0.0/ext/byebug
+make -j16 DESTDIR\= sitearchdir\=./.gem.20261125-16074-um8xgm sitelibdir\=./.gem.20261125-16074-um8xgm
+compiling breakpoint.c
+compiling byebug.c
+compiling context.c
+compiling locker.c
+compiling threads.c
+linking shared-object byebug/byebug.bundle
+
+current directory: /Users/diel/localhost/resend-ruby/vendor/bundle/ruby/4.0.0/gems/byebug-13.0.0/ext/byebug
+make -j16 DESTDIR\= sitearchdir\=./.gem.20261125-16074-um8xgm sitelibdir\=./.gem.20261125-16074-um8xgm install
+/usr/bin/install -c -m 0755 byebug.bundle ./.gem.20261125-16074-um8xgm/byebug
+
+current directory: /Users/diel/localhost/resend-ruby/vendor/bundle/ruby/4.0.0/gems/byebug-13.0.0/ext/byebug
+make DESTDIR\= sitearchdir\=./.gem.20261125-16074-um8xgm sitelibdir\=./.gem.20261125-16074-um8xgm clean

@@ -1,0 +1,203 @@
+# frozen_string_literal: true
+
+module RuboCop
+  module Cop
+    # Common functionality for checking hash alignment.
+    module HashAlignmentStyles
+      # Handles calculation of deltas when the enforced style is 'key'.
+      class KeyAlignment
+        def checkable_layout?(_node)
+          true
+        end
+
+        def deltas_for_first_pair(first_pair)
+          {
+            separator: separator_delta(first_pair),
+            value: value_delta(first_pair)
+          }
+        end
+
+        def deltas(first_pair, current_pair)
+          if Util.begins_its_line?(current_pair.source_range)
+            key_delta = first_pair.key_delta(current_pair)
+            separator_delta = separator_delta(current_pair)
+            value_delta = value_delta(current_pair)
+
+            { key: key_delta, separator: separator_delta, value: value_delta }
+          else
+            {}
+          end
+        end
+
+        private
+
+        def separator_delta(pair)
+          if pair.hash_rocket?
+            correct_separator_column = pair.key.source_range.end.column + 1
+            actual_separator_column = pair.loc.operator.column
+
+            correct_separator_column - actual_separator_column
+          else
+            0
+          end
+        end
+
+        def value_delta(pair)
+          return 0 if pair.value_on_new_line? || pair.value_omission?
+
+          correct_value_column = pair.loc.operator.end.column + 1
+          actual_value_column = pair.value.loc.column
+
+          correct_value_column - actual_value_column
+        end
+      end
+
+      # Common functionality for checking alignment of hash values.
+      module ValueAlignment
+        def checkable_layout?(node)
+          !node.pairs_on_same_line? && !node.mixed_delimiters? && alignable_values?(node)
+        end
+
+        def deltas(first_pair, current_pair)
+          key_delta = key_delta(first_pair, current_pair)
+          shift = separator_shift(current_pair, key_delta)
+          separator_delta = separator_delta(first_pair, current_pair, shift)
+          value_delta = value_delta(first_pair, current_pair) - shift - separator_delta
+
+          { key: key_delta, separator: separator_delta, value: value_delta }
+        end
+
+        private
+
+        def alignable_values?(node)
+          return false if node.pairs.first.value_omission?
+
+          node.pairs.none? { |pair| value_on_later_line?(pair) }
+        end
+
+        def value_on_later_line?(pair)
+          pair.value && pair.key.last_line != pair.value.first_line
+        end
+
+        def separator_shift(current_pair, key_delta)
+          current_pair.key.multiline? ? 0 : key_delta
+        end
+
+        def separator_delta(first_pair, current_pair, shift)
+          if current_pair.hash_rocket?
+            hash_rocket_delta(first_pair, current_pair) - shift
+          else
+            0
+          end
+        end
+      end
+
+      # Handles calculation of deltas when the enforced style is 'table'.
+      class TableAlignment
+        include ValueAlignment
+
+        def deltas_for_first_pair(first_pair)
+          separator_delta = separator_delta(first_pair, first_pair, 0)
+          {
+            separator: separator_delta,
+            value: value_delta(first_pair, first_pair) - separator_delta
+          }
+        end
+
+        private
+
+        def key_delta(first_pair, current_pair)
+          first_pair.key_delta(current_pair)
+        end
+
+        def hash_rocket_delta(first_pair, current_pair)
+          target_operator_column(first_pair) - current_pair.loc.operator.column
+        end
+
+        def value_delta(first_pair, current_pair)
+          correct_value_column = target_operator_column(first_pair) +
+                                 max_delimiter_width(first_pair.parent) - 1
+
+          current_pair.value_omission? ? 0 : correct_value_column - current_pair.value.loc.column
+        end
+
+        # The column the separator should land on: the shared key margin
+        # plus the widest single-line key, or, if larger, a multiline key's
+        # own last-line end column. The latter can't be measured from a
+        # multiline key's (newline-including) source length, so it's a
+        # separate candidate rather than folded into `max_key_width`.
+        def target_operator_column(first_pair)
+          hash_node = first_pair.parent
+          candidates = multiline_key_end_columns(hash_node)
+
+          key_width = max_key_width(hash_node)
+          candidates << (first_pair.loc.column + key_width + 1) if key_width.positive?
+
+          candidates.max
+        end
+
+        def multiline_key_end_columns(hash_node)
+          hash_node.keys.reject(&:single_line?).map { |key| key.source_range.end.column + 1 }
+        end
+
+        def max_key_width(hash_node)
+          hash_node.keys.select(&:single_line?).map { |key| key.source.length }.max || 0
+        end
+
+        def max_delimiter_width(hash_node)
+          hash_node.pairs.map { |pair| pair.delimiter(true).length }.max
+        end
+      end
+
+      # Handles calculation of deltas when the enforced style is 'separator'.
+      class SeparatorAlignment
+        include ValueAlignment
+
+        def deltas_for_first_pair(_first_pair)
+          {}
+        end
+
+        # Keys are right-aligned by the column their last line ends on.
+        # A key spanning several lines ends on a line other than the one it starts on,
+        # so moving its first line would never change that column and the correction
+        # would be repeated on every pass. Such pairs are left alone, and so is every pair
+        # when the first key spans several lines, since there is then no column to right-align to.
+        def deltas(first_pair, current_pair)
+          return {} if first_pair.key.multiline? || current_pair.key.multiline?
+
+          super
+        end
+
+        private
+
+        def key_delta(first_pair, current_pair)
+          first_pair.key_delta(current_pair, :right)
+        end
+
+        def hash_rocket_delta(first_pair, current_pair)
+          first_pair.delimiter_delta(current_pair)
+        end
+
+        def value_delta(first_pair, current_pair)
+          return 0 if first_pair.equal?(current_pair) || current_pair.value_omission?
+
+          expected_value_column = first_pair.loc.operator.end.column + 1
+          expected_value_column - current_pair.value.loc.column
+        end
+      end
+
+      # Handles calculation of deltas for `kwsplat` nodes.
+      # This is a special case that just ensures the kwsplat is aligned with the rest of the hash
+      # since a `kwsplat` does not have a key, separator or value.
+      class KeywordSplatAlignment
+        def deltas(first_pair, current_pair)
+          if Util.begins_its_line?(current_pair.source_range)
+            { key: first_pair.key_delta(current_pair) }
+          else
+            {}
+          end
+        end
+      end
+    end
+  end
+end

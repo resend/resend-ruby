@@ -1,0 +1,18 @@
+current directory: /Users/diel/localhost/resend-ruby/vendor/bundle/ruby/4.0.0/gems/racc-1.8.1/ext/racc/cparse
+/opt/homebrew/opt/ruby/bin/ruby extconf.rb
+creating Makefile
+
+current directory: /Users/diel/localhost/resend-ruby/vendor/bundle/ruby/4.0.0/gems/racc-1.8.1/ext/racc/cparse
+make -j16 DESTDIR\= sitearchdir\=./.gem.20261125-16074-qin882 sitelibdir\=./.gem.20261125-16074-qin882 clean
+
+current directory: /Users/diel/localhost/resend-ruby/vendor/bundle/ruby/4.0.0/gems/racc-1.8.1/ext/racc/cparse
+make -j16 DESTDIR\= sitearchdir\=./.gem.20261125-16074-qin882 sitelibdir\=./.gem.20261125-16074-qin882
+compiling cparse.c
+linking shared-object racc/cparse.bundle
+
+current directory: /Users/diel/localhost/resend-ruby/vendor/bundle/ruby/4.0.0/gems/racc-1.8.1/ext/racc/cparse
+make -j16 DESTDIR\= sitearchdir\=./.gem.20261125-16074-qin882 sitelibdir\=./.gem.20261125-16074-qin882 install
+/usr/bin/install -c -m 0755 cparse.bundle ./.gem.20261125-16074-qin882/racc
+
+current directory: /Users/diel/localhost/resend-ruby/vendor/bundle/ruby/4.0.0/gems/racc-1.8.1/ext/racc/cparse
+make DESTDIR\= sitearchdir\=./.gem.20261125-16074-qin882 sitelibdir\=./.gem.20261125-16074-qin882 clean

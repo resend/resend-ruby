@@ -1,0 +1,113 @@
+# frozen_string_literal: true
+
+module RuboCop
+  module Cop
+    module Style
+      # Checks for uses of `rescue` in its modifier form. It is added for the following
+      # reasons:
+      #
+      # * The syntax of modifier form `rescue` can be misleading because it
+      #   might lead us to believe that `rescue` handles the given exception
+      #   but it actually rescues all exceptions to return the given rescue
+      #   block. In this case, value returned by handle_error or
+      #   SomeException.
+      #
+      # * Modifier form `rescue` would rescue all the exceptions. It would
+      #   silently skip all exceptions or errors and handle the error.
+      #   Example: If `NoMethodError` is raised, modifier form rescue would
+      #   handle the exception.
+      #
+      # @example
+      #   # bad
+      #   some_method rescue handle_error
+      #
+      #   # bad
+      #   some_method rescue SomeException
+      #
+      #   # good
+      #   begin
+      #     some_method
+      #   rescue
+      #     handle_error
+      #   end
+      #
+      #   # good
+      #   begin
+      #     some_method
+      #   rescue SomeException
+      #     handle_error
+      #   end
+      class RescueModifier < Base
+        include Alignment
+        include RangeHelp
+        include RescueNode
+        extend AutoCorrector
+
+        MSG = 'Avoid using `rescue` in its modifier form.'
+
+        def self.autocorrect_incompatible_with
+          [Style::MethodCallWithArgsParentheses]
+        end
+
+        def on_resbody(node)
+          return unless rescue_modifier?(node)
+
+          rescue_node = node.parent
+          add_offense(rescue_node) do |corrector|
+            # The heredoc body would be left behind when the rescue body is moved.
+            next if heredoc_end(node)
+            next if inside_corrected_rescue_body?(rescue_node)
+
+            parenthesized = parenthesized?(rescue_node)
+
+            correct_rescue_block(corrector, rescue_node, parenthesized)
+            ParenthesesCorrector.correct(corrector, rescue_node.parent) if parenthesized
+            ignore_node(rescue_node)
+          end
+        end
+
+        private
+
+        def inside_corrected_rescue_body?(node)
+          node.each_ancestor(:resbody).any? { |resbody| ignored_node?(resbody.parent) }
+        end
+
+        def parenthesized?(node)
+          node.parent && parentheses?(node.parent)
+        end
+
+        # rubocop:disable-next Metrics/AbcSize
+        def correct_rescue_block(corrector, node, parenthesized)
+          operation = node.body
+
+          node_indentation, node_offset = indentation_and_offset(node, parenthesized)
+
+          corrector.wrap(operation, '[', ']') if operation.array_type? && !operation.bracketed?
+          corrector.remove(range_between(operation.source_range.end_pos, node.source_range.end_pos))
+          corrector.insert_before(operation, "begin\n#{node_indentation}")
+          corrector.insert_after(heredoc_end(operation) || operation, <<~RESCUE_CLAUSE.chop)
+
+            #{node_offset}rescue
+            #{node_indentation}#{node.resbody_branches.first.body.source}
+            #{node_offset}end
+          RESCUE_CLAUSE
+        end
+
+        def indentation_and_offset(node, parenthesized)
+          node_indentation = indentation(node)
+          node_offset = offset(node)
+          if parenthesized
+            node_indentation = node_indentation[0...-1]
+            node_offset = node_offset[0...-1]
+          end
+          [node_indentation, node_offset]
+        end
+
+        def heredoc_end(node)
+          node.each_node(:any_str).select(&:heredoc?).map { |heredoc| heredoc.loc.heredoc_end }
+              .max_by(&:end_pos)
+        end
+      end
+    end
+  end
+end

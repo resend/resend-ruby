@@ -1,0 +1,206 @@
+# frozen_string_literal: true
+
+module RuboCop
+  module Cop
+    module Style
+      # Enforces the use of explicit block argument to avoid writing
+      # block literal that just passes its arguments to another block.
+      #
+      # NOTE: This cop only registers an offense if the block args match the
+      # yield args exactly.
+      #
+      # @example
+      #   # bad
+      #   def with_tmp_dir
+      #     Dir.mktmpdir do |tmp_dir|
+      #       Dir.chdir(tmp_dir) { |dir| yield dir } # block just passes arguments
+      #     end
+      #   end
+      #
+      #   # bad
+      #   def nine_times
+      #     9.times { yield }
+      #   end
+      #
+      #   # good
+      #   def with_tmp_dir(&block)
+      #     Dir.mktmpdir do |tmp_dir|
+      #       Dir.chdir(tmp_dir, &block)
+      #     end
+      #   end
+      #
+      #   with_tmp_dir do |dir|
+      #     puts "dir is accessible as a parameter and pwd is set: #{dir}"
+      #   end
+      #
+      #   # good
+      #   def nine_times(&block)
+      #     9.times(&block)
+      #   end
+      #
+      class ExplicitBlockArgument < Base
+        include RangeHelp
+        extend AutoCorrector
+
+        MSG = 'Consider using explicit block argument in the ' \
+              "surrounding method's signature over `yield`."
+
+        # @!method yielding_block?(node)
+        def_node_matcher :yielding_block?, <<~PATTERN
+          (block $_ (args $...) (yield $...))
+        PATTERN
+
+        # `Style/LambdaCall` rewrites the `call` that the block argument is appended to, and
+        # `Style/TrailingCommaInArguments` changes the trailing comma where it is appended,
+        # in the same pass.
+        def self.autocorrect_incompatible_with
+          [Lint::UnusedMethodArgument, Style::LambdaCall, Style::TrailingCommaInArguments]
+        end
+
+        def initialize(config = nil, options = nil)
+          super
+          @def_nodes = Set.new.compare_by_identity
+        end
+
+        def on_yield(node)
+          block_node = node.parent
+
+          yielding_block?(block_node) do |send_node, block_args, yield_args|
+            return unless yielding_arguments?(block_args, yield_args)
+
+            def_node = block_node.each_ancestor(:any_def).first
+            # if `yield` is being called outside of a method context, ignore
+            # this is not a valid ruby pattern, but can happen in haml or erb,
+            # so this can cause crashes in haml_lint
+            return unless def_node
+            return if argument_forwarding?(def_node)
+
+            block_name = extract_block_name(def_node)
+
+            add_offense(block_node) do |corrector|
+              next unless can_add_block_argument?(def_node, send_node, block_name)
+
+              corrector.remove(block_body_range(block_node, send_node))
+
+              add_block_argument(send_node, corrector, block_name)
+              add_block_argument(def_node, corrector, block_name) if @def_nodes.add?(def_node)
+            end
+          end
+        end
+
+        private
+
+        # A block parameter can't be added next to `...`.
+        def argument_forwarding?(def_node)
+          def_node.arguments.any?(&:forward_arg_type?)
+        end
+
+        def extract_block_name(def_node)
+          if def_node.block_argument?
+            def_node.last_argument.name
+          else
+            'block'
+          end
+        end
+
+        def can_add_block_argument?(def_node, send_node, block_name)
+          return false if block_name_taken?(def_node, block_name)
+
+          !send_node.zsuper_type? || zsuper_arguments_forwardable?(def_node)
+        end
+
+        def block_name_taken?(def_node, block_name)
+          return false if def_node.block_argument?
+
+          def_node.each_descendant(:argument, :lvasgn).any? { |node| node.name.to_s == block_name }
+        end
+
+        # A destructuring argument can only be passed on as the original value,
+        # and anonymous arguments can only be forwarded since Ruby 3.2.
+        def zsuper_arguments_forwardable?(def_node)
+          def_node.arguments.none? do |arg|
+            arg.mlhs_type? ||
+              (arg.type?(:restarg, :kwrestarg) && !arg.name && target_ruby_version < 3.2)
+          end
+        end
+
+        def yielding_arguments?(block_args, yield_args)
+          yield_args = yield_args.dup.fill(
+            nil,
+            yield_args.length, block_args.length - yield_args.length
+          )
+
+          yield_args.zip(block_args).all? do |yield_arg, block_arg|
+            next false unless yield_arg && block_arg
+
+            block_arg && yield_arg.children.first == block_arg.children.first
+          end
+        end
+
+        def add_block_argument(node, corrector, block_name)
+          if node.arguments?
+            insert_argument(node, corrector, block_name)
+          elsif empty_arguments?(node)
+            corrector.replace(node.arguments, "(&#{block_name})")
+          elsif index_call?(node)
+            corrector.replace(node.loc.selector, "[&#{block_name}]")
+          elsif call_like?(node)
+            correct_call_node(node, corrector, block_name)
+          else
+            corrector.insert_after(node.loc.name, "(&#{block_name})")
+          end
+        end
+
+        def empty_arguments?(node)
+          # Is there an arguments node with only parentheses?
+          node.arguments.is_a?(RuboCop::AST::Node) && node.arguments.loc.begin
+        end
+
+        def index_call?(node)
+          node.send_type? && node.method?(:[]) && !node.loc?(:dot)
+        end
+
+        def call_like?(node)
+          node.type?(:call, :zsuper, :super)
+        end
+
+        def insert_argument(node, corrector, block_name)
+          last_arg = node.last_argument
+          arg_range = range_with_surrounding_comma(last_arg.source_range, :right)
+          replacement = " &#{block_name}"
+          replacement = ",#{replacement}" unless arg_range.source.end_with?(',')
+          corrector.insert_after(arg_range, replacement) unless last_arg.blockarg_type?
+        end
+
+        def correct_call_node(node, corrector, block_name)
+          new_arguments = if node.zsuper_type?
+                            args = build_new_arguments_for_zsuper(node) << "&#{block_name}"
+                            args.join(', ')
+                          else
+                            "&#{block_name}"
+                          end
+          if node.parenthesized?
+            corrector.replace(node.loc.begin.join(node.loc.end), "(#{new_arguments})")
+          else
+            corrector.insert_after(node, "(#{new_arguments})")
+          end
+        end
+
+        def build_new_arguments_for_zsuper(node)
+          def_node = node.each_ancestor(:any_def).first
+          def_node.arguments.filter_map do |arg|
+            case arg.type
+            when :arg, :optarg then arg.name.to_s
+            when :kwarg, :kwoptarg then "#{arg.name}: #{arg.name}"
+            when :restarg, :kwrestarg then arg.source
+            end
+          end
+        end
+
+        def block_body_range(block_node, send_node)
+          range_between(send_node.source_range.end_pos, block_node.loc.end.end_pos)
+        end
+      end
+    end
+  end
+end
