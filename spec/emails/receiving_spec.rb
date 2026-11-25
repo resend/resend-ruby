@@ -229,5 +229,16 @@ RSpec.describe "Emails::Receiving" do
 
       Resend::Emails::Receiving.list(to: ["support@acme.com"], start_date: nil, before: "cursor_456")
     end
+
+    it "should list without a query when params is nil" do
+      request_instance = instance_double(Resend::Request)
+      allow(request_instance).to receive(:perform).and_return({ object: "list", has_more: false, data: [] })
+      allow(Resend::Request).to receive(:new) do |path, _body, _verb|
+        expect(path).to eq("emails/receiving")
+        request_instance
+      end
+
+      Resend::Emails::Receiving.list(nil)
+    end
   end
 end

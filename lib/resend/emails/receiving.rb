@@ -54,7 +54,7 @@ module Resend
         #   Resend::Emails::Receiving.list(to: ["support@acme.com"], start_date: "2026-11-01", end_date: "2026-11-15")
         def list(params = {})
           # The API reads `to` as one comma-separated value and rejects a repeated parameter.
-          query = params.transform_values { |value| value.is_a?(Array) ? value.join(",") : value }
+          query = (params || {}).transform_values { |value| value.is_a?(Array) ? value.join(",") : value }
           path = Resend::PaginationHelper.build_paginated_path("emails/receiving", query)
           Resend::Request.new(path, {}, "get").perform
         end
