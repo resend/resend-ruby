@@ -41,7 +41,7 @@ module Resend
     end
 
     def handle_error!(data, resp = nil)
-      code = data[:statusCode]
+      code = data[:statusCode] || http_status(resp)
       headers = resp.respond_to?(:headers) ? resp.headers : (data[:headers] || {})
 
       raise Resend::Error.for_status(code).new(data[:message], code, headers, name: data[:name])
@@ -70,12 +70,20 @@ module Resend
       data = resp.respond_to?(:parsed_response) ? resp.parsed_response : resp
       data ||= {}
       data.transform_keys!(&:to_sym) unless resp.body.empty?
-      handle_error!(data, resp) if error_response?(data)
+      handle_error!(data, resp) if error_response?(data, resp)
       data
     end
 
-    def error_response?(resp)
-      resp[:statusCode] && resp[:statusCode] != 200 && resp[:statusCode] != 201
+    def error_response?(data, resp)
+      status = data[:statusCode]
+      return status != 200 && status != 201 if status
+
+      # Not every error body carries statusCode, so fall back to the HTTP status
+      http_status(resp).to_i >= 400
+    end
+
+    def http_status(resp)
+      resp.code if resp.respond_to?(:code)
     end
 
     def set_idempotency_key

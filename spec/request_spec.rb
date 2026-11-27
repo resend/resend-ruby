@@ -10,6 +10,36 @@ RSpec.describe Resend::Request do
   end
 
   context '#perform' do
+    context 'error status without statusCode in the body' do
+      def stub_response(status, body)
+        response = double(HTTParty::Response, code: status, headers: {}, body: JSON.generate(body))
+        allow(response).to receive(:parsed_response).and_return(body.dup)
+        allow(HTTParty).to receive(:send).and_return(response)
+      end
+
+      it "raises from the HTTP status for a 4xx" do
+        stub_response(403, { "message" => "Forbidden" })
+
+        expect { described_class.new("emails").perform }.to raise_error(Resend::Error::ClientError, "Forbidden") do |error|
+          expect(error.code).to eq(403)
+        end
+      end
+
+      it "raises from the HTTP status for a 5xx" do
+        stub_response(503, { "message" => "Service Unavailable" })
+
+        expect { described_class.new("emails").perform }.to raise_error(Resend::Error::ServerError, "Service Unavailable") do |error|
+          expect(error.code).to eq(503)
+        end
+      end
+
+      it "does not raise for a 2xx" do
+        stub_response(200, { "id" => "abc" })
+
+        expect(described_class.new("emails").perform[:id]).to eq("abc")
+      end
+    end
+
     context 'response is not json' do
       before do
         response = double(HTTParty::Response)
