@@ -181,6 +181,19 @@ RSpec.describe "Resend::Mailer" do
     expect(body[:headers]).to be nil
   end
 
+  it "keeps display names in to, cc, bcc and reply_to" do
+    message = TestMailer.text_only(['"Doe, John" <john@example.org>', "plain@example.org"], "Test!")
+    message.cc = "Jane <jane@example.org>"
+    message.bcc = "Audit <audit@example.org>"
+    message.reply_to = "Support <support@example.org>"
+
+    body = @mailer.build_resend_params(message)
+    expect(body[:to]).to eql(['"Doe, John" <john@example.org>', "plain@example.org"])
+    expect(body[:cc]).to eql(["Jane <jane@example.org>"])
+    expect(body[:bcc]).to eql(["Audit <audit@example.org>"])
+    expect(body[:reply_to]).to eql(["Support <support@example.org>"])
+  end
+
   it "properly creates header through headers method" do
     message = TestMailer.with_headers_method("test@example.org", "Test!")
     body = @mailer.build_resend_params(message)
