@@ -53,7 +53,7 @@ module Resend
     def build_resend_params(mail)
       params = {
         from: get_from(mail),
-        to: mail.to,
+        to: get_recipients(mail, :to),
         subject: mail.subject
       }
       params.merge!(get_addons(mail))
@@ -164,9 +164,9 @@ module Resend
     #
     def get_addons(mail)
       params = {}
-      params[:cc] = mail.cc if mail.cc.present?
-      params[:bcc] = mail.bcc if mail.bcc.present?
-      params[:reply_to] = mail.reply_to if mail.reply_to.present?
+      params[:cc] = get_recipients(mail, :cc) if mail.cc.present?
+      params[:bcc] = get_recipients(mail, :bcc) if mail.bcc.present?
+      params[:reply_to] = get_recipients(mail, :reply_to) if mail.reply_to.present?
       params
     end
 
@@ -205,6 +205,21 @@ module Resend
       return from.first if from.is_a? Array
 
       from.to_s
+    end
+
+    #
+    # Gets a recipient attr (to, cc, bcc, reply_to) keeping display names
+    #
+    # @param Mail mail Rails Mail object
+    # @param Symbol name of the attr
+    #
+    # @return Array formatted addresses, or the raw value if it could not be parsed
+    #
+    def get_recipients(mail, name)
+      field = mail[name]
+      return field.formatted if field.respond_to?(:formatted)
+
+      mail.public_send(name)
     end
 
     #
